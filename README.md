@@ -1,7 +1,8 @@
 # MGTools - Magic Garden Assistant - Maintenence Mode
 
 ## READ THIS!!
->! Warning, this is the Maintenence Mode Repository for MGTools, use this repository only if prompted in the Discord Server, as this will be used when the Current Main Contributor to the main repo is not active! (Right now it is Myke)
+> Warning, this is the Maintenence Mode Repository for MGTools, use this repository only if prompted in the Discord Server, as this will be used when the Current Main Contributor to the main repo is not active! (Right now it is Myke)
+
 What does this mean?
 It means that bugfixes will be given, but new features will be added extremely sparingly if at all.
 Meant to go to the Main Repo?
