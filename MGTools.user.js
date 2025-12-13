@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.1.1
-// @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!)
-// @author       Unified Script
-// @updateURL    https://github.com/Myke247/MGTools/raw/refs/heads/Live-Beta/MGTools.user.js
-// @downloadURL  https://github.com/Myke247/MGTools/raw/refs/heads/Live-Beta/MGTools.user.js
+// @version      2.2.0
+// @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
+ // @author       Unified Script
+// @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
+// @downloadURL  https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
 // @match        https://magiccircle.gg/r/*
 // @match        https://magicgarden.gg/r/*
 // @match        https://starweaver.org/r/*
@@ -47,7 +47,7 @@
       rc.sendMessage = function (msg) {
         try {
           setLast(msg?.scopePath);
-        } catch {}
+        } catch { }
         return origSend(msg);
       };
     }
@@ -57,7 +57,7 @@
       rc.dispatch = function (evt) {
         try {
           setLast(evt?.scopePath);
-        } catch {}
+        } catch { }
         return origDispatch(evt);
       };
     }
@@ -465,7 +465,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             memoryStore[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
             console.warn('[STORAGE] Fallback to memory for key:', key);
             return true;
-          } catch (e2) {}
+          } catch (e2) { }
         }
 
         return false;
@@ -1113,7 +1113,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       try {
         localStorage.setItem('mgtools_compat_disabled', 'true');
         localStorage.removeItem('mgtools_compat_mode');
-      } catch (e) {}
+      } catch (e) { }
 
       logInfo('COMPAT', 'Compatibility mode disabled');
     },
@@ -1576,7 +1576,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
 
         atom.write = function (get, set, ...args) {
           if (!capturedStore) {
-            capturedStore = { get, set, sub: () => () => {} };
+            capturedStore = { get, set, sub: () => () => { } };
             // Restore all patched atoms immediately
             for (const a of patchedAtoms) {
               if (a.__mgtools_originalWrite) {
@@ -3738,7 +3738,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             /* no-op in /info mode */
           },
           onDisconnect() {
-            return { remove() {} };
+            return { remove() { } };
           }
         };
         productionLog('✅ /info rooms mode enabled (Firebase stubbed)');
@@ -4764,7 +4764,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         console.error(`❌ [MGA-ISOLATION] CRITICAL: Attempted to load with non-MGA key: ${keyLocal}`);
         try {
           console.trace();
-        } catch (_) {}
+        } catch (_) { }
         keyLocal = 'MGA_' + keyLocal;
       }
       try {
@@ -4826,7 +4826,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         let gmRaw = null;
         try {
           gmRaw = gmAvailable ? GM_getValue(keyLocal, null) : null;
-        } catch (e) {}
+        } catch (e) { }
 
         const mainRaw = readLS(lsMain, keyLocal);
         const targRaw = readLS(lsTarg, keyLocal);
@@ -4858,7 +4858,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
 
         try {
           productionLog(`[STORAGE-CHOICE] ${keyLocal}: gm=${gmScore} win=${mnScore} tgt=${tgScore} chosen=${bestSrc}`);
-        } catch (_) {}
+        } catch (_) { }
 
         if (best && (typeof best === 'object' || Array.isArray(best))) {
           // Do NOT write during load - only read and return
@@ -4913,7 +4913,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         const writeLS = (ls, k, v) => {
           try {
             if (ls) ls.setItem(k, v);
-          } catch (e) {}
+          } catch (e) { }
         };
 
         const toStr = val => (val == null ? null : typeof val === 'string' ? val : JSON.stringify(val));
@@ -4966,7 +4966,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               const stable = JSON.stringify(best);
               try {
                 if (gmAvailable) GM_setValue(key, stable);
-              } catch (e) {}
+              } catch (e) { }
               writeLS(lsMain, key, stable);
               writeLS(lsTarg, key, stable);
               productionLog(`[STORAGE-SYNC] ${key}: canonicalized across GM/WIN/TGT`);
@@ -4999,7 +4999,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           }
           valueLocal = Array.from(map.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
-      } catch {}
+      } catch { }
 
       // CRITICAL: Ensure we never use external script keys
       if (keyLocal && !keyLocal.startsWith('MGA_')) {
@@ -5127,7 +5127,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             try {
               localStorage.removeItem(dropKeys[i]);
               productionLog(`🧹 [STORAGE-CLEANUP] Removed: ${dropKeys[i]}`);
-            } catch (_e) {}
+            } catch (_e) { }
           }
           // Retry save after cleanup (one time only)
           if (retryCount === 0) {
@@ -5169,7 +5169,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           }
           valueLocal = Array.from(map.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
-      } catch {}
+      } catch { }
 
       try {
         const jsonString = JSON.stringify(valueLocal);
@@ -5381,10 +5381,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             // Ask for confirmation
             const confirmed = confirm(
               `📥 Import ${importCount} presets?\n\n` +
-                `Current presets: ${currentCount}\n` +
-                `Import date: ${importData.exportDate || 'Unknown'}\n` +
-                `Version: ${importData.version || 'Unknown'}\n\n` +
-                `⚠️ This will OVERWRITE your current presets!`
+              `Current presets: ${currentCount}\n` +
+              `Import date: ${importData.exportDate || 'Unknown'}\n` +
+              `Version: ${importData.version || 'Unknown'}\n\n` +
+              `⚠️ This will OVERWRITE your current presets!`
             );
 
             if (!confirmed) {
@@ -6017,9 +6017,9 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           lastStates:
             typeof lastPetHungerStates !== 'undefined'
               ? Object.keys(lastPetHungerStates || {}).map(id => ({
-                  petId: id,
-                  lastHunger: lastPetHungerStates[id]
-                }))
+                petId: id,
+                lastHunger: lastPetHungerStates[id]
+              }))
               : []
         },
 
@@ -6051,10 +6051,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         performance: {
           memoryUsage: performance?.memory
             ? {
-                usedJSHeapSize: (performance.memory.usedJSHeapSize / 1048576).toFixed(2) + ' MB',
-                totalJSHeapSize: (performance.memory.totalJSHeapSize / 1048576).toFixed(2) + ' MB',
-                jsHeapSizeLimit: (performance.memory.jsHeapSizeLimit / 1048576).toFixed(2) + ' MB'
-              }
+              usedJSHeapSize: (performance.memory.usedJSHeapSize / 1048576).toFixed(2) + ' MB',
+              totalJSHeapSize: (performance.memory.totalJSHeapSize / 1048576).toFixed(2) + ' MB',
+              jsHeapSizeLimit: (performance.memory.jsHeapSizeLimit / 1048576).toFixed(2) + ' MB'
+            }
             : 'Not available',
           intervals: {
             notificationInterval: typeof notificationInterval !== 'undefined' ? 'Active' : 'Inactive',
@@ -6071,10 +6071,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           storedData:
             typeof GM_getValue !== 'undefined'
               ? {
-                  petPresets: GM_getValue('MGA_petPresets') ? 'Present' : 'Missing',
-                  seedsToDelete: GM_getValue('MGA_seedsToDelete') ? 'Present' : 'Missing',
-                  settings: GM_getValue('MGA_data') ? 'Present' : 'Missing'
-                }
+                petPresets: GM_getValue('MGA_petPresets') ? 'Present' : 'Missing',
+                seedsToDelete: GM_getValue('MGA_seedsToDelete') ? 'Present' : 'Missing',
+                settings: GM_getValue('MGA_data') ? 'Present' : 'Missing'
+              }
               : 'GM API not available'
         },
 
@@ -6830,7 +6830,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       const gw = (typeof unsafeWindow !== 'undefined' && unsafeWindow) || window;
       try {
         if (gw.MGTools?.store?.getAtomValue) return gw.MGTools.store.getAtomValue(atomName);
-      } catch {}
+      } catch { }
       return null;
     }
 
@@ -6872,15 +6872,15 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           let d = evt.data;
           try {
             d = JSON.parse(d);
-          } catch {}
+          } catch { }
           const arr = Array.isArray(d) ? d : [d];
           for (const msg of arr)
             for (const fn of subs) {
               try {
                 fn(msg);
-              } catch {}
+              } catch { }
             }
-        } catch {}
+        } catch { }
       }
 
       WS.prototype.addEventListener = function (type, listener, opts) {
@@ -6949,7 +6949,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               unsub();
               resolve(msg);
             }
-          } catch {}
+          } catch { }
         });
         const to = setTimeout(() => {
           unsub();
@@ -7019,35 +7019,35 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       // Predicate matching server events that confirm feed success
       const makePredicate =
         ({ payload }) =>
-        msg => {
-          if (!msg || typeof msg !== 'object') return false;
+          msg => {
+            if (!msg || typeof msg !== 'object') return false;
 
-          // Option A: Explicit ack with matching petItemId
-          if (msg.type === 'FeedPetAck' && msg.ok && msg.petItemId === payload.petItemId) {
-            return true;
-          }
-
-          // Option B: Domain event (PetFed)
-          if (msg.type === 'PetFed' && msg.petItemId === payload.petItemId) {
-            return true;
-          }
-
-          // Option C: InventoryDelta removing the crop
-          if (msg.type === 'InventoryDelta' && msg.removed) {
-            if (Array.isArray(msg.removed)) {
-              return msg.removed.some(r => r.id === payload.cropItemId || r === payload.cropItemId);
+            // Option A: Explicit ack with matching petItemId
+            if (msg.type === 'FeedPetAck' && msg.ok && msg.petItemId === payload.petItemId) {
+              return true;
             }
-          }
 
-          // Fallback: Check if message JSON contains our IDs (less precise)
-          const msgStr = JSON.stringify(msg);
-          if (msgStr.includes(payload.petItemId) && msgStr.includes(payload.cropItemId)) {
-            console.log('[Feed-Verify] 🔍 Fallback match on IDs in:', msg.type || 'unknown');
-            return true;
-          }
+            // Option B: Domain event (PetFed)
+            if (msg.type === 'PetFed' && msg.petItemId === payload.petItemId) {
+              return true;
+            }
 
-          return false;
-        };
+            // Option C: InventoryDelta removing the crop
+            if (msg.type === 'InventoryDelta' && msg.removed) {
+              if (Array.isArray(msg.removed)) {
+                return msg.removed.some(r => r.id === payload.cropItemId || r === payload.cropItemId);
+              }
+            }
+
+            // Fallback: Check if message JSON contains our IDs (less precise)
+            const msgStr = JSON.stringify(msg);
+            if (msgStr.includes(payload.petItemId) && msgStr.includes(payload.cropItemId)) {
+              console.log('[Feed-Verify] 🔍 Fallback match on IDs in:', msg.type || 'unknown');
+              return true;
+            }
+
+            return false;
+          };
 
       const ok = await sendWithAck('FeedPet', { petItemId, cropItemId }, makePredicate, enableDebugPeek);
 
@@ -7378,7 +7378,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               const ctx = { get: a => (a === atom ? atom.init : undefined) };
               return atom.read(ctx);
             }
-          } catch {}
+          } catch { }
           return undefined;
         }
 
@@ -11690,42 +11690,41 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                   <div class="mga-section">
                       <div class="mga-section-title mga-pet-section-title">Active Pets</div>
                       <div class="mga-active-pets-display">
-                          ${
-                            activePets.length > 0
-                              ? `
+                          ${activePets.length > 0
+            ? `
                               <div style="color: #93c5fd; font-size: 12px; margin-bottom: 4px;">Currently Equipped:</div>
                               <div class="mga-active-pets-list">
                                   ${activePets
-                                    .map((p, index) => {
-                                      const timeUntilHungry = calculateTimeUntilHungry(p);
-                                      const timerText = formatHungerTimer(timeUntilHungry);
-                                      const timerColor =
-                                        timeUntilHungry === null
-                                          ? '#999'
-                                          : timeUntilHungry <= 0
-                                            ? '#8B0000'
-                                            : timeUntilHungry < 5 * 60 * 1000
-                                              ? '#ff4444'
-                                              : timeUntilHungry < 15 * 60 * 1000
-                                                ? '#ffa500'
-                                                : '#4caf50';
-                                      return `
+              .map((p, index) => {
+                const timeUntilHungry = calculateTimeUntilHungry(p);
+                const timerText = formatHungerTimer(timeUntilHungry);
+                const timerColor =
+                  timeUntilHungry === null
+                    ? '#999'
+                    : timeUntilHungry <= 0
+                      ? '#8B0000'
+                      : timeUntilHungry < 5 * 60 * 1000
+                        ? '#ff4444'
+                        : timeUntilHungry < 15 * 60 * 1000
+                          ? '#ffa500'
+                          : '#4caf50';
+                return `
                                           <div class="mga-pet-slot" style="display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 8px;">
                                               <span class="mga-pet-badge">${p.petSpecies}</span>
                                               <span class="mga-hunger-timer" data-pet-index="${index}" style="font-size: 12px; color: ${timerColor}; font-weight: bold;">${timerText}</span>
                                           </div>
                                       `;
-                                    })
-                                    .join('')}
+              })
+              .join('')}
                               </div>
                           `
-                              : `
+            : `
                               <div class="mga-empty-state">
                                   <div class="mga-empty-state-icon">—</div>
                                   <div class="mga-empty-state-description">No pets currently active</div>
                               </div>
                           `
-                          }
+          }
                       </div>
                   </div>
                   <div class="mga-section">
@@ -11745,42 +11744,41 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               <div class="mga-section">
                   <div class="mga-section-title mga-pet-section-title">Active Pets</div>
                   <div class="mga-active-pets-display">
-                      ${
-                        activePets.length > 0
-                          ? `
+                      ${activePets.length > 0
+          ? `
                           <div class="mga-active-pets-header">Currently Equipped:</div>
                           <div class="mga-active-pets-list">
                               ${activePets
-                                .map((p, index) => {
-                                  const timeUntilHungry = calculateTimeUntilHungry(p);
-                                  const timerText = formatHungerTimer(timeUntilHungry);
-                                  const timerColor =
-                                    timeUntilHungry === null
-                                      ? '#999'
-                                      : timeUntilHungry <= 0
-                                        ? '#8B0000'
-                                        : timeUntilHungry < 5 * 60 * 1000
-                                          ? '#ff4444'
-                                          : timeUntilHungry < 15 * 60 * 1000
-                                            ? '#ffa500'
-                                            : '#4caf50';
-                                  return `
+            .map((p, index) => {
+              const timeUntilHungry = calculateTimeUntilHungry(p);
+              const timerText = formatHungerTimer(timeUntilHungry);
+              const timerColor =
+                timeUntilHungry === null
+                  ? '#999'
+                  : timeUntilHungry <= 0
+                    ? '#8B0000'
+                    : timeUntilHungry < 5 * 60 * 1000
+                      ? '#ff4444'
+                      : timeUntilHungry < 15 * 60 * 1000
+                        ? '#ffa500'
+                        : '#4caf50';
+              return `
                                       <div class="mga-pet-slot" style="display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 8px;">
                                           <span class="mga-pet-badge">${p.petSpecies}</span>
                                           <span class="mga-hunger-timer" data-pet-index="${index}" style="font-size: 12px; color: ${timerColor}; font-weight: bold;">${timerText}</span>
                                       </div>
                                   `;
-                                })
-                                .join('')}
+            })
+            .join('')}
                           </div>
                       `
-                          : `
+          : `
                           <div class="mga-empty-state">
                               <div class="mga-empty-state-icon">—</div>
                               <div class="mga-empty-state-description">No pets currently active</div>
                           </div>
                       `
-                      }
+        }
                   </div>
               </div>
 
@@ -12052,9 +12050,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       const totalPresets = Object.keys(petPresets).length;
 
       let html = `
-              ${
-                totalPresets > 0
-                  ? `
+              ${totalPresets > 0
+          ? `
                   <div class="mga-section" style="padding: 8px 12px; background: rgba(139, 92, 246, 0.15); border-left: 3px solid #8b5cf6; margin-bottom: 12px;">
                       <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                           <div style="flex: 1;">
@@ -12069,47 +12066,46 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                       </div>
                   </div>
               `
-                  : ''
-              }
+          : ''
+        }
               <div class="mga-section">
                   <div class="mga-section-title mga-pet-section-title">Active Pets</div>
                   <div class="mga-active-pets-display">
-                      ${
-                        activePets.length > 0
-                          ? `
+                      ${activePets.length > 0
+          ? `
                           <div class="mga-active-pets-header">Currently Equipped:</div>
                           <div class="mga-active-pets-list">
                               ${activePets
-                                .map((p, index) => {
-                                  const timeUntilHungry = calculateTimeUntilHungry(p);
-                                  const timerText = formatHungerTimer(timeUntilHungry);
-                                  const timerColor =
-                                    timeUntilHungry === null
-                                      ? '#999'
-                                      : timeUntilHungry <= 0
-                                        ? '#8B0000'
-                                        : timeUntilHungry < 5 * 60 * 1000
-                                          ? '#ff4444'
-                                          : timeUntilHungry < 15 * 60 * 1000
-                                            ? '#ffa500'
-                                            : '#4caf50';
-                                  return `
+            .map((p, index) => {
+              const timeUntilHungry = calculateTimeUntilHungry(p);
+              const timerText = formatHungerTimer(timeUntilHungry);
+              const timerColor =
+                timeUntilHungry === null
+                  ? '#999'
+                  : timeUntilHungry <= 0
+                    ? '#8B0000'
+                    : timeUntilHungry < 5 * 60 * 1000
+                      ? '#ff4444'
+                      : timeUntilHungry < 15 * 60 * 1000
+                        ? '#ffa500'
+                        : '#4caf50';
+              return `
                                       <div class="mga-pet-slot" style="display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 8px;">
                                           <span class="mga-pet-badge">${p.petSpecies}</span>
                                           <span class="mga-hunger-timer" data-pet-index="${index}" style="font-size: 12px; color: ${timerColor}; font-weight: bold;">${timerText}</span>
                                       </div>
                                   `;
-                                })
-                                .join('')}
+            })
+            .join('')}
                           </div>
                       `
-                          : `
+          : `
                           <div class="mga-empty-state">
                               <div class="mga-empty-state-icon">—</div>
                               <div class="mga-empty-state-description">No pets currently active</div>
                           </div>
                       `
-                      }
+        }
                   </div>
               </div>
 
@@ -12118,11 +12114,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                   <select class="mga-select" id="preset-quick-select" style="margin-bottom: 8px;">
                       <option value="">-- Select Preset --</option>
                       ${Object.keys(petPresets)
-                        .map(
-                          name =>
-                            `<option value="${name}">${name} (${petPresets[name].map(p => p.petSpecies).join(', ')})</option>`
-                        )
-                        .join('')}
+          .map(
+            name =>
+              `<option value="${name}">${name} (${petPresets[name].map(p => p.petSpecies).join(', ')})</option>`
+          )
+          .join('')}
                   </select>
                   <button class="mga-btn" id="quick-load-btn" style="width: 100%;">Load</button>
               </div>
@@ -12206,13 +12202,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                       </div>
                   </div>
                   <div id="filter-mode-description" style="font-size: 11px; color: #aaa; margin-bottom: 12px; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 4px;">
-                      ${
-                        filterMode === 'categories'
-                          ? '📂 Filter by ability categories'
-                          : filterMode === 'byPet'
-                            ? '🐾 Filter by pet species'
-                            : '⚙️ Filter by individual abilities'
-                      }
+                      ${filterMode === 'categories'
+          ? '📂 Filter by ability categories'
+          : filterMode === 'byPet'
+            ? '🐾 Filter by pet species'
+            : '⚙️ Filter by individual abilities'
+        }
                   </div>
 
                   <!-- Categories Mode -->
@@ -12295,7 +12290,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       productionLog('🔍 [SEEDS DEBUG] getSeedsTabContent() called - generating content');
       const seedGroups = [
         { name: 'Common', color: '#fff', seeds: ['Carrot', 'Strawberry', 'Aloe'] },
-        { name: 'Uncommon', color: '#0f0', seeds: ['Apple', 'Tulip', 'Tomato', 'Blueberry'] },
+        { name: 'Uncommon', color: '#0f0', seeds: ['Apple', 'Tulip', 'Tomato', 'Blueberry', 'FavaBean'] },
         { name: 'Rare', color: '#0af', seeds: ['Daffodil', 'Corn', 'Watermelon', 'Pumpkin', 'Delphinium', 'Squash'] },
         { name: 'Legendary', color: '#ff0', seeds: ['Echeveria', 'Coconut', 'Banana', 'Lily', 'BurrosTail'] },
         { name: 'Mythical', color: '#a0f', seeds: ['Mushroom', 'Cactus', 'Bamboo', 'Grape'] },
@@ -12340,6 +12335,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         Carrot: 'Carrot',
         Strawberry: 'Strawberry',
         Aloe: 'Aloe',
+        FavaBean: 'FavaBean',
         Blueberry: 'Blueberry',
         Apple: 'Apple',
         Tulip: 'OrangeTulip',
@@ -12355,15 +12351,18 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         Coconut: 'Coconut',
         Banana: 'Banana',
         Lily: 'Lily',
+        Camellia: 'Camellia',
         BurrosTail: 'BurrosTail',
         Mushroom: 'Mushroom',
         Cactus: 'Cactus',
         Bamboo: 'Bamboo',
+        Chrysanthemum: 'Chrysanthemum',
         Grape: 'Grape',
         Pepper: 'Pepper',
         Lemon: 'Lemon',
         PassionFruit: 'PassionFruit',
         DragonFruit: 'DragonFruit',
+        Cacao: 'Cacao',
         Lychee: 'Lychee',
         Starweaver: 'Starweaver',
         Moonbinder: 'Moonbinder',
@@ -12460,6 +12459,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       BurrosTail: 'https://cdn.discordapp.com/emojis/1423010714267942912.webp',
       Mushroom: 'https://cdn.discordapp.com/emojis/1423010734002012160.webp',
       Cactus: 'https://cdn.discordapp.com/emojis/1423010755267133531.webp',
+      FavaBean: 'https://media.magicgarden.wiki/thumb/Fava_Bean_Pod.png/200px-Fava_Bean_Pod.png',
+      Delphinium: 'https://media.magicgarden.wiki/thumb/Delphinium_Seed.png/200px-Delphinium_Seed.png',
+      Camellia: 'https://media.magicgarden.wiki/thumb/Camellia.png/200px-Camellia.png',
+      Chrysanthemum: 'https://media.magicgarden.wiki/thumb/Chrysanthemum.png/200px-Chrysanthemum.png',
+      Cacao: 'https://media.magicgarden.wiki/thumb/Cacao_Fruit.png/200px-Cacao_Fruit.png',
       Bamboo: 'https://cdn.discordapp.com/emojis/1423010797830930552.webp',
       Grape: 'https://cdn.discordapp.com/emojis/1423010779522666616.webp',
       Pepper: 'https://cdn.discordapp.com/emojis/1423010818953580574.webp',
@@ -12489,11 +12493,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
     // Color groups for item rarity/type
     const SHOP_COLOR_GROUPS = {
       white: ['CommonEgg', 'Carrot', 'Strawberry', 'Aloe'],
-      green: ['UncommonEgg', 'Apple', 'OrangeTulip', 'Tomato', 'Blueberry'],
+      green: ['UncommonEgg', 'Apple', 'OrangeTulip', 'Tomato', 'Blueberry', 'FavaBean'],
       blue: ['RareEgg', 'Daffodil', 'Corn', 'Watermelon', 'Pumpkin', 'Delphinium', 'Squash'],
-      yellow: ['LegendaryEgg', 'Echeveria', 'Coconut', 'Banana', 'Lily', 'BurrosTail'],
-      purple: ['MythicalEgg', 'Mushroom', 'Cactus', 'Bamboo', 'Grape'],
-      orange: ['Pepper', 'Lemon', 'PassionFruit', 'DragonFruit', 'Lychee', 'Sunflower']
+      yellow: ['LegendaryEgg', 'Echeveria', 'Coconut', 'Banana', 'Lily', 'BurrosTail', 'Camellia', 'Chrysanthemum'],
+      purple: ['MythicalEgg', 'Mushroom', 'Cactus', 'Bamboo', 'Grape', 'Crysanthemum'],
+      orange: ['Pepper', 'Lemon', 'PassionFruit', 'DragonFruit', 'Lychee', 'Sunflower', 'Cacao']
     };
 
     // Rainbow items (celestial seeds)
@@ -12506,6 +12510,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       Strawberry: 50,
       Aloe: 135,
       // Seeds - Uncommon tier
+      FavaBean: 250,
       Blueberry: 400,
       Apple: 500,
       OrangeTulip: 600,
@@ -12523,11 +12528,13 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       Banana: 7500,
       Lily: 20000,
       BurrosTail: 93000,
+      Camellia: 55000,
       // Seeds - Mythical tier
       Mushroom: 150000,
       Cactus: 250000,
       Bamboo: 400000,
       Grape: 850000,
+      Chrysanthemum: 670000,
       // Seeds - Divine tier
       Pepper: 1000000,
       Lemon: 2000000,
@@ -12535,6 +12542,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       DragonFruit: 5000000,
       Lychee: 25000000,
       Sunflower: 100000000,
+      Cacao: 10000000,
       // Seeds - Celestial tier
       Starweaver: 1000000000,
       DawnCelestial: 10000000000,
@@ -12623,7 +12631,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         stuckTooltips.forEach(t => {
           if (t && t.parentNode) t.remove();
         });
-      } catch (e) {}
+      } catch (e) { }
 
       try {
         if (!el || !(el instanceof Element)) {
@@ -12673,13 +12681,13 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               setTimeout(() => {
                 try {
                   if (msg && msg.parentNode) msg.remove();
-                } catch (e) {}
+                } catch (e) { }
               }, 220);
             }
           } catch (e) {
             try {
               if (msg && msg.parentNode) msg.remove();
-            } catch (_) {}
+            } catch (_) { }
           }
         };
 
@@ -12688,7 +12696,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         console.error('flashPurchaseFeedback error:', err);
         try {
           showFloatingMsg(message, duration);
-        } catch (e) {}
+        } catch (e) { }
       }
     }
 
@@ -13082,6 +13090,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       'Carrot',
       'Strawberry',
       'Aloe',
+      'FavaBean',
       'Blueberry',
       'Apple',
       'OrangeTulip',
@@ -13094,15 +13103,18 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       'Coconut',
       'Banana',
       'Lily',
+      'Camellia',
       'BurrosTail',
       'Mushroom',
       'Cactus',
       'Bamboo',
+      'Chrysanthemum',
       'Grape',
       'Pepper',
       'Lemon',
       'PassionFruit',
       'DragonFruit',
+      'Cacao',
       'Lychee',
       'Sunflower',
       'Starweaver',
@@ -13848,6 +13860,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         Aloe: 80,
         Strawberry: 60,
         Carrot: 40,
+        FavaBean: 0,
         // Eggs
         MythicalEgg: 10000,
         LegendaryEgg: 5000,
@@ -14042,35 +14055,39 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
 
       // Seed/Egg item definition
       const SEED_SPECIES = [
-        'Carrot',
-        'Strawberry',
-        'Aloe',
-        'Blueberry',
-        'Apple',
-        'OrangeTulip',
-        'Tomato',
-        'Daffodil',
-        'Corn',
-        'Watermelon',
-        'Pumpkin',
-        'Echeveria',
-        'Coconut',
-        'Banana',
-        'Lily',
-        'BurrosTail',
-        'Mushroom',
-        'Cactus',
-        'Bamboo',
-        'Grape',
-        'Pepper',
-        'Lemon',
-        'PassionFruit',
-        'DragonFruit',
-        'Lychee',
-        'Sunflower',
-        'Starweaver',
-        'DawnCelestial',
-        'MoonCelestial'
+      'Carrot',
+      'Strawberry',
+      'Aloe',
+      'FavaBean',
+      'Blueberry',
+      'Apple',
+      'OrangeTulip',
+      'Tomato',
+      'Daffodil',
+      'Corn',
+      'Watermelon',
+      'Pumpkin',
+      'Echeveria',
+      'Coconut',
+      'Banana',
+      'Lily',
+      'Camellia',
+      'BurrosTail',
+      'Mushroom',
+      'Cactus',
+      'Bamboo',
+      'Chrysanthemum',
+      'Grape',
+      'Pepper',
+      'Lemon',
+      'PassionFruit',
+      'DragonFruit',
+      'Cacao',
+      'Lychee',
+      'Sunflower',
+      'Starweaver',
+      'DawnCelestial',
+      'MoonCelestial'
       ];
 
       const EGG_IDS = ['CommonEgg', 'UncommonEgg', 'RareEgg', 'LegendaryEgg', 'MythicalEgg'];
@@ -14404,38 +14421,42 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                       </div>
                       <div id="auto-favorite-species" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; max-height: 300px; overflow-y: auto; padding-right: 8px;">
                           ${[
-                            'Carrot',
-                            'Strawberry',
-                            'Aloe',
-                            'Blueberry',
-                            'Apple',
-                            'OrangeTulip',
-                            'Tomato',
-                            'Daffodil',
-                            'Corn',
-                            'Watermelon',
-                            'Pumpkin',
-                            'Echeveria',
-                            'Coconut',
-                            'Banana',
-                            'Lily',
-                            'BurrosTail',
-                            'Mushroom',
-                            'Cactus',
-                            'Bamboo',
-                            'Grape',
-                            'Pepper',
-                            'Lemon',
-                            'PassionFruit',
-                            'DragonFruit',
-                            'Lychee',
-                            'Sunflower',
-                            'Starweaver',
-                            'DawnCelestial',
-                            'MoonCelestial'
-                          ]
-                            .map(
-                              species => `
+      'Carrot',
+      'Strawberry',
+      'Aloe',
+      'FavaBean',
+      'Blueberry',
+      'Apple',
+      'OrangeTulip',
+      'Tomato',
+      'Daffodil',
+      'Corn',
+      'Watermelon',
+      'Pumpkin',
+      'Echeveria',
+      'Coconut',
+      'Banana',
+      'Lily',
+      'Camellia',
+      'BurrosTail',
+      'Mushroom',
+      'Cactus',
+      'Bamboo',
+      'Chrysanthemum',
+      'Grape',
+      'Pepper',
+      'Lemon',
+      'PassionFruit',
+      'DragonFruit',
+      'Cacao',
+      'Lychee',
+      'Sunflower',
+      'Starweaver',
+      'DawnCelestial',
+      'MoonCelestial'
+        ]
+          .map(
+            species => `
                                   <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer; user-select: none;">
                                       <input type="checkbox" value="${species}"
                                           ${UnifiedState.data.settings.autoFavorite.species.includes(species) ? 'checked' : ''}
@@ -14443,26 +14464,26 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                       <span style="color: #e5e7eb;">${species.replace('OrangeTulip', 'Tulip').replace('DawnCelestial', 'Dawnbinder').replace('MoonCelestial', 'Moonbinder')}</span>
                                   </label>
                               `
-                            )
-                            .join('')}
+          )
+          .join('')}
                       </div>
                       <div style="font-size: 11px; color: #aaa; margin-bottom: 12px; border-top: 1px solid rgba(255, 255, 255, 0.57); padding-top: 12px;">
                           Automatically favorite items with these mutations:
                       </div>
                       <div id="auto-favorite-mutations" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
                           ${[
-                            'Rainbow',
-                            'Gold',
-                            'Frozen',
-                            'Wet',
-                            'Chilled',
-                            'Dawnlit',
-                            'Amberlit',
-                            'Dawnbound',
-                            'Amberbound'
-                          ]
-                            .map(
-                              mutation => `
+          'Rainbow',
+          'Gold',
+          'Frozen',
+          'Wet',
+          'Chilled',
+          'Dawnlit',
+          'Amberlit',
+          'Dawnbound',
+          'Amberbound'
+        ]
+          .map(
+            mutation => `
                                   <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; user-select: none;">
                                       <input type="checkbox" value="${mutation}"
                                           ${UnifiedState.data.settings.autoFavorite.mutations.includes(mutation) ? 'checked' : ''}
@@ -14470,16 +14491,16 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                       <span style="color: #e5e7eb;">${mutation}</span>
                                   </label>
                               `
-                            )
-                            .join('')}
+          )
+          .join('')}
                       </div>
                       <div style="font-size: 11px; color: #aaa; margin-bottom: 12px; border-top: 1px solid rgba(255, 255, 255, 0.57); padding-top: 12px;">
                           Automatically favorite pets with these abilities:
                       </div>
                       <div id="auto-favorite-pet-abilities" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
                           ${['Rainbow Granter', 'Gold Granter']
-                            .map(
-                              ability => `
+          .map(
+            ability => `
                                   <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; user-select: none;">
                                       <input type="checkbox" value="${ability}"
                                           ${(UnifiedState.data.settings.autoFavorite.petAbilities || []).includes(ability) ? 'checked' : ''}
@@ -14487,8 +14508,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                       <span style="color: #e5e7eb;">${ability}</span>
                                   </label>
                               `
-                            )
-                            .join('')}
+          )
+          .join('')}
                       </div>
                   </div>
               </div>
@@ -14704,9 +14725,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           " ${isCurrentRoom ? 'disabled' : ''}>
                               ${isCurrentRoom ? 'Current' : 'Join'}
                           </button>
-                          ${
-                            allowDelete
-                              ? `
+                          ${allowDelete
+            ? `
                           <button class="room-delete-btn" data-room="${room.id}" style="
                               padding: 6px 10px;
                               font-size: 14px;
@@ -14720,8 +14740,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           " title="Remove room from list">
                               ❌
                           </button>`
-                              : ''
-                          }
+            : ''
+          }
                       </div>
                   </div>
               `;
@@ -14781,9 +14801,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                   <!-- BUGFIX v3.7.4: Single container approach - swaps content instead of toggling display on two divs -->
                   <!-- This fixes the side-by-side display bug where both tabs were showing simultaneously -->
                   <div id="rooms-tab-content">
-                      ${
-                        activeRoomsTab === 'mg'
-                          ? `
+                      ${activeRoomsTab === 'mg'
+          ? `
                           <!-- MG & Custom Tab Content -->
                           <div id="room-status-list-mg" style="display: flex; flex-direction: column; gap: 8px;">
                               ${mgAndCustomRooms.map(room => renderRoomCard(room, room.category === 'custom', room.category === 'custom')).join('')}
@@ -14821,14 +14840,13 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               </div>
                           </div>
                       `
-                          : `
+          : `
                           <!-- Discord Servers Tab Content -->
                           <div id="room-status-list-discord" style="display: flex; flex-direction: column; gap: 8px;">
-                              ${
-                                RoomRegistry.discord.length > 0
-                                  ? RoomRegistry.discord.map(room => renderRoomCard(room, false, false)).join('')
-                                  : '<div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">No Discord rooms available</div>'
-                              }
+                              ${RoomRegistry.discord.length > 0
+            ? RoomRegistry.discord.map(room => renderRoomCard(room, false, false)).join('')
+            : '<div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">No Discord rooms available</div>'
+          }
                           </div>
                           <div style="margin-top: 16px; padding: 12px; background: rgba(138, 43, 226, 0.2); border-radius: 6px; border: 1px solid rgba(138, 43, 226, 0.3);">
                               <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
@@ -14841,7 +14859,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               </div>
                           </div>
                       `
-                      }
+        }
                   </div>
               </div>
           `;
@@ -14931,6 +14949,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           <option value="Carrot">🥕 Carrot</option>
                           <option value="Strawberry">🍓 Strawberry</option>
                           <option value="Aloe">🌿 Aloe</option>
+                          <option value="FavaBean">🫘 Fava Bean</option>
                           <option value="Apple">🍎 Apple</option>
                           <option value="Tulip">🌷 Tulip</option>
                           <option value="Tomato">🍅 Tomato</option>
@@ -14943,6 +14962,9 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           <option value="Coconut">🥥 Coconut</option>
                           <option value="Banana">🍌 Banana</option>
                           <option value="Lily">🌺 Lily</option>
+                          <option value="Camellia">🌸 Camellia</option>
+                          <option value="Chrysanthemum">🌼 Chrysanthemum</option>
+                          <option value="Cacao">🍫 Cacao Bean</option>
                           <option value="BurrosTail">🌿 BurrosTail</option>
                           <option value="Mushroom">🍄 Mushroom</option>
                           <option value="Cactus">🌵 Cactus</option>
@@ -14977,6 +14999,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           <option value="Carrot">🥕 Carrot</option>
                           <option value="Strawberry">🍓 Strawberry</option>
                           <option value="Aloe">🌿 Aloe</option>
+                          <option value="FavaBean">🫘 Fava Bean</option>
                           <option value="Apple">🍎 Apple</option>
                           <option value="Tulip">🌷 Tulip</option>
                           <option value="Tomato">🍅 Tomato</option>
@@ -14989,6 +15012,9 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           <option value="Coconut">🥥 Coconut</option>
                           <option value="Banana">🍌 Banana</option>
                           <option value="Lily">🌺 Lily</option>
+                          <option value="Camellia">🌸 Camellia</option>
+                          <option value="Chrysanthemum">🌼 Chrysanthemum</option>
+                          <option value="Cacao">🍫 Cacao Bean</option>
                           <option value="BurrosTail">🌿 BurrosTail</option>
                           <option value="Mushroom">🍄 Mushroom</option>
                           <option value="Cactus">🌵 Cactus</option>
@@ -16643,6 +16669,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       Snail: 1000,
       Bee: 1500,
       Chicken: 3000,
+      Turkey: 500,
       Bunny: 750,
       Dragonfly: 250,
       Pig: 50000,
@@ -16668,6 +16695,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       Cow: 75 * 60 * 1000,
       Turtle: 90 * 60 * 1000,
       Goat: 60 * 60 * 1000,
+      Turkey: 45 * 60 * 1000,
       Squirrel: 30 * 60 * 1000,
       Capybara: 60 * 60 * 1000,
       Butterfly: 30 * 60 * 1000,
@@ -17303,8 +17331,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                   <div class="mga-section">
                       <div class="mga-section-title" style="font-size: 13px;">Game Controls</div>
                       ${Object.entries(hotkeys.gameKeys)
-                        .map(
-                          ([key, config]) => `
+          .map(
+            ([key, config]) => `
                           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 5px; background: rgba(255, 255, 255, 0.05); border-radius: 4px;">
                               <span style="font-size: 12px; flex: 1;">${config.name}</span>
                               <button class="hotkey-button" data-key="${key}" style="
@@ -17319,9 +17347,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               ">
                                   ${config.custom ? `${config.original.toUpperCase()} → ${config.custom.toUpperCase()}` : config.original.toUpperCase()}
                               </button>
-                              ${
-                                config.custom
-                                  ? `
+                              ${config.custom
+                ? `
                                   <button class="hotkey-reset" data-key="${key}" style="
                                       margin-left: 5px;
                                       padding: 2px 6px;
@@ -17333,19 +17360,19 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                       cursor: pointer;
                                   ">↺</button>
                               `
-                                  : ''
-                              }
+                : ''
+              }
                           </div>
                       `
-                        )
-                        .join('')}
+          )
+          .join('')}
                   </div>
 
                   <div class="mga-section">
                       <div class="mga-section-title" style="font-size: 13px;">MGTools Navigation & Features</div>
                       ${Object.entries(hotkeys.mgToolsKeys)
-                        .map(
-                          ([key, config]) => `
+          .map(
+            ([key, config]) => `
                           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 5px; background: rgba(255, 255, 255, 0.05); border-radius: 4px;">
                               <span style="font-size: 12px; flex: 1;">${config.name}</span>
                               <button class="hotkey-button-mgtools" data-key="${key}" style="
@@ -17360,9 +17387,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               ">
                                   ${config.custom ? config.custom.toUpperCase() : 'Not Set'}
                               </button>
-                              ${
-                                config.custom
-                                  ? `
+                              ${config.custom
+                ? `
                                   <button class="hotkey-reset-mgtools" data-key="${key}" style="
                                       margin-left: 5px;
                                       padding: 2px 6px;
@@ -17374,12 +17400,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                       cursor: pointer;
                                   ">↺</button>
                               `
-                                  : ''
-                              }
+                : ''
+              }
                           </div>
                       `
-                        )
-                        .join('')}
+          )
+          .join('')}
                   </div>
 
                   <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -17555,6 +17581,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               <span>🌿 Aloe</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-fava-bean" class="mga-checkbox"
+                                     ${settings.notifications.watchedSeeds.includes('FavaBean') ? 'checked' : ''}
+                                     style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🫘 Fava Bean</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-blueberry" class="mga-checkbox"
                                      ${settings.notifications.watchedSeeds.includes('Blueberry') ? 'checked' : ''}
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
@@ -17627,6 +17659,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               <span>🌺 Lily</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-camellia" class="mga-checkbox"
+                                     ${settings.notifications.watchedSeeds.includes('Camellia') ? 'checked' : ''}
+                                     style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🌸 Camellia</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-burrostail" class="mga-checkbox"
                                      ${settings.notifications.watchedSeeds.includes('BurrosTail') ? 'checked' : ''}
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
@@ -17649,6 +17687,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                      ${settings.notifications.watchedSeeds.includes('Bamboo') ? 'checked' : ''}
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
                               <span>🎋 Bamboo</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-chrysanthemum" class="mga-checkbox"
+                                      ${settings.notifications.watchedSeeds.includes('Chrysanthemum') ? 'checked' : ''}
+                                      style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🌸 Chrysanthemum</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-grape" class="mga-checkbox"
@@ -17679,6 +17723,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                      ${settings.notifications.watchedSeeds.includes('DragonFruit') ? 'checked' : ''}
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
                               <span>🐉 DragonFruit</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-cacao" class="mga-checkbox"
+                                     ${settings.notifications.watchedSeeds.includes('Cacao') ? 'checked' : ''}
+                                     style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🍫 Cacao Bean</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-lychee" class="mga-checkbox"
@@ -17757,7 +17807,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                       </label>
                       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px;">
                           ${DECOR_ITEMS.map(
-                            decor => `
+        decor => `
                               <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                                   <input type="checkbox" id="watch-decor-${decor.id.toLowerCase()}" class="mga-checkbox"
                                          ${settings.notifications.watchedDecor.includes(decor.id) ? 'checked' : ''}
@@ -17765,7 +17815,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                   <span>🎨 ${decor.name}</span>
                               </label>
                           `
-                          ).join('')}
+      ).join('')}
                       </div>
                   </div>
 
@@ -17864,62 +17914,62 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
 
                       <div id="individual-abilities-notification-list" style="display: grid; grid-template-columns: 1fr; gap: 4px; max-height: 400px; overflow-y: auto; padding: 4px;">
                           ${(() => {
-                            // Comprehensive list of all abilities organized by category
-                            const abilities = [
-                              // XP Boosts
-                              { name: 'XP Boost I', category: '💫 XP Boosts' },
-                              { name: 'XP Boost II', category: '💫 XP Boosts' },
-                              { name: 'XP Boost III', category: '💫 XP Boosts' },
-                              { name: 'XP Boost IV', category: '💫 XP Boosts' },
-                              { name: 'Hatch XP Boost', category: '💫 XP Boosts' },
-                              // Crop Size Boosts (only I and II exist in game)
-                              { name: 'Crop Size Boost I', category: '📈 Crop Size Boosts' },
-                              { name: 'Crop Size Boost II', category: '📈 Crop Size Boosts' },
-                              // Selling
-                              { name: 'Sell Boost I', category: '💰 Selling' },
-                              { name: 'Sell Boost II', category: '💰 Selling' },
-                              { name: 'Sell Boost III', category: '💰 Selling' },
-                              { name: 'Sell Boost IV', category: '💰 Selling' },
-                              { name: 'Selling Refund', category: '💰 Selling' },
-                              // Harvesting
-                              { name: 'Double Harvest', category: '🌾 Harvesting' },
-                              // Growth Speed
-                              { name: 'Plant Growth Boost I', category: '🐢 Growth Speed' },
-                              { name: 'Plant Growth Boost II', category: '🐢 Growth Speed' },
-                              { name: 'Plant Growth Boost III', category: '🐢 Growth Speed' },
-                              // Special Mutations
-                              { name: 'Rainbow Mutation', category: '🌈 Special' },
-                              { name: 'Gold Mutation', category: '🌈 Special' },
-                              // Other
-                              { name: 'Seed Finder I', category: '🔧 Other' },
-                              { name: 'Seed Finder II', category: '🔧 Other' },
-                              { name: 'Hunger Boost I', category: '🔧 Other' },
-                              { name: 'Hunger Boost II', category: '🔧 Other' },
-                              { name: 'Max Strength Boost I', category: '🔧 Other' },
-                              { name: 'Max Strength Boost II', category: '🔧 Other' },
-                              { name: 'Crop Eater', category: '🔧 Other' }
-                            ];
+          // Comprehensive list of all abilities organized by category
+          const abilities = [
+            // XP Boosts
+            { name: 'XP Boost I', category: '💫 XP Boosts' },
+            { name: 'XP Boost II', category: '💫 XP Boosts' },
+            { name: 'XP Boost III', category: '💫 XP Boosts' },
+            { name: 'XP Boost IV', category: '💫 XP Boosts' },
+            { name: 'Hatch XP Boost', category: '💫 XP Boosts' },
+            // Crop Size Boosts (only I and II exist in game)
+            { name: 'Crop Size Boost I', category: '📈 Crop Size Boosts' },
+            { name: 'Crop Size Boost II', category: '📈 Crop Size Boosts' },
+            // Selling
+            { name: 'Sell Boost I', category: '💰 Selling' },
+            { name: 'Sell Boost II', category: '💰 Selling' },
+            { name: 'Sell Boost III', category: '💰 Selling' },
+            { name: 'Sell Boost IV', category: '💰 Selling' },
+            { name: 'Selling Refund', category: '💰 Selling' },
+            // Harvesting
+            { name: 'Double Harvest', category: '🌾 Harvesting' },
+            // Growth Speed
+            { name: 'Plant Growth Boost I', category: '🐢 Growth Speed' },
+            { name: 'Plant Growth Boost II', category: '🐢 Growth Speed' },
+            { name: 'Plant Growth Boost III', category: '🐢 Growth Speed' },
+            // Special Mutations
+            { name: 'Rainbow Mutation', category: '🌈 Special' },
+            { name: 'Gold Mutation', category: '🌈 Special' },
+            // Other
+            { name: 'Seed Finder I', category: '🔧 Other' },
+            { name: 'Seed Finder II', category: '🔧 Other' },
+            { name: 'Hunger Boost I', category: '🔧 Other' },
+            { name: 'Hunger Boost II', category: '🔧 Other' },
+            { name: 'Max Strength Boost I', category: '🔧 Other' },
+            { name: 'Max Strength Boost II', category: '🔧 Other' },
+            { name: 'Crop Eater', category: '🔧 Other' }
+          ];
 
-                            const watchedAbilities = settings.notifications.watchedAbilities || [];
+          const watchedAbilities = settings.notifications.watchedAbilities || [];
 
-                            // Group abilities by category
-                            const grouped = {};
-                            abilities.forEach(ability => {
-                              if (!grouped[ability.category]) grouped[ability.category] = [];
-                              grouped[ability.category].push(ability.name);
-                            });
+          // Group abilities by category
+          const grouped = {};
+          abilities.forEach(ability => {
+            if (!grouped[ability.category]) grouped[ability.category] = [];
+            grouped[ability.category].push(ability.name);
+          });
 
-                            let html = '';
-                            Object.keys(grouped)
-                              .sort()
-                              .forEach(category => {
-                                html += `<div class="ability-category-group" style="margin-bottom: 8px;">
+          let html = '';
+          Object.keys(grouped)
+            .sort()
+            .forEach(category => {
+              html += `<div class="ability-category-group" style="margin-bottom: 8px;">
                                       <div style="font-size: 11px; font-weight: 600; color: #aaa; margin-bottom: 4px; padding: 4px 8px; background: rgba(255,255,255,0.03); border-radius: 4px;">${category}</div>`;
 
-                                grouped[category].forEach(abilityName => {
-                                  const isChecked =
-                                    watchedAbilities.length === 0 || watchedAbilities.includes(abilityName);
-                                  html += `
+              grouped[category].forEach(abilityName => {
+                const isChecked =
+                  watchedAbilities.length === 0 || watchedAbilities.includes(abilityName);
+                html += `
                                           <label class="mga-checkbox-group ability-checkbox-item" data-ability="${abilityName}" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; transition: background 0.2s; border-radius: 4px;">
                                               <input type="checkbox"
                                                      class="mga-checkbox individual-ability-checkbox"
@@ -17928,12 +17978,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                                      style="accent-color: #4a9eff;">
                                               <span style="font-size: 11px; color: #ddd;">${abilityName}</span>
                                           </label>`;
-                                });
-                                html += '</div>';
-                              });
+              });
+              html += '</div>';
+            });
 
-                            return html;
-                          })()}
+          return html;
+        })()}
                       </div>
                   </div>
               </div>
@@ -18253,11 +18303,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                                   ${typeof CompatibilityMode !== 'undefined' && CompatibilityMode.flags.enabled ? '✅ Enabled' : '⚪ Disabled'}
                               </div>
                               <div style="font-size: 11px; color: #aaa;">
-                                  ${
-                                    typeof CompatibilityMode !== 'undefined' && CompatibilityMode.flags.enabled
-                                      ? 'Reason: ' + (CompatibilityMode.detectionReason || 'manual')
-                                      : 'Auto-detects CSP restrictions'
-                                  }
+                                  ${typeof CompatibilityMode !== 'undefined' && CompatibilityMode.flags.enabled
+          ? 'Reason: ' + (CompatibilityMode.detectionReason || 'manual')
+          : 'Auto-detects CSP restrictions'
+        }
                               </div>
                           </div>
                           <button id="compat-toggle-btn" class="mga-btn mga-btn-sm"
@@ -18617,27 +18666,27 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                   <div class="mga-active-pets-header">Currently Equipped:</div>
                   <div class="mga-active-pets-list">
                       ${activePets
-                        .map((p, index) => {
-                          const timeUntilHungry = calculateTimeUntilHungry(p);
-                          const timerText = formatHungerTimer(timeUntilHungry);
-                          const timerColor =
-                            timeUntilHungry === null
-                              ? '#999'
-                              : timeUntilHungry <= 0
-                                ? '#8B0000'
-                                : timeUntilHungry < 5 * 60 * 1000
-                                  ? '#ff4444'
-                                  : timeUntilHungry < 15 * 60 * 1000
-                                    ? '#ffa500'
-                                    : '#4caf50';
-                          return `
+              .map((p, index) => {
+                const timeUntilHungry = calculateTimeUntilHungry(p);
+                const timerText = formatHungerTimer(timeUntilHungry);
+                const timerColor =
+                  timeUntilHungry === null
+                    ? '#999'
+                    : timeUntilHungry <= 0
+                      ? '#8B0000'
+                      : timeUntilHungry < 5 * 60 * 1000
+                        ? '#ff4444'
+                        : timeUntilHungry < 15 * 60 * 1000
+                          ? '#ffa500'
+                          : '#4caf50';
+                return `
                               <div class="mga-pet-slot" style="display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 8px;">
                                   <span class="mga-pet-badge">${p.petSpecies}</span>
                                   <span class="mga-hunger-timer" data-pet-index="${index}" style="font-size: 12px; color: ${timerColor}; font-weight: bold;">${timerText}</span>
                               </div>
                           `;
-                        })
-                        .join('')}
+              })
+              .join('')}
                   </div>
               `
             : `
@@ -19733,12 +19782,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             gmArchive: verifyArchive?.length || 0,
             lsMain: verifyLS
               ? (() => {
-                  try {
-                    return JSON.parse(verifyLS).length;
-                  } catch (e) {
-                    return 'parse-error';
-                  }
-                })()
+                try {
+                  return JSON.parse(verifyLS).length;
+                } catch (e) {
+                  return 'parse-error';
+                }
+              })()
               : 0,
             lsArchive: (() => {
               try {
@@ -19985,11 +20034,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           </span>
                       </div>
                       <div class="mga-log-ability">${displayAbilityName}</div>
-                      ${
-                        log.data && Object.keys(log.data).length > 0
-                          ? `<div class="mga-log-details">${formatLogData(log.data)}</div>`
-                          : ''
-                      }
+                      ${log.data && Object.keys(log.data).length > 0
+            ? `<div class="mga-log-details">${formatLogData(log.data)}</div>`
+            : ''
+          }
                   </div>
               `);
       });
@@ -20609,7 +20657,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         Lychee: 'Lychee',
         Starweaver: 'Starweaver',
         Moonbinder: 'Moonbinder',
-        Dawnbinder: 'Dawnbinder'
+        Dawnbinder: 'Dawnbinder',
+        Chrysanthemum: 'Chrysanthemum',
+        Camellia: 'Camellia',
+        Cacao: 'Cacao'
       };
 
       context.querySelectorAll('.seed-checkbox').forEach(checkbox => {
@@ -20797,7 +20848,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             'Lemon',
             'PassionFruit',
             'DragonFruit',
-            'Lychee'
+            'Lychee',
+            'Chrysanthemum',
+            'Camellia',
+            'Cacao'
           ];
           selectSeedsByList(context, rareSeeds);
           debugLog('BUTTON_INTERACTIONS', 'Selected rare+ seeds');
@@ -21130,7 +21184,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           if (chatElement && chatElement.contains(active)) {
             return true;
           }
-        } catch {}
+        } catch { }
       }
 
       // In-game chat detection - check for common game chat patterns
@@ -22505,7 +22559,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         'watch-sunflower': 'Sunflower',
         'watch-starweaver': 'Starweaver',
         'watch-dawnbinder': 'Dawnbinder',
-        'watch-moonbinder': 'Moonbinder'
+        'watch-moonbinder': 'Moonbinder',
+        'watch-chrysanthemum': 'Chrysanthemum',
+        'watch-camellia': 'Camellia',
+        'watch-cacao': 'Cacao',
+        'watch-fava-bean': 'FavaBean'
       };
 
       Object.entries(seedWatchMap).forEach(([checkboxId, seedId]) => {
@@ -23274,7 +23332,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             UnifiedState.data.settings &&
             UnifiedState.data.settings.hideWeather
           );
-        } catch (_) {}
+        } catch (_) { }
         const cloned = weatherCheckbox.cloneNode(true);
         weatherCheckbox.parentNode.replaceChild(cloned, weatherCheckbox);
         cloned.addEventListener('change', e => {
@@ -23631,7 +23689,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           // Expose full value for console inspection (extract .data if present for myUserSlotAtom)
           try {
             window[windowKey] = value?.data || value;
-          } catch (e) {}
+          } catch (e) { }
 
           return value;
         };
@@ -26210,7 +26268,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               debugLog('VALUE_MANAGER', `Using cached value for ${type} after ${attempts} failures`);
             } else {
               // Brief delay before retry
-              setTimeout(() => {}, 10 * attempts);
+              setTimeout(() => { }, 10 * attempts);
             }
           }
         }
@@ -27068,7 +27126,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           if (Array.isArray(actualPetSlots)) {
             // DEBUG: Log raw slot data to understand structure
             if (UnifiedState.data.settings?.debugMode) {
-              actualPetSlots.forEach((slot, i) => {});
+              actualPetSlots.forEach((slot, i) => { });
             }
 
             const activePets = actualPetSlots
@@ -27108,7 +27166,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             const petsChanged =
               activePets.length !== previousCount ||
               JSON.stringify(activePets.map(p => ({ s: p.petSpecies, a: p.abilities }))) !==
-                JSON.stringify(previousPets.map(p => ({ s: p.petSpecies, a: p.abilities })));
+              JSON.stringify(previousPets.map(p => ({ s: p.petSpecies, a: p.abilities })));
 
             if (petsChanged) {
               // Update UI if pets tab is active
@@ -27815,9 +27873,9 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         innerElements.forEach(inner => {
           // Check if we're looking at an egg
           const isPlantedEgg = currentCrop?.[0]?.species?.endsWith('Egg') ||
-                               currentCrop?.[0]?.species?.includes('Egg') ||
-                               currentCrop?.[0]?.type === 'egg' ||
-                               currentCrop?.[0]?.category === 'egg';
+            currentCrop?.[0]?.species?.includes('Egg') ||
+            currentCrop?.[0]?.type === 'egg' ||
+            currentCrop?.[0]?.category === 'egg';
           const isEgg = currentEgg || isPlantedEgg;
 
           if (isEgg) {
@@ -28530,7 +28588,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             if (typeof GM_deleteValue !== 'undefined') {
               GM_deleteValue('MGA_logs_manually_cleared');
             }
-          } catch (e) {}
+          } catch (e) { }
           logDebug('STORAGE', '⏰ Clear session expired (>24h) - resuming normal log loading');
           skipLogLoading = false;
         }
@@ -29545,7 +29603,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       UnifiedState.popoutWindows.forEach(window => {
         try {
           window.close();
-        } catch (e) {}
+        } catch (e) { }
       });
       UnifiedState.popoutWindows.clear();
     }
@@ -30021,7 +30079,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             });
             try {
               globalThis.__lastLocalTeleport = { x, y, at: Date.now() };
-            } catch (e) {}
+            } catch (e) { }
             return { ok: true, x, y, method: 'PlayerService.setPosition' };
           }
         } catch (e) {
@@ -30066,10 +30124,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                     if (p.__lt_origWrite) {
                       try {
                         p.write = p.__lt_origWrite;
-                      } catch (e) {}
+                      } catch (e) { }
                       try {
                         delete p.__lt_origWrite;
-                      } catch (e) {}
+                      } catch (e) { }
                     }
                   }
                 }
@@ -30081,7 +30139,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             // trigger the app to call writes (same trick used before)
             try {
               globalThis.dispatchEvent?.(new Event('visibilitychange'));
-            } catch (e) {}
+            } catch (e) { }
 
             // wait for capture (short loop)
             const until = Date.now() + timeout;
@@ -30094,10 +30152,10 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               if (p.__lt_origWrite) {
                 try {
                   p.write = p.__lt_origWrite;
-                } catch (e) {}
+                } catch (e) { }
                 try {
                   delete p.__lt_origWrite;
-                } catch (e) {}
+                } catch (e) { }
               }
             }
           }
@@ -30109,7 +30167,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             capturedSet(positionAtom, { x, y });
             try {
               globalThis.__lastLocalTeleport = { x, y, at: Date.now() };
-            } catch (e) {}
+            } catch (e) { }
             return { ok: true, x, y, method: 'jotai-capture' };
           } catch (err) {
             return { ok: false, error: 'capturedSet failed: ' + String(err) };
@@ -30621,6 +30679,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               Butterfly: 0.2, // Mythical
               Turtle: 1,
               Goat: 1.1, // Legendary
+              Turkey: 2.2,
               Cow: 2,
               Pig: 2.1, // Rare
               Chicken: 3,
@@ -31004,10 +31063,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             Cow: ['Coconut', 'Banana', 'BurrosTail', 'Mushroom'],
             Squirrel: ['Pumpkin', 'Banana', 'Grape'],
             Turtle: ['Watermelon', 'BurrosTail', 'Bamboo', 'Pepper'],
-            Goat: ['Pumpkin', 'Coconut', 'Cactus', 'Pepper'],
+            Goat: ['Pumpkin', 'Coconut', 'Pepper', 'Camellia', 'PassionFruit'],
             Butterfly: ['Daffodil', 'Lily', 'Grape', 'Lemon', 'Sunflower'],
             Capybara: ['Lemon', 'PassionFruit', 'DragonFruit', 'Lychee'],
             Peacock: ['Cactus', 'Sunflower', 'Lychee'],
+            Turkey: ['FavaBean', 'Corn','Squash'],
             Copycat: []
           };
 
@@ -33052,32 +33112,32 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
     // ==================== VERSION INFO ====================
     productionLog(
       '╔════════════════════════════════════════╗\n' +
-        '║   🌱 Magic Garden Unified Assistant    ║\n' +
-        '║            Version 1.3.2               ║\n' +
-        '║                                        ║\n' +
-        '║  🎮 Works in ANY browser console!     ║\n' +
-        '║  • Game Mode: Full integration        ║\n' +
-        '║  • Demo Mode: Standalone with samples ║\n' +
-        '║                                        ║\n' +
-        '║  Features:                             ║\n' +
-        '║  • Pet Loadout Management             ║\n' +
-        '║  • Ability Log Tracking               ║\n' +
-        '║  • Seed Deletion & Auto-Delete        ║\n' +
-        '║  • Value Calculations                 ║\n' +
-        '║  • Restock & Event Timers            ║\n' +
-        '║  • Theme Customization                ║\n' +
-        '║  • Pop-out Windows                    ║\n' +
-        '║                                        ║\n' +
-        '║  Controls:                            ║\n' +
-        '║  • window.MGA - Full API              ║\n' +
-        '║  • MGA.showPanel() - Show UI          ║\n' +
-        '║  • MGA.init() - Manual start          ║\n' +
-        '║  • Alt+M - Toggle apanel               ║\n' +
-        '║                                        ║\n' +
-        '║  Debugging (if issues occur):         ║\n' +
-        '║  • MGA.debug.debugStorage() - Storage ║\n' +
-        '║  • MGA_debugStorage() - Same as above ║\n' +
-        '╚════════════════════════════════════════╝'
+      '║   🌱 Magic Garden Unified Assistant    ║\n' +
+      '║            Version 1.3.2               ║\n' +
+      '║                                        ║\n' +
+      '║  🎮 Works in ANY browser console!     ║\n' +
+      '║  • Game Mode: Full integration        ║\n' +
+      '║  • Demo Mode: Standalone with samples ║\n' +
+      '║                                        ║\n' +
+      '║  Features:                             ║\n' +
+      '║  • Pet Loadout Management             ║\n' +
+      '║  • Ability Log Tracking               ║\n' +
+      '║  • Seed Deletion & Auto-Delete        ║\n' +
+      '║  • Value Calculations                 ║\n' +
+      '║  • Restock & Event Timers            ║\n' +
+      '║  • Theme Customization                ║\n' +
+      '║  • Pop-out Windows                    ║\n' +
+      '║                                        ║\n' +
+      '║  Controls:                            ║\n' +
+      '║  • window.MGA - Full API              ║\n' +
+      '║  • MGA.showPanel() - Show UI          ║\n' +
+      '║  • MGA.init() - Manual start          ║\n' +
+      '║  • Alt+M - Toggle apanel               ║\n' +
+      '║                                        ║\n' +
+      '║  Debugging (if issues occur):         ║\n' +
+      '║  • MGA.debug.debugStorage() - Storage ║\n' +
+      '║  • MGA_debugStorage() - Same as above ║\n' +
+      '╚════════════════════════════════════════╝'
     );
 
     // ==================== IMMEDIATE INITIALIZATION TEST ====================
@@ -33132,7 +33192,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
   function bestAnchorFrom(el) {
     try {
       if (el && el.getBoundingClientRect) return el.getBoundingClientRect();
-    } catch {}
+    } catch { }
     // fallback: any visible tooltip-like container
     const cand = d.querySelectorAll(
       '[role="tooltip"], [data-popper-placement], .chakra-tooltip, .chakra-tooltip__popper'
@@ -33183,12 +33243,12 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
     if (localStorage.getItem(CLEAR_FLAG) === 'true') {
       try {
         localStorage.removeItem(CLEAR_FLAG);
-      } catch {}
+      } catch { }
     }
     if (localStorage.getItem(SESSION_FLAG)) {
       try {
         localStorage.removeItem(SESSION_FLAG);
-      } catch {}
+      } catch { }
     }
   }
   function wrapLogsArray(arr) {
@@ -33295,15 +33355,15 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               archKeys.forEach(k => {
                 try {
                   if (typeof GM_setValue !== 'undefined') GM_setValue(k, JSON.stringify([]));
-                } catch {}
+                } catch { }
                 try {
                   localStorage.removeItem(k);
-                } catch {}
+                } catch { }
               });
               if (window.updateAbilityLogDisplay) {
                 try {
                   window.updateAbilityLogDisplay(document);
-                } catch {}
+                } catch { }
               }
             } catch (err) {
               console.error('[MGTP] clear logs failed', err);
@@ -33626,13 +33686,13 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         if (typeof window.refreshSeparateWindowPopouts === 'function') {
           try {
             window.refreshSeparateWindowPopouts('rooms');
-          } catch {}
+          } catch { }
         }
         try {
           rerenderRoomsUI();
           // Force update room counts in any visible room UI
           document.querySelectorAll('.mga-tab-item[data-tab="rooms"]').forEach(tab => tab.click());
-        } catch {}
+        } catch { }
         // Inline rooms lists
         const list = document.getElementById('room-status-list');
         if (list) {
@@ -33663,9 +33723,9 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           extra = new Set(
             q
               ? q
-                  .split(',')
-                  .map(s => s.trim())
-                  .filter(Boolean)
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean)
               : []
           );
         });
@@ -34188,7 +34248,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
   function gmSet(k, v) {
     try {
       if (typeof GM_setValue === 'function') GM_setValue(k, JSON.stringify(v));
-    } catch {}
+    } catch { }
   }
 
   // Enforce tombstone on read paths (localStorage + GM)
@@ -34201,7 +34261,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       };
       Storage.prototype.getItem.__mgtoolsPatched = true;
     }
-  } catch {}
+  } catch { }
 
   try {
     if (typeof GM_getValue === 'function' && !GM_getValue.__mgtoolsPatched) {
@@ -34212,7 +34272,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       };
       window.GM_getValue.__mgtoolsPatched = true;
     }
-  } catch {}
+  } catch { }
 
   try {
     if (typeof GM_setValue === 'function' && !GM_setValue.__mgtoolsPatched) {
@@ -34222,13 +34282,13 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           try {
             const arr = Array.isArray(v) ? v : typeof v === 'string' ? JSON.parse(v) : [];
             if (arr && arr.length) localStorage.removeItem(FLAG);
-          } catch {}
+          } catch { }
         }
         return _gm.apply(this, arguments);
       };
       window.GM_setValue.__mgtoolsPatched = true;
     }
-  } catch {}
+  } catch { }
 
   function hardClear() {
     try {
@@ -34238,7 +34298,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       try {
         localStorage.removeItem(LOG_MAIN);
         localStorage.removeItem(LOG_ARCH);
-      } catch {}
+      } catch { }
       if (window.UnifiedState?.data) window.UnifiedState.data.petAbilityLogs = [];
       if (Array.isArray(window.petAbilityLogs)) window.petAbilityLogs.length = 0;
     } catch (e) {
