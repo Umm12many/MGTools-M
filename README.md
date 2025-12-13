@@ -1,6 +1,13 @@
-# MGTools - Magic Garden Assistant
+# MGTools - Magic Garden Assistant - Maintenence Mode
 
-**Version 2.0.0** | All-in-one assistant for Magic Garden with a beautiful unified UI
+## READ THIS!!
+>! Warning, this is the Maintenence Mode Repository for MGTools, use this repository only if prompted in the Discord Server, as this will be used when the Current Main Contributor to the main repo is not active! (Right now it is Myke)
+What does this mean?
+It means that bugfixes will be given, but new features will be added extremely sparingly if at all.
+Meant to go to the Main Repo?
+[Main Repo](https://github.com/Myke247/MGTools)
+
+**Version 2.0.0-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
 
 ![MGTools](https://img.shields.io/badge/version-2.0.0-blue) ![Status](https://img.shields.io/badge/status-beta-orange)
 
