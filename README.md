@@ -10,7 +10,7 @@ Meant to go to the Main Repo?
 
 **Version 2.2.2-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
 
-![MGTools]([https://img.shields.io/badge/2.2.2-M?style=flat&label=version](https://img.shields.io/badge/version-2.2.2_M-blue)) ![Status](https://img.shields.io/badge/status-maintenance-yellow?style=flat&label=status)
+![MGTools](https://img.shields.io/badge/version-2.2.2_M-blue) ![Status](https://img.shields.io/badge/status-maintenance-yellow?style=flat&label=status)
 
 
 ---
