@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.2.0
+// @version      2.2.1
 // @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
  // @author       Unified Script
 // @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
@@ -612,11 +612,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
   const CONFIG = {
     // Version Information
     VERSION: {
-      CURRENT: '2.1.1',
-      CHECK_URL_STABLE: 'https://raw.githubusercontent.com/Myke247/MGTools/main/MGTools.user.js',
-      CHECK_URL_BETA: 'https://raw.githubusercontent.com/Myke247/MGTools/Live-Beta/MGTools.user.js',
-      DOWNLOAD_URL_STABLE: 'https://github.com/Myke247/MGTools/raw/refs/heads/main/MGTools.user.js',
-      DOWNLOAD_URL_BETA: 'https://github.com/Myke247/MGTools/raw/refs/heads/Live-Beta/MGTools.user.js'
+      CURRENT: '2.2.1',
+      CHECK_URL_STABLE: 'https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js',
+      CHECK_URL_BETA: 'https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js',
+      DOWNLOAD_URL_STABLE: 'https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js',
+      DOWNLOAD_URL_BETA: 'https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js'
     },
 
     // Debug Settings
