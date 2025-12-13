@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.2.1
+// @version      2.2.2
 // @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
  // @author       Unified Script
 // @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
@@ -612,7 +612,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
   const CONFIG = {
     // Version Information
     VERSION: {
-      CURRENT: '2.2.1',
+      CURRENT: '2.2.2',
       CHECK_URL_STABLE: 'https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js',
       CHECK_URL_BETA: 'https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js',
       DOWNLOAD_URL_STABLE: 'https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js',
@@ -8155,11 +8155,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         if (IS_LIVE_BETA) {
           // On Live Beta branch - use orange/yellow colors
           if (versionComparison === 0) {
-            color = '#ff9500'; // Orange for up-to-date beta
-            statusMsg = 'UP TO DATE';
+            color = '#48ff00ff'; // Orange for up-to-date beta
+            statusMsg = 'MAINTENANCE MODE VERSION';
           } else if (versionComparison > 0) {
-            color = '#ffff00'; // Yellow for dev beta
-            statusMsg = 'DEV VERSION';
+            color = '#48ff00ff'; // Yellow for dev beta
+            statusMsg = 'MAINTENANCE MODE VERSION';
           } else {
             color = '#ff00ff'; // Magenta for outdated beta
             statusMsg = 'UPDATE AVAILABLE';
@@ -8167,11 +8167,11 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         } else {
           // On Stable branch - use green colors
           if (versionComparison === 0) {
-            color = '#00ff00'; // Bright green for up-to-date stable
-            statusMsg = 'UP TO DATE';
+            color = '#48ff00ff'; // Bright green for up-to-date stable
+            statusMsg = 'MAINTENANCE MODE VERSION';
           } else if (versionComparison > 0) {
-            color = '#90ee90'; // Light green for dev stable
-            statusMsg = 'DEV VERSION';
+            color = '#48ff00ff'; // Light green for dev stable
+            statusMsg = 'MAINTENANCE MODE VERSION';
           } else {
             color = '#ff0000'; // Red for outdated stable
             statusMsg = 'UPDATE AVAILABLE';
