@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.2.2
+// @version      2.3.0
 // @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
  // @author       Unified Script
 // @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
@@ -18,6 +18,12 @@
 // @grant        GM_xmlhttpRequest
 // @connect      raw.githubusercontent.com
 // @connect      *
+// @connect       firebaseio.com
+// @connect       googleapis.com
+// @connect       google.com
+// @require       https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js
+// @require       https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js
+// @require       https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js
 // @run-at       document-end
 // ==/UserScript==
 
@@ -133,7 +139,7 @@ async function rcSend(payload, opts = {}) {
  * MGTools - Magic Garden Enhancement Suite
  * A comprehensive userscript for enhancing the Magic Garden gaming experience
  *
- * @version 1.1.0
+ * @version 2.3.0
  * @author Unified Script
  * @license MIT
  */
@@ -173,7 +179,7 @@ async function rcSend(payload, opts = {}) {
 // === DIAGNOSTIC LOGGING (MUST EXECUTE IF SCRIPT LOADS) ===
 console.error('🚨🚨🚨 MGTOOLS LOADING - IF YOU SEE THIS, SCRIPT IS RUNNING 🚨🚨🚨');
 console.log('[MGTOOLS-DEBUG] 1. Script file loaded');
-console.log('[MGTOOLS-DEBUG] ⚡ VERSION: 2.0.0 - Pet auto-favorite fixes + Micro/Mini dock sizes');
+console.log('[MGTOOLS-DEBUG] ⚡ VERSION: 2.3.0 - Updated Rooms + New Game Feature bug fixes');
 console.log('[MGTOOLS-DEBUG] 🕐 Load Time:', new Date().toISOString());
 console.log('[MGTOOLS-DEBUG] 2. Location:', window.location.href);
 console.log('[MGTOOLS-DEBUG] 3. Navigator:', navigator.userAgent);
@@ -612,7 +618,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
   const CONFIG = {
     // Version Information
     VERSION: {
-      CURRENT: '2.2.2',
+      CURRENT: '2.3.0',
       CHECK_URL_STABLE: 'https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js',
       CHECK_URL_BETA: 'https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js',
       DOWNLOAD_URL_STABLE: 'https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js',
@@ -3414,7 +3420,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       'MG13',
       'MG14',
       'MG15',
-      'SLAY'
+      'SLAY',
+      '12MANY'
     ]; // Default tracked rooms
     // REMOVED v3.7.3: Discord activity rooms removed - they use numeric IDs and can't be joined from external browser
     // Discord users see play#1-40 natively in Discord's activity sidebar
@@ -3425,104 +3432,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
     // Centralized room data with categories for the 2-tab interface
     const RoomRegistry = {
       discord: [
-        // Garlic Bread's Server (play1-play10 - NO HYPHEN)
-        { id: 'i-1425232387037462538-gc-1399110335469977781-1411124424676999308', name: 'play1', category: 'discord' },
-        { id: 'i-1426213334721757305-gc-1399110335469977781-1411801827674030191', name: 'play2', category: 'discord' },
-        { id: 'i-1426696111514456277-gc-1399110335469977781-1411801899489034471', name: 'play3', category: 'discord' },
-        { id: 'i-1425131188074319992-gc-1399110335469977781-1411801931373875240', name: 'play4', category: 'discord' },
-        { id: 'i-1426523715059056691-gc-1399110335469977781-1411801958616141864', name: 'play5', category: 'discord' },
-        { id: 'i-1426962425999130785-gc-1399110335469977781-1411801990345916496', name: 'play6', category: 'discord' },
-        { id: 'i-1426782888900296754-gc-1399110335469977781-1411802027255660644', name: 'play7', category: 'discord' },
-        { id: 'i-1426963026216751124-gc-1399110335469977781-1411802063876128980', name: 'play8', category: 'discord' },
-        { id: 'i-1426736748104515747-gc-1399110335469977781-1411802098533666837', name: 'play9', category: 'discord' },
-        { id: 'i-1426972080355807252-gc-1399110335469977781-1411802136911548467', name: 'play10', category: 'discord' },
-
-        // Magic Circle Numbered Rooms (play-2 through play-50 - WITH HYPHEN)
-        { id: 'i-1416705483108257912-gc-808935495543160852-1389438720427425894', name: 'play-2', category: 'discord' },
-        { id: 'i-1414738624276205699-gc-808935495543160852-1389979453957996705', name: 'play-3', category: 'discord' },
-        { id: 'i-1426270545699405844-gc-808935495543160852-1389979475336233000', name: 'play-4', category: 'discord' },
-        { id: 'i-1424918072380231760-gc-808935495543160852-1391350549944733768', name: 'play-5', category: 'discord' },
-        { id: 'i-1424940435679477782-gc-808935495543160852-1391629723687452802', name: 'play-6', category: 'discord' },
-        { id: 'i-1414738652449345536-gc-808935495543160852-1392897701087019028', name: 'play-7', category: 'discord' },
-        { id: 'i-1426340656351150221-gc-808935495543160852-1417928182505672877', name: 'play-8', category: 'discord' },
-        { id: 'i-1426648328271167558-gc-808935495543160852-1392928961679331541', name: 'play-9', category: 'discord' },
-        { id: 'i-1424650709747499109-gc-808935495543160852-1394338319411970198', name: 'play-10', category: 'discord' },
-        { id: 'i-1421249275131859125-gc-808935495543160852-1394338344753959032', name: 'play-11', category: 'discord' },
-        { id: 'i-1417583142918950943-gc-808935495543160852-1394338361631703181', name: 'play-12', category: 'discord' },
-        { id: 'i-1426272039320158390-gc-808935495543160852-1394714064575271032', name: 'play-13', category: 'discord' },
-        { id: 'i-1421215237289545901-gc-808935495543160852-1394714079448399962', name: 'play-14', category: 'discord' },
-        { id: 'i-1426260441730125874-gc-808935495543160852-1394714101065974021', name: 'play-15', category: 'discord' },
-        { id: 'i-1425314797603520553-gc-808935495543160852-1394714159857270936', name: 'play-16', category: 'discord' },
-        { id: 'i-1422642064910319697-gc-808935495543160852-1395445292664488088', name: 'play-17', category: 'discord' },
-        { id: 'i-1425331756999118868-gc-808935495543160852-1395445357495718081', name: 'play-18', category: 'discord' },
-        { id: 'i-1426661481679945920-gc-808935495543160852-1421303964225372294', name: 'play-19', category: 'discord' },
-        { id: 'i-1425346474035646574-gc-808935495543160852-1395445408737788064', name: 'play-20', category: 'discord' },
-        { id: 'i-1426272183986163772-gc-808935495543160852-1406700719272104188', name: 'play-21', category: 'discord' },
-        { id: 'i-1418751419091124374-gc-808935495543160852-1413559836976873672', name: 'play-22', category: 'discord' },
-        { id: 'i-1426656896491978895-gc-808935495543160852-1414650590323277904', name: 'play-23', category: 'discord' },
-        { id: 'i-1424941680062369792-gc-808935495543160852-1414650614415102163', name: 'play-24', category: 'discord' },
-        { id: 'i-1426340142351781950-gc-808935495543160852-1414650635642732564', name: 'play-25', category: 'discord' },
-        { id: 'i-1426361682346901595-gc-808935495543160852-1415547820177625139', name: 'play-26', category: 'discord' },
-        { id: 'i-1426942108480180385-gc-808935495543160852-1415547932303687690', name: 'play-27', category: 'discord' },
-        { id: 'i-1425073932637048884-gc-808935495543160852-1415547947315236864', name: 'play-28', category: 'discord' },
-        { id: 'i-1426290019294908498-gc-808935495543160852-1415550373145350183', name: 'play-29', category: 'discord' },
-        { id: 'i-1425336873709998170-gc-808935495543160852-1420055125409661008', name: 'play-30', category: 'discord' },
-        { id: 'i-1426645924557361315-gc-808935495543160852-1415737760005755021', name: 'play-31', category: 'discord' },
-        { id: 'i-1426363145806418082-gc-808935495543160852-1415737783116628101', name: 'play-32', category: 'discord' },
-        { id: 'i-1424670769790586900-gc-808935495543160852-1415737800992751696', name: 'play-33', category: 'discord' },
-        { id: 'i-1426648937850474538-gc-808935495543160852-1415737817056940203', name: 'play-34', category: 'discord' },
-        { id: 'i-1426634638595592222-gc-808935495543160852-1415737832332329112', name: 'play-35', category: 'discord' },
-        { id: 'i-1426636340619116576-gc-808935495543160852-1415737848279335024', name: 'play-36', category: 'discord' },
-        { id: 'i-1426633119934582926-gc-808935495543160852-1415737865761194066', name: 'play-37', category: 'discord' },
-        { id: 'i-1426691900710322276-gc-808935495543160852-1415737879208001689', name: 'play-38', category: 'discord' },
-        { id: 'i-1426659673783930890-gc-808935495543160852-1415737894144053428', name: 'play-39', category: 'discord' },
-        { id: 'i-1421247473728622632-gc-808935495543160852-1415737913324605450', name: 'play-40', category: 'discord' },
-        { id: 'i-1426432879709392917-gc-808935495543160852-1426432790832087211', name: 'play-41', category: 'discord' },
-        { id: 'i-1426433582888648848-gc-808935495543160852-1426433415455965305', name: 'play-42', category: 'discord' },
-        { id: 'i-1426434402606387240-gc-808935495543160852-1426434222825930814', name: 'play-43', category: 'discord' },
-        { id: 'i-1426434430360227840-gc-808935495543160852-1426434241947893902', name: 'play-44', category: 'discord' },
-        { id: 'i-1426434453651193888-gc-808935495543160852-1426434265268097025', name: 'play-45', category: 'discord' },
-        { id: 'i-1426434474119397456-gc-808935495543160852-1426434292162101278', name: 'play-46', category: 'discord' },
-        { id: 'i-1426434494306455603-gc-808935495543160852-1426434306888171530', name: 'play-47', category: 'discord' },
-        { id: 'i-1426434520390832228-gc-808935495543160852-1426434330770804898', name: 'play-48', category: 'discord' },
-        { id: 'i-1426434545942659085-gc-808935495543160852-1426434349049577553', name: 'play-49', category: 'discord' },
-        { id: 'i-1426434571775381634-gc-808935495543160852-1426434382196904006', name: 'play-50', category: 'discord' },
-
-        // Magic Circle Country/Regional Rooms
-        { id: 'i-1426792268613816442-gc-808935495543160852-1413592763617775657', name: 'play-🇧🇩', category: 'discord' },
-        { id: 'i-1426912200731131945-gc-808935495543160852-1413628673810239550', name: 'play-🇧🇷', category: 'discord' },
-        { id: 'i-1426725151986286703-gc-808935495543160852-1413627931644661800', name: 'play-🇨🇦', category: 'discord' },
-        { id: 'i-1426827100626751498-gc-808935495543160852-1413586163511328839', name: 'play-🇩🇪', category: 'discord' },
-        { id: 'i-1426830750170484746-gc-808935495543160852-1413586384098427002', name: 'play-🇪🇸', category: 'discord' },
-        { id: 'i-1426946558137597963-gc-808935495543160852-1413589376025235508', name: 'play-🇫🇮', category: 'discord' },
-        { id: 'i-1426458931898617916-gc-808935495543160852-1413592562136252417', name: 'play-🇫🇷', category: 'discord' },
-        { id: 'i-1426814239305240627-gc-808935495543160852-1413586233791086745', name: 'play-🇬🇧', category: 'discord' },
-        { id: 'i-1426946909162967225-gc-808935495543160852-1414314377615642904', name: 'play-🇮🇩', category: 'discord' },
-        { id: 'i-1426491363075031082-gc-808935495543160852-1413618707871301712', name: 'play-🇮🇹', category: 'discord' },
-        { id: 'i-1424645601508851743-gc-808935495543160852-1413590129213309089', name: 'play-🇯🇵', category: 'discord' },
-        { id: 'i-1419121202450141266-gc-808935495543160852-1415708269762187294', name: 'play-🇰🇷', category: 'discord' },
-        { id: 'i-1426943939231092838-gc-808935495543160852-1413590246691569794', name: 'play-🇲🇳', category: 'discord' },
-        { id: 'i-1426972888908566672-gc-808935495543160852-1413622408766689373', name: 'play-🇲🇽', category: 'discord' },
-        { id: 'i-1424661883863953488-gc-808935495543160852-1413628856426635264', name: 'play-🇳🇱', category: 'discord' },
-        { id: 'i-1426816652437721092-gc-808935495543160852-1413628948064219236', name: 'play-🇵🇭', category: 'discord' },
-        { id: 'i-1426957485669175436-gc-808935495543160852-1413630205695512607', name: 'play-🇵🇱', category: 'discord' },
-        { id: 'i-1426901797056778311-gc-808935495543160852-1413630342379880468', name: 'play-🇵🇹', category: 'discord' },
-        { id: 'i-1426887346990665869-gc-808935495543160852-1413630567003844619', name: 'play-🇷🇴', category: 'discord' },
-        { id: 'i-1426939853031968799-gc-808935495543160852-1413630623656435742', name: 'play-🇷🇺', category: 'discord' },
-        { id: 'i-1421302686969557062-gc-808935495543160852-1413630845351010336', name: 'play-🇸🇪', category: 'discord' },
-        { id: 'i-1426974695889502248-gc-808935495543160852-1413593072447705118', name: 'play-🇹🇭', category: 'discord' },
-        { id: 'i-1426925686738731140-gc-808935495543160852-1413630992336257034', name: 'play-🇹🇷', category: 'discord' },
-        { id: 'i-1426975329226395671-gc-808935495543160852-1413631114369695744', name: 'play-🇺🇦', category: 'discord' },
-        { id: 'i-1426868636468084817-gc-808935495543160852-1413586285082361857', name: 'play-🇺🇸', category: 'discord' },
-        { id: 'i-1426956652857069662-gc-808935495543160852-1413631297003737108', name: 'play-🇻🇳', category: 'discord' },
-
-        // Magic Circle Special Rooms
-        {
-          id: 'i-1424646014697267220-gc-808935495543160852-1417643699050270741',
-          name: 'play-québec',
-          category: 'discord'
-        },
-        { id: 'i-1424646193404747847-gc-808935495543160852-1389442193931571271', name: 'play', category: 'discord' }
+          { id: '12MANY', name: '12MANY', category: 'discord' },
+                  { id: 'SLAY', name: 'SLAY', category: 'discord' },
       ],
 
       // Magic Circle public rooms (v3.7.4: Renamed to short codes, added MG11-15)
@@ -3542,7 +3453,6 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         { id: 'MG13', name: 'MG13', category: 'public' },
         { id: 'MG14', name: 'MG14', category: 'public' },
         { id: 'MG15', name: 'MG15', category: 'public' },
-        { id: 'SLAY', name: 'SLAY', category: 'special' }
       ],
 
       // Get all rooms (discord + MG + custom)
@@ -3749,14 +3659,34 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       }
     }
 
-    // Start reporting current room's player count
-    async function startRoomReporting(firebase) {
-      if (firebase && firebase.__useInfo) {
-        productionLog('ℹ️ rooms: /info mode, reporting disabled');
-        return;
-      }
 
-      if (!firebase) return;
+
+    // Start reporting current room's player count
+    async function startRoomReporting(firebases) {
+
+          const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyDW_p602lr7Itqe0-JrSVwaeVt7Y5bxciQ",
+        authDomain: "public-rooms.firebaseapp.com",
+        databaseURL: "https://public-rooms-default-rtdb.firebaseio.com",
+        projectId: "public-rooms",
+        storageBucket: "public-rooms.firebasestorage.app",
+        messagingSenderId : "479424427769",
+        appId: "1:479424427769:web:eddee292003df0a8659428",
+        measurementId: "G-3EZQXLXWZN"
+    };
+
+      let database, app;
+      if (typeof firebase !== 'undefined' && typeof firebase.apps !== 'undefined') {
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(FIREBASE_CONFIG);
+            } else {
+                app = firebase.app();
+            }
+            database = firebase.database();
+            console.log("[Public Rooms] Firebase initialized for background operations");
+        } else {
+            console.error("[Public Rooms] Firebase SDK is missing. Cannot initialize.");
+        }
 
       const roomCode = getCurrentRoomCode();
       if (!roomCode) return;
@@ -3764,8 +3694,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       UnifiedState.data.roomStatus.currentRoom = roomCode;
 
       try {
-        const { ref, set, onDisconnect } = firebase;
-        const currentRoomRef = ref(UnifiedState.firebase.database, `roomCounts/${roomCode}`);
+        const { ref, set, onDisconnect } = database;
+        const currentRoomRef = database.ref(`rooms/${roomCode}`);
 
         // Try to report immediately, with retry logic
         let count = getActualPlayerCount();
@@ -3786,11 +3716,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
           console.warn(`[Room Status] No player data available after ${maxRetries} retries for ${roomCode}`);
           // Still start the interval reporting - it will catch it later
         } else {
-          await set(currentRoomRef, {
-            count: count,
-            lastUpdate: Date.now(),
-            reporter: getReporterId()
-          });
+        console.error('rooms/' + roomCode.toUpperCase() + '/playerCount');
+        await database.ref('rooms/' + roomCode.toUpperCase() + '/playerCount').set(count);
 
           // Update local state immediately so user sees their own room count
           if (!UnifiedState.data.roomStatus.counts) {
@@ -3802,7 +3729,6 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
         }
 
         // Set up onDisconnect cleanup
-        await onDisconnect(currentRoomRef).remove();
 
         // Start interval reporting
         // Debounced reporting: Only update Firebase if count actually changed
@@ -3835,11 +3761,8 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
             lastReportedCount = currentCount;
             lastForceReportTime = now;
 
-            await set(currentRoomRef, {
-              count: currentCount,
-              lastUpdate: now,
-              reporter: getReporterId()
-            });
+        console.error('rooms/' + roomCode.toUpperCase() + '/playerCount');
+        await database.ref('rooms/' + roomCode.toUpperCase() + '/playerCount').set(currentCount);
 
             // Update local state immediately
             UnifiedState.data.roomStatus.counts[roomCode] = currentCount;
@@ -3858,6 +3781,16 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
       }
     }
 
+    startRoomReporting({
+        apiKey: "AIzaSyDW_p602lr7Itqe0-JrSVwaeVt7Y5bxciQ",
+        authDomain: "public-rooms.firebaseapp.com",
+        databaseURL: "https://public-rooms-default-rtdb.firebaseio.com",
+        projectId: "public-rooms",
+        storageBucket: "public-rooms.firebasestorage.app",
+        messagingSenderId : "479424427769",
+        appId: "1:479424427769:web:eddee292003df0a8659428",
+        measurementId: "G-3EZQXLXWZN"
+    });
     // Listen to all room counts
     function startRoomListener(firebase) {
       if (!firebase) return;
@@ -14754,7 +14687,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
               <div class="mga-section">
                   <div class="mga-section-title">🎮 Live Room Status</div>
                   <p style="font-size: 11px; color: #aaa; margin-bottom: 12px;">
-                      Real-time player counts for Magic Garden rooms. Add custom rooms to track, or browse official MG1-10 servers.
+                      Real-time player counts for Magic Garden rooms. browse official MG1-15 servers, as well as 2 special ones. Powered by Umm12roomy.
                   </p>
 
                   <!-- Tab Selector (BUGFIX v3.7.3: MG tab first, Discord second) -->
@@ -14772,7 +14705,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           transition: all 0.2s;
                           border-radius: 4px 4px 0 0;
                       ">
-                          🌟 MG & Custom
+                          🌟 MGTools
                       </button>
                       <button class="rooms-tab-btn" data-tab="discord" style="
                           flex: 1;
@@ -14787,7 +14720,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           transition: all 0.2s;
                           border-radius: 4px 4px 0 0;
                       ">
-                          🎮 Discord Servers
+                          🎮 Alternate Rooms
                       </button>
                   </div>
 
@@ -14809,7 +14742,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           </div>
 
                           <!-- Add Custom Room Section -->
-                          <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255, 255, 255, 0.57); border-radius: 6px;">
+                          <div style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255, 255, 255, 0.57); border-radius: 6px; display: none;">
                               <div style="font-weight: bold; color: #60a5fa; margin-bottom: 8px; font-size: 13px;">➕ Add Custom Room</div>
                               <div style="display: flex; gap: 8px; align-items: center;">
                                   <input type="text" id="add-room-input" placeholder="Room code (e.g., MG16)"
@@ -14835,8 +14768,7 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                               <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
                                   <strong style="color: #4ade80;">Magic Garden Rooms</strong><br>
                                   • MG1-15 are public Magic Garden servers<br>
-                                  • Add your own custom rooms to track<br>
-                                  • Player counts update automatically every 5 seconds
+                                  • Player counts update automatically!
                               </div>
                           </div>
                       `
@@ -14850,12 +14782,9 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
                           </div>
                           <div style="margin-top: 16px; padding: 12px; background: rgba(138, 43, 226, 0.2); border-radius: 6px; border: 1px solid rgba(138, 43, 226, 0.3);">
                               <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-                                  <strong style="color: #a78bfa;">💡 Discord Activity Rooms (87 Total)</strong><br>
-                                  • Garlic Bread: play1-play10 (no hyphen) - 10 rooms<br>
-                                  • Magic Circle: play-2 to play-50 (with hyphen) - 49 rooms<br>
-                                  • Magic Circle: Country rooms (play-🇨🇦, play-🇬🇧, etc.) - 26 rooms<br>
-                                  • Special: play-québec, play - 2 rooms<br>
-                                  • <strong>Player counts via /api/rooms/{id}/info</strong> (same as community scripts)
+                                  <strong style="color: #a78bfa;">💡 Special rooms</strong><br>
+                                  • This will be replaced by an "Other Rooms" tab soon that will allow you to create your own rooms and view others public rooms.<br>
+                                  • For now its just 12MANY and SLAY.
                               </div>
                           </div>
                       `
@@ -33411,163 +33340,56 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
   }
 
   // ---------- Rooms via /api/rooms/{code}/info with Fallbacks ----------
-  (function roomsInfo() {
+  /* global firebase, GM_xmlhttpRequest, MGA_saveJSON, rerenderRoomsUI */
+
+(function roomsInfo() {
     // CRITICAL: Detect correct window scope (Tampermonkey uses unsafeWindow)
-    // This IIFE is in separate scope from main script, so we need to detect which window has our data
     const isUserscript = typeof unsafeWindow !== 'undefined';
     const correctWindow = isUserscript ? unsafeWindow : window;
 
-    // Get correct API base URL (handles Discord browser context)
-    const globalScope = correctWindow;
-    const getApiBase = globalScope.getGameApiBaseUrl || (() => location.origin);
-    const apiBase = getApiBase();
-    const API_V1 = name => `${apiBase}/api/rooms/${encodeURIComponent(name)}/info`;
+    // --- FIREBASE CONFIGURATION & Initialization (Copied from public-rooms.user.js) ---
+    const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyDW_p602lr7Itqe0-JrSVwaeVt7Y5bxciQ",
+        authDomain: "public-rooms.firebaseapp.com",
+        databaseURL: "https://public-rooms-default-rtdb.firebaseio.com",
+        projectId: "public-rooms",
+        storageBucket: "public-rooms.firebasestorage.app",
+        messagingSenderId : "479424427769",
+        appId: "1:479424427769:web:eddee292003df0a8659428",
+        measurementId: "G-3EZQXLXWZN"
+    };
+
+    let database;
+    let isFirebaseReady = false;
+
+    // NEW: Initialize Firebase
+    try {
+        if (typeof firebase !== 'undefined' && typeof firebase.apps !== 'undefined') {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(FIREBASE_CONFIG);
+            }
+            database = firebase.database();
+            isFirebaseReady = true;
+            console.log("[ROOMCODE] Firebase initialized for room status fetching.");
+        } else {
+            console.error("[ROOMCODE] Firebase SDK is missing. Cannot initialize.");
+        }
+    } catch (e) {
+        console.error("[ROOMCODE] Firebase initialization failed:", e);
+    }
+    // ---------------------------------------------------------------------------------
+
+
     const TRACKED = correctWindow.UnifiedState?.data?.customRooms ||
       correctWindow.TRACKED_ROOMS || ['MG1', 'MG2', 'MG3', 'MG4', 'MG5', 'MG6', 'MG7', 'MG8', 'MG9', 'MG10', 'SLAY'];
     let extra = new Set();
+    // NEW: 'counts' will now be populated by the Firebase data
     const counts = {};
 
-    // Build reverse lookup: Discord room ID -> display name
-    // This allows us to store counts by name (e.g., 'PLAY1') instead of by ID
-    const roomIdToName = {};
+    // Removed API Base URL, API_V1, fetchWithFetch, fetchWithGM, fetchOne as they are deprecated.
 
-    // Parse player count from various API response formats
-    function parsePlayerCount(data) {
-      if (!data) return 0;
+    // Removed roomIdToName and parsePlayerCount as we use the Firebase room data directly.
 
-      // Try multiple field names
-      const count =
-        data?.numPlayers ??
-        data?.players?.online ??
-        data?.players?.count ??
-        data?.online ??
-        data?.count ??
-        data?.playerCount ??
-        0;
-
-      return Math.max(0, Number(count) || 0);
-    }
-
-    // Fetch using standard fetch API
-    async function fetchWithFetch(url, name) {
-      const r = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(10000)
-      });
-
-      if (!r.ok) {
-        throw new Error(`HTTP ${r.status}`);
-      }
-
-      const data = await r.json();
-      return data;
-    }
-
-    // Fallback: Fetch using GM_xmlhttpRequest (bypasses CORS)
-    async function fetchWithGM(url, name) {
-      return new Promise((resolve, reject) => {
-        if (typeof GM_xmlhttpRequest !== 'function') {
-          reject(new Error('GM_xmlhttpRequest not available'));
-          return;
-        }
-
-        GM_xmlhttpRequest({
-          method: 'GET',
-          url: url,
-          headers: { Accept: 'application/json' },
-          timeout: 10000,
-          onload: response => {
-            if (response.status >= 200 && response.status < 300) {
-              try {
-                const data = JSON.parse(response.responseText);
-                resolve(data);
-              } catch (e) {
-                reject(new Error(`Parse error: ${e.message}`));
-              }
-            } else {
-              reject(new Error(`HTTP ${response.status}`));
-            }
-          },
-          onerror: error => reject(new Error('Network error')),
-          ontimeout: () => reject(new Error('Timeout'))
-        });
-      });
-    }
-
-    async function fetchOne(roomIdOrName) {
-      const roomDebugMode = correctWindow.UnifiedState?.data?.settings?.roomDebugMode;
-      const isDiscordRoom = roomIdOrName.includes('i-') && roomIdOrName.includes('-gc-');
-
-      try {
-        let data = null;
-
-        // Try /api/rooms/{code}/info endpoint (works for both simple codes and Discord IDs)
-        try {
-          const url1 = API_V1(roomIdOrName);
-          data = await fetchWithFetch(url1, roomIdOrName);
-          if (roomDebugMode) {
-            console.log(`[ROOMS] ✅ Fetch succeeded for ${roomIdOrName}:`, data);
-          }
-        } catch (e1) {
-          // Try GM_xmlhttpRequest fallback if fetch fails
-          try {
-            const url1 = API_V1(roomIdOrName);
-            if (roomDebugMode) {
-              console.log(`[ROOMS] 🔄 Retrying ${roomIdOrName} with GM_xmlhttpRequest`);
-            }
-            data = await fetchWithGM(url1, roomIdOrName);
-            if (roomDebugMode) {
-              console.log(`[ROOMS] ✅ GM fetch succeeded for ${roomIdOrName}:`, data);
-            }
-          } catch (e2) {
-            // Log error if Room Debug Mode is enabled
-            if (roomDebugMode) {
-              console.warn(`[ROOMS] ❌ Failed to fetch ${roomIdOrName}:`, e1.message);
-            }
-            throw new Error(`All methods failed for ${roomIdOrName}`);
-          }
-        }
-
-        // Parse the count from whichever API succeeded
-        const online = parsePlayerCount(data);
-
-        // CRITICAL: For Discord rooms, store by DISPLAY NAME, not ID
-        // This allows UI to find counts by looking up 'PLAY1' instead of long ID
-        let storageKey;
-        if (isDiscordRoom && roomIdToName[roomIdOrName]) {
-          storageKey = roomIdToName[roomIdOrName].toUpperCase();
-          if (roomDebugMode && online > 0) {
-            console.log(`[ROOMS] 📊 Discord room ${roomIdToName[roomIdOrName]}: ${online} players`);
-          }
-        } else {
-          storageKey = roomIdOrName.toUpperCase();
-          if (roomDebugMode && online > 0) {
-            console.log(`[ROOMS] 📊 ${roomIdOrName}: ${online} players`);
-          }
-        }
-
-        counts[storageKey] = online;
-      } catch (e) {
-        // Store failure as 0, using same key logic
-        let storageKey;
-        if (isDiscordRoom && roomIdToName[roomIdOrName]) {
-          storageKey = roomIdToName[roomIdOrName].toUpperCase();
-        } else {
-          storageKey = roomIdOrName.toUpperCase();
-        }
-        counts[storageKey] = 0;
-
-        // Log failures only in debug mode
-        if (roomDebugMode) {
-          console.warn(
-            `[ROOMS] ⚠️ ${isDiscordRoom ? 'Discord room' : 'Room'} ${roomIdOrName.substring(0, 30)}... failed:`,
-            e.message
-          );
-        }
-      }
-    }
 
     // Track last poll time when UI was hidden (for reduced frequency)
     let lastTickWhenHidden = 0;
@@ -33576,233 +33398,189 @@ console.log('[MGTOOLS-DEBUG] 4. Window type:', window === window.top ? 'TOP' : '
     let cachedRoomsUIVisible = null;
     let lastUICheckTime = 0;
 
+    // MODIFIED: 'tick' function to fetch from Firebase
     async function tick() {
-      const roomDebugMode = correctWindow.UnifiedState?.data?.settings?.roomDebugMode;
+        if (!isFirebaseReady) {
+            console.error("[ROOMCODE] Skipping tick: Firebase not ready.");
+            return;
+        }
 
-      // SMART POLLING: Reduce frequency when Rooms UI is closed (not skip entirely)
-      // Cache the UI check - only re-query every 5 seconds
-      const now = Date.now();
-      if (!cachedRoomsUIVisible || now - lastUICheckTime > 5000) {
-        cachedRoomsUIVisible =
-          document.querySelector('.mga-sidebar[data-visible="true"] [data-tab="rooms"]') ||
-          document.querySelector('#room-status-list') ||
-          document.querySelector('[data-mga-popout="rooms"]');
-        lastUICheckTime = now;
-      }
-      const roomsUIVisible = cachedRoomsUIVisible;
+        const roomDebugMode = correctWindow.UnifiedState?.data?.settings?.roomDebugMode;
 
-      // If UI not visible, only poll every 30 seconds instead of every 5 seconds
-      if (!roomsUIVisible) {
+        // SMART POLLING: Check visibility (Original logic retained)
         const now = Date.now();
-        // Skip this tick if we polled less than 30 seconds ago while hidden
-        if (lastTickWhenHidden > 0 && now - lastTickWhenHidden < 30000) {
-          if (roomDebugMode) {
-            const secondsSinceLastPoll = Math.floor((now - lastTickWhenHidden) / 1000);
-            console.log(`[ROOMS] ⏸️ Skipping tick - UI hidden (last poll ${secondsSinceLastPoll}s ago)`);
-          }
-          return;
+        if (!cachedRoomsUIVisible || now - lastUICheckTime > 5000) {
+            cachedRoomsUIVisible =
+            document.querySelector('.mga-sidebar[data-visible="true"] [data-tab="rooms"]') ||
+            document.querySelector('#room-status-list') ||
+            document.querySelector('[data-mga-popout="rooms"]');
+            lastUICheckTime = now;
         }
-        lastTickWhenHidden = now;
-        if (roomDebugMode) {
-          console.log('[ROOMS] 🔄 Polling while UI hidden (30s interval)');
+        const roomsUIVisible = cachedRoomsUIVisible;
+
+        if (!roomsUIVisible) {
+            const now = Date.now();
+            if (lastTickWhenHidden > 0 && now - lastTickWhenHidden < 30000) {
+                if (roomDebugMode) {
+                    const secondsSinceLastPoll = Math.floor((now - lastTickWhenHidden) / 1000);
+                    console.log(`[ROOMS] ⏸️ Skipping tick - UI hidden (last poll ${secondsSinceLastPoll}s ago)`);
+                }
+                return;
+            }
+            lastTickWhenHidden = now;
+            if (roomDebugMode) {
+                console.log('[ROOMS] 🔄 Polling while UI hidden (30s interval)');
+            }
+        } else {
+            lastTickWhenHidden = 0;
         }
-      } else {
-        // Reset hidden timer when UI is visible
-        lastTickWhenHidden = 0;
-      }
+        // END SMART POLLING
 
-      // Include Discord rooms from RoomRegistry for play1-play50 and country rooms
-      const discordRoomIds =
-        typeof correctWindow.RoomRegistry !== 'undefined' && correctWindow.RoomRegistry?.discord
-          ? correctWindow.RoomRegistry.discord.map(r => r.id)
-          : [];
-
-      // CRITICAL: Build roomId -> name lookup for Discord rooms
-      // This allows us to store counts by display name (e.g., 'PLAY1') instead of long ID
-      if (correctWindow.RoomRegistry?.discord && Object.keys(roomIdToName).length === 0) {
-        correctWindow.RoomRegistry.discord.forEach(room => {
-          roomIdToName[room.id] = room.name;
-        });
-        if (roomDebugMode) {
-          console.log('[ROOMS] 🗺️ Built Discord room lookup map:', Object.keys(roomIdToName).length, 'rooms');
-        }
-      }
-
-      const names = [...TRACKED, ...extra, ...discordRoomIds];
-
-      if (roomDebugMode) {
-        console.log(
-          `[ROOMS] 🔄 Tick running: ${names.length} total rooms (${TRACKED.length} MG/Custom, ${discordRoomIds.length} Discord)`
-        );
-      }
-
-      // PERFORMANCE OPTIMIZATION: Batch room requests to avoid network spam
-      // Process 10 rooms at a time with 200ms delay between batches
-      try {
-        const BATCH_SIZE = 10;
-        const BATCH_DELAY = 200; // ms between batches
-
-        for (let i = 0; i < names.length; i += BATCH_SIZE) {
-          const batch = names.slice(i, i + BATCH_SIZE);
-          await Promise.all(batch.map(fetchOne));
-
-          // Add delay between batches (except for last batch)
-          if (i + BATCH_SIZE < names.length) {
-            await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
-          }
-        }
-
-        // Show sample of Discord room counts if debug mode enabled
-        if (roomDebugMode) {
-          const discordKeys = Object.keys(counts).filter(k => k.startsWith('PLAY'));
-          if (discordKeys.length > 0) {
-            console.log(
-              '[ROOMS] 📝 Sample Discord room counts:',
-              discordKeys
-                .slice(0, 5)
-                .map(k => `${k}:${counts[k]}`)
-                .join(', ')
-            );
-          }
-        }
-      } catch (e) {
-        console.error('[ROOMS] ❌ Tick error:', e);
-      }
-
-      // write into UnifiedState so UI updates
-      if (typeof correctWindow.UnifiedState !== 'undefined' && correctWindow.UnifiedState?.data) {
-        correctWindow.UnifiedState.data.roomStatus = correctWindow.UnifiedState.data.roomStatus || {};
-        // CRITICAL: Directly replace counts to ensure fresh data
-        correctWindow.UnifiedState.data.roomStatus.counts = { ...counts };
-
-        // ADDED: Persist to storage
-        MGA_saveJSON('MGA_roomStatus', correctWindow.UnifiedState.data.roomStatus);
-
-        if (roomDebugMode) {
-          console.log(`[ROOMS] ✅ Updated ${Object.keys(counts).length} room counts in UnifiedState`);
-        }
-
-        // refresh any open rooms views
-        if (typeof window.refreshSeparateWindowPopouts === 'function') {
-          try {
-            window.refreshSeparateWindowPopouts('rooms');
-          } catch { }
-        }
+        // NEW CORE LOGIC: Fetch all public rooms from Firebase
         try {
-          rerenderRoomsUI();
-          // Force update room counts in any visible room UI
-          document.querySelectorAll('.mga-tab-item[data-tab="rooms"]').forEach(tab => tab.click());
-        } catch { }
-        // Inline rooms lists
-        const list = document.getElementById('room-status-list');
-        if (list) {
-          // trigger the existing re-render path if available
-          if (typeof window.updateRoomStatusUI === 'function') {
-            window.updateRoomStatusUI();
-          } else {
-            // minimal DOM update: replace counts in .room-count els
-            list.querySelectorAll('.room-row').forEach(row => {
-              const code = (row.getAttribute('data-room') || '').toUpperCase();
-              const span = row.querySelector('.room-count');
-              if (span && code) {
-                span.textContent = String(counts[code] ?? window.UnifiedState.data.roomStatus.counts[code] ?? 0);
-              }
+            const snapshot = await database.ref('rooms/').once('value');
+            const firebaseRooms = snapshot.val() || {};
+            const roomCodes = Object.keys(firebaseRooms);
+
+            // Clear previous counts and populate with Firebase data
+            Object.keys(counts).forEach(key => delete counts[key]);
+
+            roomCodes.forEach(code => {
+                const room = firebaseRooms[code];
+                // Use the uppercase room code as the key, as expected by the original UI
+                const key = code.toUpperCase();
+                const playerCount = room.playerCount ?? 0;
+
+                counts[key] = playerCount;
+
+                if (roomDebugMode && playerCount > 0) {
+                    console.log(`[ROOMS] 📊 Firebase Room ${key}: ${playerCount} players`);
+                }
             });
-          }
+
+            if (roomDebugMode) {
+                console.log(`[ROOMS] ✅ Fetched ${roomCodes.length} room counts from Firebase`);
+            }
+        } catch (e) {
+            console.error('[ROOMS] ❌ Firebase fetch error:', e);
+            // On failure, keep existing counts or set all to 0 (we'll keep existing counts for resilience)
         }
-      }
+
+
+        // write into UnifiedState so UI updates (Original logic retained)
+        if (typeof correctWindow.UnifiedState !== 'undefined' && correctWindow.UnifiedState?.data) {
+            correctWindow.UnifiedState.data.roomStatus = correctWindow.UnifiedState.data.roomStatus || {};
+            // CRITICAL: Directly replace counts to ensure fresh data
+            correctWindow.UnifiedState.data.roomStatus.counts = { ...counts };
+
+            // ADDED: Persist to storage
+            if (typeof MGA_saveJSON === 'function') {
+                MGA_saveJSON('MGA_roomStatus', correctWindow.UnifiedState.data.roomStatus);
+            }
+
+            if (roomDebugMode) {
+                console.log(`[ROOMS] ✅ Updated ${Object.keys(counts).length} room counts in UnifiedState`);
+            }
+
+            // refresh any open rooms views
+            if (typeof window.refreshSeparateWindowPopouts === 'function') {
+                try {
+                    window.refreshSeparateWindowPopouts('rooms');
+                } catch { }
+            }
+            try {
+                if (typeof rerenderRoomsUI === 'function') {
+                    rerenderRoomsUI();
+                }
+                // Force update room counts in any visible room UI
+                document.querySelectorAll('.mga-tab-item[data-tab="rooms"]').forEach(tab => tab.click());
+            } catch { }
+            // Inline rooms lists
+            const list = document.getElementById('room-status-list');
+            if (list) {
+                // trigger the existing re-render path if available
+                if (typeof window.updateRoomStatusUI === 'function') {
+                    window.updateRoomStatusUI();
+                } else {
+                    // minimal DOM update: replace counts in .room-count els
+                    list.querySelectorAll('.room-row').forEach(row => {
+                        const code = (row.getAttribute('data-room') || '').toUpperCase();
+                        const span = row.querySelector('.room-count');
+                        if (span && code) {
+                            span.textContent = String(counts[code] ?? window.UnifiedState.data.roomStatus.counts[code] ?? 0);
+                        }
+                    });
+                }
+            }
+        }
     }
-    // PERFORMANCE OPTIMIZATION: Watch specific container instead of entire document
-    // This reduces mutation callback frequency by 90%+
+
+    // MutationObserver to watch for room-search-input (Original logic retained)
     const obs = new MutationObserver(() => {
-      const inp = document.getElementById('room-search-input');
-      if (inp && !inp.__mgtpBound) {
-        inp.__mgtpBound = true;
-        inp.addEventListener('input', () => {
-          const q = (inp.value || '').trim().toUpperCase();
-          extra = new Set(
-            q
-              ? q
-                .split(',')
-                .map(s => s.trim())
-                .filter(Boolean)
-              : []
-          );
-        });
-      }
+        const inp = document.getElementById('room-search-input');
+        if (inp && !inp.__mgtpBound) {
+            inp.__mgtpBound = true;
+            inp.addEventListener('input', () => {
+                const q = (inp.value || '').trim().toUpperCase();
+                extra = new Set(
+                    q
+                    ? q
+                        .split(',')
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                    : []
+                );
+            });
+        }
     });
 
-    // Watch only the sidebar container instead of entire document
-    // Falls back to document if sidebar not found yet
+    // Watch only the sidebar container instead of entire document (Original logic retained)
     const observeRoomSearch = () => {
-      const sidebar = document.getElementById('mgh-sidebar') || document.querySelector('.mga-sidebar');
-      const targetElement = sidebar || document.documentElement;
+        const sidebar = document.getElementById('mgh-sidebar') || document.querySelector('.mga-sidebar');
+        const targetElement = sidebar || document.documentElement;
 
-      obs.observe(targetElement, {
-        subtree: true,
-        childList: true,
-        // OPTIMIZATION: Only watch childList changes, ignore attributes/characterData
-        attributes: false,
-        characterData: false
-      });
+        obs.observe(targetElement, {
+            subtree: true,
+            childList: true,
+            attributes: false,
+            characterData: false
+        });
 
-      if (!sidebar) {
-        // If sidebar not ready yet, retry in 1 second
-        setTimeout(() => {
-          obs.disconnect();
-          observeRoomSearch();
-        }, 1000);
-      }
+        if (!sidebar) {
+            setTimeout(() => {
+                obs.disconnect();
+                observeRoomSearch();
+            }, 1000);
+        }
     };
 
     observeRoomSearch();
 
-    // Wait for UnifiedState and RoomRegistry to be ready before starting polling
+    // Wait for UnifiedState and Firebase to be ready before starting polling
     function startPollingWhenReady() {
-      const hasUnifiedState = typeof correctWindow.UnifiedState !== 'undefined' && correctWindow.UnifiedState?.data;
-      const hasRoomRegistry = typeof correctWindow.RoomRegistry !== 'undefined' && correctWindow.RoomRegistry?.discord;
+        const hasUnifiedState = typeof correctWindow.UnifiedState !== 'undefined' && correctWindow.UnifiedState?.data;
 
-      if (hasUnifiedState && hasRoomRegistry) {
-        // PERFORMANCE OPTIMIZATION: Increased interval from 5s to 10s
-        // Room counts don't change that rapidly, 10s is still responsive
-        setTimeout(tick, 1000); // First tick after 1 second
-        setInterval(tick, 10000); // Then every 10 seconds (was 5s)
-      } else {
-        setTimeout(startPollingWhenReady, 500);
-      }
+        // NEW: Check for Firebase readiness instead of RoomRegistry
+        if (hasUnifiedState && isFirebaseReady) {
+            // PERFORMANCE OPTIMIZATION: Retained 10s interval
+            setTimeout(tick, 1000); // First tick after 1 second
+            setInterval(tick, 10000); // Then every 10 seconds
+        } else {
+            // Only log if UnifiedState is not ready, as Firebase readiness is checked by `isFirebaseReady`
+            if (!hasUnifiedState) {
+                console.log("[ROOMCODE] Waiting for UnifiedState to be ready...");
+            } else if (!isFirebaseReady) {
+                console.log("[ROOMCODE] Waiting for Firebase to initialize...");
+            }
+            setTimeout(startPollingWhenReady, 500);
+        }
     }
 
     startPollingWhenReady();
+    
 
-    // Expose diagnostic function for testing
-    // Usage: testDiscordRoomFetch() or testDiscordRoomFetch('room-id')
-    correctWindow.testDiscordRoomFetch = async function (roomId) {
-      const testId = roomId || 'i-1425232387037462538-gc-1399110335469977781-1411124424676999308';
-      const url = `${apiBase}/api/rooms/${encodeURIComponent(testId)}/info`;
-
-      console.log('[ROOMS TEST] Testing:', testId.substring(0, 40) + '...');
-      console.log('[ROOMS TEST] URL:', url);
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { Accept: 'application/json' }
-        });
-
-        if (!response.ok) {
-          const text = await response.text();
-          console.error('[ROOMS TEST] ❌ HTTP', response.status, '-', text);
-          return;
-        }
-
-        const data = await response.json();
-        console.log('[ROOMS TEST] ✅ Success! Players:', data.numPlayers ?? 'NOT FOUND', '| Full data:', data);
-      } catch (e) {
-        console.error('[ROOMS TEST] ❌ Fetch failed:', e);
-      }
-    };
-  })();
+    // Removed testDiscordRoomFetch
+})();
 
   // ==================== ENHANCED WEBSOCKET AUTO-RECONNECT SYSTEM ====================
   (function enhancedSocketReconnect() {
