@@ -5,12 +5,15 @@
 
 What does this mean?
 It means that bugfixes will be given, but new features will be added extremely sparingly if at all.
+
 Meant to go to the Main Repo?
+
 [Main Repo](https://github.com/Myke247/MGTools)
 
-**Version 2.0.0-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
+## **Version 2.2.2-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
 
-![MGTools](https://img.shields.io/badge/version-2.0.0-blue) ![Status](https://img.shields.io/badge/status-beta-orange)
+![MGTools](https://img.shields.io/badge/version-2.2.2_M-blue) ![Status](https://img.shields.io/badge/status-maintenance-yellow?style=flat&label=status)
+
 
 ---
 
