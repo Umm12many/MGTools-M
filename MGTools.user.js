@@ -9643,8 +9643,8 @@ console.log(
 
       async function fetchVersion(branch) {
         const urls = [
-          `https://raw.githubusercontent.com/Myke247/MGTools/${branch}/MGTools.user.js${cacheBust}`,
-          `https://api.github.com/repos/Myke247/MGTools/contents/MGTools.user.js`,
+          `https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js${cacheBust}`,
+          `https://api.github.com/repos/Umm12many/MGTools-M/contents/MGTools.user.js`,
         ];
 
         for (const url of urls) {
