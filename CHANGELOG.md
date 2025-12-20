@@ -1,5 +1,24 @@
 # Changelog - MGTools
 
+## Version 2.4.0 & 2.3.0 (2025-12-20 & 2025-12-15)
+
+**Bug Fixes:**
+* Fixed crop value calculations
+* Fixed garden value calculations
+* Fixed Auto-Favoriting
+* Corrected new sell values for crops that had been changed recently
+* Corrected crops that could be fed to pets
+* Fixed Firefox (Still a bit buggy, would recommend using a chrome based browser)
+
+**Behind the Scenes Changes:**
+* Refactored all plants into single database
+
+**Additions:**
+* Added winter crops
+* Added winter eggs and pets to shop things
+* Changed: "Rare Item in stock" to: "Watched item in stock"
+* Changed: changed old wiki links to new ones.
+
 ## Version 2.1.1 (2025-11-06)
 
 **Bug Fixes:**

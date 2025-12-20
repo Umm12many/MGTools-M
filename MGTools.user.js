@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.3.0
+// @version      2.4.0
 // @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
-// @author       Unified Script
+// @author       Myke247 & Umm12many
 // @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
 // @downloadURL  https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
 // @match        https://magiccircle.gg/r/*
@@ -176,13 +176,79 @@ async function rcSend(payload, opts = {}) {
  * Handles initial script loading, diagnostics, and environment detection
  */
 
+class Plant {
+  /**
+   * @param {string} name The Plant's display name.
+   * @param {string} id The Plants in game ID.
+   * @param {string} shopImage The link to the image for the Plant.
+   * @param {number} rarity The number of the rarity for the Plant inside the shop (if in the shop)/For the plant in general, 0 for common, 1 for uncommon, 2 for rare, 3 for legendary, 4 for mythical, 5 for divine, 6 for celestial
+   * @param {number} shopPrice The price of the Plant in the shop (If in the shop)
+   * @param {boolean} inShop Whether or not the Plant is buyable in the shop
+   * @param {string} htmlEmoji The emoji (EG 🌵 for Cactus) to be shown inside html for Notifications, Wiki tools, etc.
+   * @param {number} plantValue The base selling value for said Plant, with no modifiers.
+   */
+  constructor(
+    name,
+    id,
+    shopImage,
+    rarity,
+    shopPrice,
+    inShop,
+    htmlEmoji,
+    plantValue,
+  ) {
+    this.name = name;
+    this.id = id;
+    this.shopImage = shopImage;
+    this.rarity = rarity;
+    this.shopPrice = shopPrice;
+    this.inShop = inShop;
+    this.htmlEmoji = htmlEmoji;
+    this.plantValue = plantValue;
+  }
+
+  /**
+   * Returns the plant in json format.
+   * @returns {string} the plant in json
+   */
+  getPlantJson() {
+    if (this.inShop) {
+      return `
+       {
+         "name" = "${this.name}",
+         "id" = "${this.id}",
+         "shopImage" = "${this.shopImage}",
+         "rarity" = ${this.rarity},
+         "shopPrice" = ${this.shopPrice},
+         "inShop" = ${this.inShop},
+         "htmlEmoji" = "${this.htmlEmoji}",
+         "plantValue" = ${this.plantValue}
+       }
+       `;
+    } else {
+      return `
+       {
+         "name" = "${this.name}",
+         "id" = "${this.id}",
+         "shopImage" = "${this.shopImage}",
+         "rarity" = ${this.rarity},
+         "inShop" = ${this.inShop},
+         "htmlEmoji" = "${this.htmlEmoji}",
+         "plantValue" = ${this.plantValue}
+       }
+       `;
+    }
+  }
+}
+
 // === DIAGNOSTIC LOGGING (MUST EXECUTE IF SCRIPT LOADS) ===
-console.error(
-  "🚨🚨🚨 MGTOOLS LOADING - IF YOU SEE THIS, SCRIPT IS RUNNING 🚨🚨🚨",
+console.warn(
+  "%c🚨🚨🚨 MGTOOLS LOADING - IF YOU SEE THIS, SCRIPT IS RUNNING 🚨🚨🚨",
+  "font-size: 20px;",
 );
 console.log("[MGTOOLS-DEBUG] 1. Script file loaded");
 console.log(
-  "[MGTOOLS-DEBUG] ⚡ VERSION: 2.3.0 - Updated Rooms + New Game Feature bug fixes",
+  "[MGTOOLS-DEBUG] ⚡ VERSION: 2.4.0 - More New Game Feature bug fixes + Firefox is Back!",
 );
 console.log("[MGTOOLS-DEBUG] 🕐 Load Time:", new Date().toISOString());
 console.log("[MGTOOLS-DEBUG] 2. Location:", window.location.href);
@@ -652,7 +718,7 @@ console.log(
   const CONFIG = {
     // Version Information
     VERSION: {
-      CURRENT: "2.3.0",
+      CURRENT: "2.4.0",
       CHECK_URL_STABLE:
         "https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js",
       CHECK_URL_BETA:
@@ -3461,6 +3527,14 @@ console.log(
      * Manages all application state, settings, and runtime data
      * @namespace UnifiedState
      */
+    const NUM_COM = 0;
+    const NUM_UNCOM = 1;
+    const NUM_RARE = 2;
+    const NUM_LEG = 3;
+    const NUM_MYTH = 4;
+    const NUM_DIV = 5;
+    const NUM_CEL = 6;
+
     const UnifiedState = {
       initialized: false,
       jotaiReady: false, // NEW: Track when Jotai store is ready
@@ -3663,6 +3737,381 @@ console.log(
         myGarden: null,
         quinoaData: null,
       },
+
+      // --- Database (Remember to include delphinium!!!!!!) ---
+
+      plantsDatabase: [
+        new Plant(
+          "Carrot",
+          "Carrot",
+          "https://media.magicgarden.wiki/Carrot.png",
+          NUM_COM,
+          10,
+          true,
+          "🥕",
+          20,
+        ),
+        new Plant(
+          "Strawberry",
+          "Strawberry",
+          "https://media.magicgarden.wiki/Strawberry.png",
+          NUM_COM,
+          50,
+          true,
+          "🍓",
+          14,
+        ),
+        new Plant(
+          "Aloe",
+          "Aloe",
+          "https://media.magicgarden.wiki/Aloe.png",
+          NUM_COM,
+          135,
+          true,
+          "🌿",
+          310,
+        ),
+        new Plant(
+          "Delphinium",
+          "Delphinium",
+          "https://media.magicgarden.wiki/Delphinium.png",
+          NUM_UNCOM,
+          0,
+          false,
+          "🪻",
+          530,
+        ),
+        new Plant(
+          "FavaBean",
+          "FavaBean",
+          "https://media.magicgarden.wiki/Fava_Bean_Pod.png",
+          NUM_UNCOM,
+          250,
+          true,
+          "🫛",
+          30,
+        ),
+        new Plant(
+          "Blueberry",
+          "Blueberry",
+          "https://media.magicgarden.wiki/Blueberry.png",
+          NUM_UNCOM,
+          400,
+          true,
+          "🫐",
+          23,
+        ),
+        new Plant(
+          "Apple",
+          "Apple",
+          "https://media.magicgarden.wiki/Apple.png",
+          NUM_UNCOM,
+          500,
+          true,
+          "🍎",
+          73,
+        ),
+        new Plant(
+          "Tulip",
+          "OrangeTulip",
+          "https://media.magicgarden.wiki/Tulip.png",
+          NUM_UNCOM,
+          600,
+          true,
+          "🌷",
+          767,
+        ),
+        new Plant(
+          "Tomato",
+          "Tomato",
+          "https://media.magicgarden.wiki/Tomato.png",
+          NUM_UNCOM,
+          800,
+          true,
+          "🍅",
+          27,
+        ),
+        new Plant(
+          "Daffodil",
+          "Daffodil",
+          "https://media.magicgarden.wiki/Daffodil.png",
+          NUM_RARE,
+          1000,
+          true,
+          "🌻",
+          1090,
+        ),
+        new Plant(
+          "Corn",
+          "Corn",
+          "https://media.magicgarden.wiki/Corn.png",
+          NUM_RARE,
+          1300,
+          true,
+          "🌽",
+          36,
+        ),
+        new Plant(
+          "Watermelon",
+          "Watermelon",
+          "https://media.magicgarden.wiki/Watermelon.png",
+          NUM_RARE,
+          2500,
+          true,
+          "🍉",
+          2708,
+        ),
+        new Plant(
+          "Pumpkin",
+          "Pumpkin",
+          "https://media.magicgarden.wiki/Pumpkin.png",
+          NUM_RARE,
+          3000,
+          true,
+          "🎃",
+          3700,
+        ),
+        new Plant(
+          "Echeveria",
+          "Echeveria",
+          "https://media.magicgarden.wiki/Echeveria.png",
+          NUM_RARE,
+          4200,
+          true,
+          "🌵",
+          4600,
+        ),
+        new Plant(
+          "Coconut",
+          "Coconut",
+          "https://media.magicgarden.wiki/Coconut.png",
+          NUM_LEG,
+          6000,
+          true,
+          "🥥",
+          302,
+        ),
+        new Plant(
+          "Banana",
+          "Banana",
+          "https://media.magicgarden.wiki/Banana.png",
+          NUM_LEG,
+          7500,
+          true,
+          "🍌",
+          1750,
+        ),
+        new Plant(
+          "PineTree",
+          "PineTree",
+          "https://media.magicgarden.wiki/Pine_Tree.png",
+          NUM_LEG,
+          12000,
+          true,
+          "🌲",
+          15000,
+        ),
+        new Plant(
+          "Lily",
+          "Lily",
+          "https://media.magicgarden.wiki/Lily.png",
+          NUM_LEG,
+          20000,
+          true,
+          "💮",
+          20123,
+        ),
+        new Plant(
+          "Camellia",
+          "Camellia",
+          "https://media.magicgarden.wiki/Camellia.png",
+          NUM_LEG,
+          55000,
+          true,
+          "🌼",
+          4875,
+        ),
+        new Plant(
+          "Squash",
+          "Squash",
+          "https://media.magicgarden.wiki/Squash.png",
+          NUM_LEG,
+          0,
+          false,
+          "🎄",
+          3500,
+        ),
+        new Plant(
+          "BurrosTail",
+          "BurrosTail",
+          "https://media.magicgarden.wiki/Burro's_Tail.png",
+          NUM_LEG,
+          93000,
+          true,
+          "🪴",
+          6000,
+        ),
+        new Plant(
+          "Mushroom",
+          "Mushroom",
+          "https://media.magicgarden.wiki/Mushroom.png",
+          NUM_MYTH,
+          150000,
+          true,
+          "🍄",
+          160000,
+        ),
+        new Plant(
+          "Cactus",
+          "Cactus",
+          "https://media.magicgarden.wiki/Cactus.png",
+          NUM_MYTH,
+          250000,
+          true,
+          "🌵",
+          261000,
+        ),
+        new Plant(
+          "Bamboo",
+          "Bamboo",
+          "https://media.magicgarden.wiki/Bamboo.png",
+          NUM_MYTH,
+          400000,
+          true,
+          "🎍",
+          500000,
+        ),
+        new Plant(
+          "Poinsettia",
+          "Poinsettia",
+          "https://media.magicgarden.wiki/Poinsettia.png",
+          NUM_MYTH,
+          500000,
+          true,
+          "🪷",
+          30000,
+        ),
+        new Plant(
+          "Chrysanthemum",
+          "Chrysanthemum",
+          "https://media.magicgarden.wiki/Chrysanthemum.png",
+          NUM_MYTH,
+          650000,
+          true,
+          "🌸",
+          18000,
+        ),
+        new Plant(
+          "Grape",
+          "Grape",
+          "https://media.magicgarden.wiki/Grape.png",
+          NUM_MYTH,
+          850000,
+          true,
+          "🍇",
+          12500,
+        ),
+        new Plant(
+          "Pepper",
+          "Pepper",
+          "https://media.magicgarden.wiki/Pepper.png",
+          NUM_DIV,
+          1000000,
+          true,
+          "🌶️",
+          7220,
+        ),
+        new Plant(
+          "Lemon",
+          "Lemon",
+          "https://media.magicgarden.wiki/Lemon.png",
+          NUM_DIV,
+          2000000,
+          true,
+          "🍋",
+          10000,
+        ),
+        new Plant(
+          "PassionFruit",
+          "PassionFruit",
+          "https://media.magicgarden.wiki/Passion_Fruit.png",
+          NUM_DIV,
+          2750000,
+          true,
+          "🥭",
+          24500,
+        ),
+        new Plant(
+          "DragonFruit",
+          "DragonFruit",
+          "https://media.magicgarden.wiki/Dragon_Fruit.png",
+          NUM_DIV,
+          5000000,
+          true,
+          "🐉",
+          24500,
+        ),
+        new Plant(
+          "Cacao",
+          "Cacao",
+          "https://media.magicgarden.wiki/Cacao_Fruit.png",
+          NUM_DIV,
+          10000000,
+          true,
+          "🫘",
+          50000,
+        ),
+        new Plant(
+          "Lychee",
+          "Lychee",
+          "https://media.magicgarden.wiki/Lychee.png",
+          NUM_DIV,
+          25000000,
+          true,
+          "🍒",
+          50000,
+        ),
+        new Plant(
+          "Sunflower",
+          "Sunflower",
+          "https://media.magicgarden.wiki/Sunflower.png",
+          NUM_DIV,
+          100000000,
+          true,
+          "🌻",
+          750000,
+        ),
+        new Plant(
+          "Starweaver",
+          "Starweaver",
+          "https://media.magicgarden.wiki/Starweaver_Fruit.png",
+          NUM_CEL,
+          1000000000,
+          true,
+          "⭐",
+          10000000,
+        ),
+        new Plant(
+          "Dawnbinder",
+          "DawnCelestial",
+          "https://media.magicgarden.wiki/Dawnbinder_Bulb.png",
+          NUM_CEL,
+          10000000000,
+          true,
+          "🌙",
+          11000000,
+        ),
+        new Plant(
+          "Moonbinder",
+          "MoonCelestial",
+          "https://media.magicgarden.wiki/Moonbinder_Bulb.png",
+          NUM_CEL,
+          50000000000,
+          true,
+          "🌅",
+          11000000,
+        ),
+      ],
     };
 
     // Export UnifiedState for debugging and external access
@@ -7068,7 +7517,16 @@ console.log(
 
     // Debounced save system to reduce I/O operations
     const saveTimeouts = new Map();
+
     function MGA_debouncedSave(key, data) {
+      // 1. Immediate Safety Check: Is the environment even alive?
+      try {
+        // A simple check to see if we can still touch the basic environment
+        if (typeof window === "undefined") return;
+      } catch (e) {
+        return; // Environment is completely dead, don't even try to queue a save
+      }
+
       // Clear existing timeout for this key
       if (saveTimeouts.has(key)) {
         clearTimeout(saveTimeouts.get(key));
@@ -7077,13 +7535,54 @@ console.log(
       // Set new debounced timeout
       const timeout = setTimeout(() => {
         try {
-          MGA_saveJSON(key, data);
-          productionLog(`💾 [MEMORY] Debounced save completed for ${key}`);
+          // 2. Re-verify everything inside the async callback
+          // Firefox might have de-initialized between the call and this execution
+          const isFirefox = navigator.userAgent.includes("Firefox");
+
+          // If we are in Firefox, verify the storage API is still linked
+          if (
+            isFirefox &&
+            typeof GM_setValue === "undefined" &&
+            typeof localStorage === "undefined"
+          ) {
+            throw new Error("storage_unreachable");
+          }
+
+          // 3. Perform the save
+          if (typeof MGA_saveJSON === "function") {
+            MGA_saveJSON(key, data);
+          }
+
+          // 4. Safe Logging
+          // Don't let a logging failure crash a successful save
+          try {
+            if (typeof productionLog === "function") {
+              productionLog(`💾 [MEMORY] Debounced save completed for ${key}`);
+            }
+          } catch (logError) {
+            // Console might be uninitialized, just ignore
+          }
         } catch (error) {
-          console.error(`❌ [MEMORY] Debounced save failed for ${key}:`, error);
+          // 5. Handle the "Component not initialized" or "Dead Object"
+          if (
+            error.message?.includes("initialized") ||
+            error.message?.includes("dead")
+          ) {
+            // Silently fail and perhaps retry in a few seconds if the data is critical
+            console.warn(
+              `⚠️ [MEMORY] Save postponed: Tab context busy/inactive for ${key}`,
+            );
+          } else {
+            console.error(
+              `❌ [MEMORY] Debounced save failed for ${key}:`,
+              error,
+            );
+          }
+        } finally {
+          // Always cleanup the map to prevent memory leaks
+          saveTimeouts.delete(key);
         }
-        saveTimeouts.delete(key);
-      }, MGA_MemoryConfig.saveDebounceMs);
+      }, MGA_MemoryConfig?.saveDebounceMs || 1000);
 
       saveTimeouts.set(key, timeout);
     }
@@ -13799,58 +14298,30 @@ console.log(
       productionLog(
         "🔍 [SEEDS DEBUG] getSeedsTabContent() called - generating content",
       );
+      // 1. Your Rarity Structure (The target list)
       const seedGroups = [
-        {
-          name: "Common",
-          color: "#fff",
-          seeds: ["Carrot", "Strawberry", "Aloe"],
-        },
-        {
-          name: "Uncommon",
-          color: "#0f0",
-          seeds: ["Apple", "Tulip", "Tomato", "Blueberry", "FavaBean"],
-        },
-        {
-          name: "Rare",
-          color: "#0af",
-          seeds: [
-            "Daffodil",
-            "Corn",
-            "Watermelon",
-            "Pumpkin",
-            "Delphinium",
-            "Squash",
-          ],
-        },
-        {
-          name: "Legendary",
-          color: "#ff0",
-          seeds: ["Echeveria", "Coconut", "Banana", "Lily", "BurrosTail"],
-        },
-        {
-          name: "Mythical",
-          color: "#a0f",
-          seeds: ["Mushroom", "Cactus", "Bamboo", "Grape"],
-        },
-        {
-          name: "Divine",
-          color: "orange",
-          seeds: [
-            "Sunflower",
-            "Pepper",
-            "Lemon",
-            "PassionFruit",
-            "DragonFruit",
-            "Lychee",
-          ],
-        },
-        {
-          name: "Celestial",
-          color: "#ff69b4",
-          seeds: ["Starweaver", "Moonbinder", "Dawnbinder"],
-          protected: true,
-        },
+        { name: "Common", color: "#fff", seeds: [] }, // Index 0
+        { name: "Uncommon", color: "#0f0", seeds: [] }, // Index 1
+        { name: "Rare", color: "#0af", seeds: [] }, // Index 2
+        { name: "Legendary", color: "#ff0", seeds: [] }, // Index 3
+        { name: "Mythical", color: "#a0f", seeds: [] }, // Index 4
+        { name: "Divine", color: "orange", seeds: [] }, // Index 5
+        { name: "Celestial", color: "#ff69b4", seeds: [], protected: true }, // Index 6
       ];
+
+      // 2. The Logic to fill the seeds list
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        // Use plant.rarity as the index for the rarityList
+        const targetRarity = seedGroups[plant.rarity];
+
+        if (targetRarity) {
+          targetRarity.seeds.push(plant.name);
+        } else {
+          console.warn(
+            `Plant ${plant.name} has an invalid rarity index: ${plant.rarity}`,
+          );
+        }
+      });
 
       let html = `
               <div class="mga-section">
@@ -13881,43 +14352,13 @@ console.log(
           `;
 
       // Seed ID mapping for checking saved state (same as setupSeedsTabHandlers)
-      const seedIdMap = {
-        Carrot: "Carrot",
-        Strawberry: "Strawberry",
-        Aloe: "Aloe",
-        FavaBean: "FavaBean",
-        Blueberry: "Blueberry",
-        Apple: "Apple",
-        Tulip: "OrangeTulip",
-        Tomato: "Tomato",
-        Daffodil: "Daffodil",
-        Sunflower: "Sunflower",
-        Corn: "Corn",
-        Watermelon: "Watermelon",
-        Pumpkin: "Pumpkin",
-        Delphinium: "Delphinium",
-        Squash: "Squash",
-        Echeveria: "Echeveria",
-        Coconut: "Coconut",
-        Banana: "Banana",
-        Lily: "Lily",
-        Camellia: "Camellia",
-        BurrosTail: "BurrosTail",
-        Mushroom: "Mushroom",
-        Cactus: "Cactus",
-        Bamboo: "Bamboo",
-        Chrysanthemum: "Chrysanthemum",
-        Grape: "Grape",
-        Pepper: "Pepper",
-        Lemon: "Lemon",
-        PassionFruit: "PassionFruit",
-        DragonFruit: "DragonFruit",
-        Cacao: "Cacao",
-        Lychee: "Lychee",
-        Starweaver: "Starweaver",
-        Moonbinder: "Moonbinder",
-        Dawnbinder: "Dawnbinder",
-      };
+      const seedIdMap = {};
+
+      // 2. The Logic to fill the seeds list
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        // Use plant.rarity as the index for the rarityList
+        seedIdMap[plant.name] = plant.id;
+      });
 
       productionLog("🔍 [SEEDS DEBUG] Applying saved state to checkboxes:", {
         savedSeedsToDelete: UnifiedState.data.seedsToDelete,
@@ -14002,53 +14443,12 @@ console.log(
 
     // Shop sprite image map (Discord CDN URLs)
     const SHOP_IMAGE_MAP = {
-      // Seeds
-      Carrot: "https://cdn.discordapp.com/emojis/1423010183574982669.webp",
-      Strawberry: "https://cdn.discordapp.com/emojis/1423010222724874330.webp",
-      Aloe: "https://cdn.discordapp.com/emojis/1423010259655590028.webp",
-      Blueberry: "https://cdn.discordapp.com/emojis/1423010283126784010.webp",
-      Apple: "https://cdn.discordapp.com/emojis/1423010302965846046.webp",
-      OrangeTulip: "https://cdn.discordapp.com/emojis/1423010324952514621.webp",
-      Tomato: "https://cdn.discordapp.com/emojis/1423010355109433478.webp",
-      Daffodil: "https://cdn.discordapp.com/emojis/1423010391356866654.webp",
-      Corn: "https://cdn.discordapp.com/emojis/1423010497648656566.webp",
-      Watermelon: "https://cdn.discordapp.com/emojis/1423010520067346515.webp",
-      Pumpkin: "https://cdn.discordapp.com/emojis/1423010546474549338.webp",
-      Echeveria: "https://cdn.discordapp.com/emojis/1423010587910078614.webp",
-      Coconut: "https://cdn.discordapp.com/emojis/1423010611721273444.webp",
-      Banana: "https://cdn.discordapp.com/emojis/1423010652582187089.webp",
-      Lily: "https://cdn.discordapp.com/emojis/1423010686388404407.webp",
-      BurrosTail: "https://cdn.discordapp.com/emojis/1423010714267942912.webp",
-      Mushroom: "https://cdn.discordapp.com/emojis/1423010734002012160.webp",
-      Cactus: "https://cdn.discordapp.com/emojis/1423010755267133531.webp",
-      FavaBean:
-        "https://media.magicgarden.wiki/thumb/Fava_Bean_Pod.png/200px-Fava_Bean_Pod.png",
-      Delphinium:
-        "https://media.magicgarden.wiki/thumb/Delphinium_Seed.png/200px-Delphinium_Seed.png",
-      Camellia:
-        "https://media.magicgarden.wiki/thumb/Camellia.png/200px-Camellia.png",
-      Chrysanthemum:
-        "https://media.magicgarden.wiki/thumb/Chrysanthemum.png/200px-Chrysanthemum.png",
-      Cacao:
-        "https://media.magicgarden.wiki/thumb/Cacao_Fruit.png/200px-Cacao_Fruit.png",
-      Bamboo: "https://cdn.discordapp.com/emojis/1423010797830930552.webp",
-      Grape: "https://cdn.discordapp.com/emojis/1423010779522666616.webp",
-      Pepper: "https://cdn.discordapp.com/emojis/1423010818953580574.webp",
-      Lemon: "https://cdn.discordapp.com/emojis/1423010911144120330.webp",
-      PassionFruit:
-        "https://cdn.discordapp.com/emojis/1423010934863171677.webp",
-      DragonFruit: "https://cdn.discordapp.com/emojis/1423010954991370271.webp",
-      Lychee: "https://cdn.discordapp.com/emojis/1423011007206396076.webp",
-      Sunflower: "https://cdn.discordapp.com/emojis/1423010976499765288.webp",
-      Starweaver: "https://cdn.discordapp.com/emojis/1423011042744729700.webp",
-      DawnCelestial:
-        "https://cdn.discordapp.com/emojis/1423011097883185412.webp",
-      MoonCelestial:
-        "https://cdn.discordapp.com/emojis/1423011077410525308.webp",
+      // Seeds added programatically
       // Eggs
       CommonEgg: "https://cdn.discordapp.com/emojis/1423011628978540676.webp",
       UncommonEgg: "https://cdn.discordapp.com/emojis/1423011627602804856.webp",
       RareEgg: "https://cdn.discordapp.com/emojis/1423011625664905316.webp",
+      WinterEgg: "https://media.magicgarden.wiki/Winter_Egg.png",
       LegendaryEgg:
         "https://cdn.discordapp.com/emojis/1423011623089737739.webp",
       MythicalEgg: "https://cdn.discordapp.com/emojis/1423011620828745899.webp",
@@ -14064,106 +14464,51 @@ console.log(
         "https://cdn.discordapp.com/emojis/1426622542222856282.webp",
     };
 
+    UnifiedState.plantsDatabase.forEach((plant) => {
+      // Use plant.rarity as the index for the rarityList
+      SHOP_IMAGE_MAP[plant.id] = plant.shopImage;
+    });
+
     // Color groups for item rarity/type
     const SHOP_COLOR_GROUPS = {
-      white: ["CommonEgg", "Carrot", "Strawberry", "Aloe"],
-      green: [
-        "UncommonEgg",
-        "Apple",
-        "OrangeTulip",
-        "Tomato",
-        "Blueberry",
-        "FavaBean",
-      ],
-      blue: [
-        "RareEgg",
-        "Daffodil",
-        "Corn",
-        "Watermelon",
-        "Pumpkin",
-        "Delphinium",
-        "Squash",
-      ],
-      yellow: [
-        "LegendaryEgg",
-        "Echeveria",
-        "Coconut",
-        "Banana",
-        "Lily",
-        "BurrosTail",
-        "Camellia",
-        "Chrysanthemum",
-      ],
-      purple: [
-        "MythicalEgg",
-        "Mushroom",
-        "Cactus",
-        "Bamboo",
-        "Grape",
-        "Crysanthemum",
-      ],
-      orange: [
-        "Pepper",
-        "Lemon",
-        "PassionFruit",
-        "DragonFruit",
-        "Lychee",
-        "Sunflower",
-        "Cacao",
-      ],
+      white: ["CommonEgg"],
+      green: ["UncommonEgg"],
+      blue: ["RareEgg"],
+      yellow: ["LegendaryEgg", "WinterEgg"],
+      purple: ["MythicalEgg"],
+      orange: [],
     };
 
     // Rainbow items (celestial seeds)
-    const SHOP_RAINBOW_ITEMS = ["Starweaver", "DawnCelestial", "MoonCelestial"];
+    const SHOP_RAINBOW_ITEMS = [];
+
+    const colorKeys = Object.keys(SHOP_COLOR_GROUPS);
+
+    // 2. The Logic to fill the seeds list
+    UnifiedState.plantsDatabase.forEach((plant) => {
+      // Use plant.rarity as the index for the rarityList
+      const targetRarity = SHOP_COLOR_GROUPS[plant.rarity];
+
+      if (plant.rarity < NUM_CEL) {
+        const targetKey = colorKeys[plant.rarity];
+        SHOP_COLOR_GROUPS[targetKey].push(plant.id);
+      } else if (plant.rarity === NUM_CEL) {
+        SHOP_RAINBOW_ITEMS.push(plant.id);
+      } else {
+        console.warn(
+          `Plant ${plant.name} has an invalid rarity index: ${plant.rarity}`,
+        );
+      }
+    });
 
     // Shop prices (from in-game shop screenshots)
     const SHOP_PRICES = {
-      // Seeds - Common tier
-      Carrot: 10,
-      Strawberry: 50,
-      Aloe: 135,
-      // Seeds - Uncommon tier
-      FavaBean: 250,
-      Blueberry: 400,
-      Apple: 500,
-      OrangeTulip: 600,
-      Tomato: 800,
-      // Seeds - Rare tier
-      Daffodil: 1000,
-      Corn: 1300,
-      Delphinium: 1800,
-      Squash: 2200,
-      Watermelon: 2500,
-      Pumpkin: 3000,
-      // Seeds - Legendary tier
-      Echeveria: 4200,
-      Coconut: 6000,
-      Banana: 7500,
-      Lily: 20000,
-      BurrosTail: 93000,
-      Camellia: 55000,
-      // Seeds - Mythical tier
-      Mushroom: 150000,
-      Cactus: 250000,
-      Bamboo: 400000,
-      Grape: 850000,
-      Chrysanthemum: 670000,
-      // Seeds - Divine tier
-      Pepper: 1000000,
-      Lemon: 2000000,
-      PassionFruit: 2750000,
-      DragonFruit: 5000000,
-      Lychee: 25000000,
-      Sunflower: 100000000,
-      Cacao: 10000000,
-      // Seeds - Celestial tier
-      Starweaver: 1000000000,
-      DawnCelestial: 10000000000,
-      MoonCelestial: 50000000000,
+      // Seeds managed programatically
       // Eggs
       CommonEgg: 100000,
       UncommonEgg: 1000000,
       RareEgg: 10000000,
+      WinterEgg: 80000000,
       LegendaryEgg: 100000000,
       MythicalEgg: 1000000000,
       // Tools (from game screenshot)
@@ -14174,6 +14519,13 @@ console.log(
       GardenShovel: 0, // OWNED - unlimited uses
       "Garden Shovel": 0,
     };
+
+    UnifiedState.plantsDatabase.forEach((plant) => {
+      // Use plant.rarity as the index for the rarityList
+      if (plant.inShop) {
+        SHOP_PRICES[plant.id] = plant.shopPrice;
+      }
+    });
 
     // Format price with k/m/b notation and return color
     function formatShopPrice(price) {
@@ -14725,46 +15077,19 @@ console.log(
     }
 
     // Shop item constants (moved before first use)
-    const SEED_SPECIES_SHOP = [
-      "Carrot",
-      "Strawberry",
-      "Aloe",
-      "FavaBean",
-      "Blueberry",
-      "Apple",
-      "OrangeTulip",
-      "Tomato",
-      "Daffodil",
-      "Corn",
-      "Watermelon",
-      "Pumpkin",
-      "Echeveria",
-      "Coconut",
-      "Banana",
-      "Lily",
-      "Camellia",
-      "BurrosTail",
-      "Mushroom",
-      "Cactus",
-      "Bamboo",
-      "Chrysanthemum",
-      "Grape",
-      "Pepper",
-      "Lemon",
-      "PassionFruit",
-      "DragonFruit",
-      "Cacao",
-      "Lychee",
-      "Sunflower",
-      "Starweaver",
-      "DawnCelestial",
-      "MoonCelestial",
-    ];
+    const SEED_SPECIES_SHOP = [];
+
+    UnifiedState.plantsDatabase.forEach((plant) => {
+      if (plant.inShop) {
+        SEED_SPECIES_SHOP.push(plant.id);
+      }
+    });
 
     const EGG_IDS_SHOP = [
       "CommonEgg",
       "UncommonEgg",
       "RareEgg",
+      "WinterEgg",
       "LegendaryEgg",
       "MythicalEgg",
     ];
@@ -14776,6 +15101,8 @@ console.log(
       WateringCan: "Watering Can",
       PlanterPot: "Planter Pot",
       GardenShovel: "Garden Shovel",
+      DawnCelestial: "Dawnbinder",
+      MoonCelestial: "Moonbinder",
     };
 
     function setupShopWindowHandlers(window, type) {
@@ -15539,49 +15866,13 @@ console.log(
 
     function getItemValue(id, type) {
       // Placeholder - you can integrate with your value system
-      const valueMap = {
-        // Seeds (approximate values)
-        MoonCelestial: 50000,
-        DawnCelestial: 45000,
-        Starweaver: 40000,
-        Lychee: 8000,
-        DragonFruit: 7000,
-        PassionFruit: 6000,
-        Sunflower: 5000,
-        Lemon: 4000,
-        Pepper: 3500,
-        Grape: 3000,
-        Bamboo: 2500,
-        Cactus: 2000,
-        Mushroom: 1800,
-        BurrosTail: 1500,
-        Lily: 1200,
-        Banana: 1000,
-        Coconut: 900,
-        Echeveria: 800,
-        Pumpkin: 600,
-        Watermelon: 500,
-        Corn: 400,
-        Daffodil: 300,
-        Tomato: 250,
-        OrangeTulip: 200,
-        Apple: 150,
-        Blueberry: 100,
-        Aloe: 80,
-        Strawberry: 60,
-        Carrot: 40,
-        FavaBean: 0,
-        // Eggs
-        MythicalEgg: 10000,
-        LegendaryEgg: 5000,
-        RareEgg: 1000,
-        UncommonEgg: 200,
-        CommonEgg: 50,
-        // Tools (placeholder values - these will be replaced with actual game values)
-        Shovel: 500,
-        WateringCan: 300,
-        Fertilizer: 200,
-      };
+      const valueMap = [];
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        // Use plant.rarity as the index for the rarityList
+        if (plant.inShop) {
+          valueMap[plant.name] = plant.shopPrice;
+        }
+      });
       return valueMap[id] || 100;
     }
 
@@ -15764,46 +16055,17 @@ console.log(
       startInventoryCounter();
 
       // Seed/Egg item definition
-      const SEED_SPECIES = [
-        "Carrot",
-        "Strawberry",
-        "Aloe",
-        "FavaBean",
-        "Blueberry",
-        "Apple",
-        "OrangeTulip",
-        "Tomato",
-        "Daffodil",
-        "Corn",
-        "Watermelon",
-        "Pumpkin",
-        "Echeveria",
-        "Coconut",
-        "Banana",
-        "Lily",
-        "Camellia",
-        "BurrosTail",
-        "Mushroom",
-        "Cactus",
-        "Bamboo",
-        "Chrysanthemum",
-        "Grape",
-        "Pepper",
-        "Lemon",
-        "PassionFruit",
-        "DragonFruit",
-        "Cacao",
-        "Lychee",
-        "Sunflower",
-        "Starweaver",
-        "DawnCelestial",
-        "MoonCelestial",
-      ];
+      const SEED_SPECIES = [];
+
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        SEED_SPECIES[`watch-${plant.id.toLowerCase()}`] = plant.id;
+      });
 
       const EGG_IDS = [
         "CommonEgg",
         "UncommonEgg",
         "RareEgg",
+        "WinterEgg",
         "LegendaryEgg",
         "MythicalEgg",
       ];
@@ -16160,48 +16422,26 @@ console.log(
                           Automatically favorite these species when added to inventory:
                       </div>
                       <div id="auto-favorite-species" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; max-height: 300px; overflow-y: auto; padding-right: 8px;">
-                          ${[
-                            "Carrot",
-                            "Strawberry",
-                            "Aloe",
-                            "FavaBean",
-                            "Blueberry",
-                            "Apple",
-                            "OrangeTulip",
-                            "Tomato",
-                            "Daffodil",
-                            "Corn",
-                            "Watermelon",
-                            "Pumpkin",
-                            "Echeveria",
-                            "Coconut",
-                            "Banana",
-                            "Lily",
-                            "Camellia",
-                            "BurrosTail",
-                            "Mushroom",
-                            "Cactus",
-                            "Bamboo",
-                            "Chrysanthemum",
-                            "Grape",
-                            "Pepper",
-                            "Lemon",
-                            "PassionFruit",
-                            "DragonFruit",
-                            "Cacao",
-                            "Lychee",
-                            "Sunflower",
-                            "Starweaver",
-                            "DawnCelestial",
-                            "MoonCelestial",
-                          ]
+                          ${UnifiedState.plantsDatabase
+                            .map((plant) => plant.id) // Extract IDs directly from the database
                             .map(
                               (species) => `
                                   <label style="display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer; user-select: none;">
                                       <input type="checkbox" value="${species}"
                                           ${UnifiedState.data.settings.autoFavorite.species.includes(species) ? "checked" : ""}
                                           style="cursor: pointer;">
-                                      <span style="color: #e5e7eb;">${species.replace("OrangeTulip", "Tulip").replace("DawnCelestial", "Dawnbinder").replace("MoonCelestial", "Moonbinder")}</span>
+                                      <span style="color: #e5e7eb;">
+                                          ${species
+                                            .replace("OrangeTulip", "Tulip")
+                                            .replace(
+                                              "DawnCelestial",
+                                              "Dawnbinder",
+                                            )
+                                            .replace(
+                                              "MoonCelestial",
+                                              "Moonbinder",
+                                            )}
+                                      </span>
                                   </label>
                               `,
                             )
@@ -16727,39 +16967,12 @@ console.log(
                       </label>
                       <select class="mga-select" id="highlight-species-select">
                           <option value="">Select species to highlight...</option>
-                          <option value="Carrot">🥕 Carrot</option>
-                          <option value="Strawberry">🍓 Strawberry</option>
-                          <option value="Aloe">🌿 Aloe</option>
-                          <option value="FavaBean">🫘 Fava Bean</option>
-                          <option value="Apple">🍎 Apple</option>
-                          <option value="Tulip">🌷 Tulip</option>
-                          <option value="Tomato">🍅 Tomato</option>
-                          <option value="Blueberry">🫐 Blueberry</option>
-                          <option value="Daffodil">🌻 Daffodil</option>
-                          <option value="Corn">🌽 Corn</option>
-                          <option value="Watermelon">🍉 Watermelon</option>
-                          <option value="Pumpkin">🎃 Pumpkin</option>
-                          <option value="Echeveria">🌵 Echeveria</option>
-                          <option value="Coconut">🥥 Coconut</option>
-                          <option value="Banana">🍌 Banana</option>
-                          <option value="Lily">🌺 Lily</option>
-                          <option value="Camellia">🌸 Camellia</option>
-                          <option value="Chrysanthemum">🌼 Chrysanthemum</option>
-                          <option value="Cacao">🍫 Cacao Bean</option>
-                          <option value="BurrosTail">🌿 BurrosTail</option>
-                          <option value="Mushroom">🍄 Mushroom</option>
-                          <option value="Cactus">🌵 Cactus</option>
-                          <option value="Bamboo">🎋 Bamboo</option>
-                          <option value="Grape">🍇 Grape</option>
-                          <option value="Sunflower">🌻 Sunflower</option>
-                          <option value="Pepper">🌶️ Pepper</option>
-                          <option value="Lemon">🍋 Lemon</option>
-                          <option value="PassionFruit">🥭 PassionFruit</option>
-                          <option value="DragonFruit">🐉 DragonFruit</option>
-                          <option value="Lychee">🍒 Lychee</option>
-                          <option value="Starweaver">⭐ Starweaver</option>
-                          <option value="Moonbinder">🌙 Moonbinder</option>
-                          <option value="Dawnbinder">🌅 Dawnbinder</option>
+                          ${UnifiedState.plantsDatabase
+                            .map(
+                              (plant) =>
+                                `<option value="${plant.name}">${plant.htmlEmoji} ${plant.name}</option>`,
+                            )
+                            .join("")}
                       </select>
                   </div>
 
@@ -16777,39 +16990,12 @@ console.log(
                       </label>
                       <select class="mga-select" id="hidden-species-select">
                           <option value="">None</option>
-                          <option value="Carrot">🥕 Carrot</option>
-                          <option value="Strawberry">🍓 Strawberry</option>
-                          <option value="Aloe">🌿 Aloe</option>
-                          <option value="FavaBean">🫘 Fava Bean</option>
-                          <option value="Apple">🍎 Apple</option>
-                          <option value="Tulip">🌷 Tulip</option>
-                          <option value="Tomato">🍅 Tomato</option>
-                          <option value="Blueberry">🫐 Blueberry</option>
-                          <option value="Daffodil">🌻 Daffodil</option>
-                          <option value="Corn">🌽 Corn</option>
-                          <option value="Watermelon">🍉 Watermelon</option>
-                          <option value="Pumpkin">🎃 Pumpkin</option>
-                          <option value="Echeveria">🌵 Echeveria</option>
-                          <option value="Coconut">🥥 Coconut</option>
-                          <option value="Banana">🍌 Banana</option>
-                          <option value="Lily">🌺 Lily</option>
-                          <option value="Camellia">🌸 Camellia</option>
-                          <option value="Chrysanthemum">🌼 Chrysanthemum</option>
-                          <option value="Cacao">🍫 Cacao Bean</option>
-                          <option value="BurrosTail">🌿 BurrosTail</option>
-                          <option value="Mushroom">🍄 Mushroom</option>
-                          <option value="Cactus">🌵 Cactus</option>
-                          <option value="Bamboo">🎋 Bamboo</option>
-                          <option value="Grape">🍇 Grape</option>
-                          <option value="Sunflower">🌻 Sunflower</option>
-                          <option value="Pepper">🌶️ Pepper</option>
-                          <option value="Lemon">🍋 Lemon</option>
-                          <option value="PassionFruit">🥭 PassionFruit</option>
-                          <option value="DragonFruit">🐉 DragonFruit</option>
-                          <option value="Lychee">🍒 Lychee</option>
-                          <option value="Starweaver">⭐ Starweaver</option>
-                          <option value="Moonbinder">🌙 Moonbinder</option>
-                          <option value="Dawnbinder">🌅 Dawnbinder</option>
+                          ${UnifiedState.plantsDatabase
+                            .map(
+                              (plant) =>
+                                `<option value="${plant.name}">${plant.htmlEmoji} ${plant.name}</option>`,
+                            )
+                            .join("")}
                       </select>
                   </div>
 
@@ -18347,9 +18533,9 @@ console.log(
           let notificationMessage;
           if (detectedItems.length === 1) {
             const item = detectedItems[0];
-            notificationMessage = `${item.icon} Rare ${item.type} in shop: ${item.id}! (${item.quantity} available)`;
+            notificationMessage = `${item.icon} Watched ${item.type} in shop: ${item.id}! (${item.quantity} available)`;
           } else {
-            notificationMessage = `🎉 Multiple items in stock:\n`;
+            notificationMessage = `🎉 Multiple watched items in stock:\n`;
             detectedItems.forEach((item) => {
               notificationMessage += `${item.icon} ${item.id} (${item.quantity} available)\n`;
             });
@@ -18479,16 +18665,23 @@ console.log(
     function initializeShopWatcher() {
       if (shopWatcherInitialized) return;
 
-      productionLog(
-        "🔄 [SHOP-WATCHER] Initializing event-driven shop monitoring...",
-      );
+      productionLog("🔄 [SHOP-WATCHER] Initializing...");
 
-      // Try to find and watch globalShop
       function watchShopData() {
+        // 1. FIREFOX SAFETY CHECK: If we clicked off, the window might be 'dead'
+        try {
+          if (!targetWindow || targetWindow === null)
+            throw new Error("lost_context");
+          // Just accessing a simple property to see if the window is initialized
+          const test = targetWindow.location.href;
+        } catch (e) {
+          // If window is not initialized, wait and try again
+          setTimeout(watchShopData, 2000);
+          return;
+        }
+
         if (!targetWindow.globalShop) {
-          productionWarn(
-            "⚠️ [SHOP-WATCHER] globalShop not found, will retry...",
-          );
+          productionWarn("⚠️ [SHOP-WATCHER] globalShop not found, retrying...");
           setTimeout(watchShopData, 5000);
           return;
         }
@@ -18497,165 +18690,116 @@ console.log(
           "✅ [SHOP-WATCHER] Found globalShop, setting up watchers...",
         );
 
-        // Store original shop data
-        const lastSeedData = JSON.stringify(
-          targetWindow.globalShop?.shops?.seed || {},
-        );
-        const lastEggData = JSON.stringify(
-          targetWindow.globalShop?.shops?.egg || {},
-        );
-        const lastDecorData = JSON.stringify(
-          targetWindow.globalShop?.shops?.decor || {},
-        );
-
-        // Use lightweight restock detection instead of heavy JSON.stringify
+        // 4. Use local variables to track state instead of attaching to the window object
         let lastSeedRestock = 0;
         let lastEggRestock = 0;
         let lastDecorRestock = 0;
 
-        setInterval(() => {
+        // 5. Polling Loop (Replaces the problematic Setter)
+        const shopPollInterval = setInterval(() => {
           try {
-            if (!targetWindow.globalShop || !targetWindow.globalShop.shops)
-              return;
-
+            // Verify window/object is still "alive" in Firefox
+            // 2. BACKGROUND TAB PROTECTION
+            // If Firefox throttles the tab, targetWindow might briefly report as uninitialized
+            if (
+              !targetWindow ||
+              !targetWindow.globalShop ||
+              !targetWindow.globalShop.shops
+            ) {
+              return; // Exit this specific interval tick silently
+            }
             const shops = targetWindow.globalShop.shops;
+            lastKnownShopRef = targetWindow.globalShop;
 
-            // Lightweight check: only compare secondsUntilRestock (resets to high number on restock)
+            // SEED SHOP
             if (shops.seed) {
-              const currentRestock = shops.seed.secondsUntilRestock || 0;
-              if (lastSeedRestock > 100 && currentRestock > lastSeedRestock) {
-                // Restock detected (timer reset to high value)
+              const current = shops.seed.secondsUntilRestock || 0;
+              if (lastSeedRestock > 100 && current > lastSeedRestock) {
                 productionLog("🔄 [SHOP-WATCHER] Seed shop restocked");
                 resetLocalPurchases("seed");
                 setTimeout(() => {
                   checkForWatchedItems();
                   refreshAllShopWindows();
-                }, 0);
+                }, 10);
               }
-              lastSeedRestock = currentRestock;
+              lastSeedRestock = current;
             }
 
+            // EGG SHOP
             if (shops.egg) {
-              const currentRestock = shops.egg.secondsUntilRestock || 0;
-
-              // Use pattern-based detection for egg shop
-              if (typeof currentRestock === "number") {
-                handleEggRestockDetection(currentRestock, shops.egg);
+              const current = shops.egg.secondsUntilRestock || 0;
+              if (typeof current === "number") {
+                handleEggRestockDetection(current, shops.egg);
               }
-
-              // Keep the fallback detection too
-              if (lastEggRestock > 100 && currentRestock > lastEggRestock) {
-                productionLog(
-                  "🔄 [SHOP-WATCHER] Egg shop restocked (fallback detection)",
-                );
+              if (lastEggRestock > 100 && current > lastEggRestock) {
+                productionLog("🔄 [SHOP-WATCHER] Egg shop restocked");
                 resetLocalPurchases("egg");
                 setTimeout(() => {
                   checkForWatchedItems();
                   refreshAllShopWindows();
-                }, 0);
+                }, 10);
               }
-              lastEggRestock = currentRestock;
+              lastEggRestock = current;
             }
 
+            // DECOR SHOP
             if (shops.decor) {
-              const currentRestock = shops.decor.secondsUntilRestock || 0;
-              if (lastDecorRestock > 100 && currentRestock > lastDecorRestock) {
+              const current = shops.decor.secondsUntilRestock || 0;
+              if (lastDecorRestock > 100 && current > lastDecorRestock) {
                 productionLog("🔄 [SHOP-WATCHER] Decor shop restocked");
-                setTimeout(() => checkForWatchedItems(), 0);
+                setTimeout(() => checkForWatchedItems(), 10);
               }
-              lastDecorRestock = currentRestock;
+              lastDecorRestock = current;
             }
           } catch (e) {
-            // Silent fail
-          }
-        }, 5000); // Poll every 5 seconds - lightweight check
-
-        productionLog(
-          "✅ [SHOP-WATCHER] Using lightweight restock detection (5s interval)",
-        );
-
-        // Also watch for complete globalShop replacement
-        const globalShopDescriptor = Object.getOwnPropertyDescriptor(
-          targetWindow,
-          "globalShop",
-        );
-        if (
-          !globalShopDescriptor ||
-          globalShopDescriptor.configurable !== false
-        ) {
-          Object.defineProperty(targetWindow, "globalShop", {
-            get() {
-              return this._globalShop;
-            },
-            set(newValue) {
-              productionLog("🔄 [SHOP-WATCHER] globalShop replaced entirely!");
-              this._globalShop = newValue;
-
-              // Re-initialize watchers for the new shop
+            // 3. THE "CLICKED OFF" CATCHER
+            // If we get NS_ERROR_NOT_INITIALIZED here, we clear the interval
+            // and let the script re-init when the tab is healthy again.
+            if (
+              e.name === "NS_ERROR_NOT_INITIALIZED" ||
+              e.message.includes("initialized")
+            ) {
+              clearInterval(shopPollInterval);
               shopWatcherInitialized = false;
-              setTimeout(() => initializeShopWatcher(), 100);
-
-              // Trigger immediate check
-              setTimeout(() => checkForWatchedItems(), 0);
-            },
-            configurable: true,
-          });
-
-          // Set initial value
-          targetWindow._globalShop = targetWindow.globalShop;
-          productionLog("✅ [SHOP-WATCHER] globalShop setter installed");
-        }
+              // Try to restart in 5 seconds
+              setTimeout(initializeShopWatcher, 5000);
+            }
+          }
+        }, 5000);
 
         shopWatcherInitialized = true;
       }
 
-      // Start watching
       watchShopData();
-
-      // DISABLED: MutationObserver causes severe FPS lag - relying on Proxy and polling only
-      // if (typeof MutationObserver !== 'undefined') {
-      //     const observer = new MutationObserver((mutations) => {
-      //         for (const mutation of mutations) {
-      //             if (mutation.target.classList?.contains('shop') ||
-      //                 mutation.target.id?.includes('shop') ||
-      //                 mutation.target.textContent?.includes('Restock')) {
-      //                 productionLog('🔄 [SHOP-WATCHER] Shop DOM changed, checking items...');
-      //                 setTimeout(() => checkForWatchedItems(), 100);
-      //                 break;
-      //             }
-      //         }
-      //     });
-      //     const gameContainer = targetDocument.querySelector('#game-container, .game-wrapper, body');
-      //     if (gameContainer) {
-      //         observer.observe(gameContainer, { childList: true, subtree: true, characterData: true });
-      //     }
-      // }
     }
 
     // ==================== PET HUNGER MONITORING ====================
 
     // Species max hunger values from wiki
-    // Source: https://magicgarden.fandom.com/wiki/Pets
+    // Source: https://magicgarden.wiki/Pets
     const SPECIES_MAX_HUNGER = {
       Worm: 500,
       Snail: 1000,
       Bee: 1500,
       Chicken: 3000,
-      Turkey: 500,
       Bunny: 750,
       Dragonfly: 250,
       Pig: 50000,
       Cow: 25000,
+      Turkey: 500,
+      SnowFox: 14000,
+      Stoat: 10000,
+      Caribou: 30000,
+      Squirrel: 15000,
       Turtle: 100000,
       Goat: 20000,
-      Squirrel: 15000,
-      Capybara: 150000,
       Butterfly: 25000,
       Peacock: 100000,
+      Capybara: 150000,
     };
 
     // Per-species hunger depletion times (milliseconds from full to 0)
-    // Source: https://magicgarden.fandom.com/wiki/Pets
+    // Source: https://magicgarden.wiki/Pets
     const SPECIES_HUNGER_DEPLETION_TIME = {
       Worm: 30 * 60 * 1000,
       Snail: 60 * 60 * 1000,
@@ -18665,13 +18809,16 @@ console.log(
       Dragonfly: 15 * 60 * 1000,
       Pig: 60 * 60 * 1000,
       Cow: 75 * 60 * 1000,
+      Turkey: 60 * 60 * 1000,
+      SnowFox: 45 * 60 * 1000,
+      Stoat: 60 * 60 * 1000,
+      Caribou: 75 * 60 * 1000,
+      Squirrel: 30 * 60 * 1000,
       Turtle: 90 * 60 * 1000,
       Goat: 60 * 60 * 1000,
-      Turkey: 45 * 60 * 1000,
-      Squirrel: 30 * 60 * 1000,
-      Capybara: 60 * 60 * 1000,
       Butterfly: 30 * 60 * 1000,
       Peacock: 60 * 60 * 1000,
+      Capybara: 60 * 60 * 1000,
     };
 
     const HUNGER_BOOST_VALUES = {
@@ -18712,7 +18859,7 @@ console.log(
           const petName = pet.petSpecies || "Pet";
 
           // BUGFIX: Different species have different max hunger values
-          // Source: https://magicgarden.fandom.com/wiki/Pets
+          // Source: https://magicgarden.wiki/Pets
           // Lower hunger = hungrier (inverse system!)
           const estimatedMaxHunger =
             SPECIES_MAX_HUNGER[pet.petSpecies] || 100000;
@@ -18827,7 +18974,7 @@ console.log(
           }
 
           // BUGFIX: Different species have different max hunger values
-          // Source: https://magicgarden.fandom.com/wiki/Pets
+          // Source: https://magicgarden.wiki/Pets
           const estimatedMaxHunger =
             SPECIES_MAX_HUNGER[pet.petSpecies] || 100000;
           const hungerPercent = (currentHunger / estimatedMaxHunger) * 100;
@@ -19586,211 +19733,26 @@ console.log(
               </div>
 
               <div class="mga-section">
-                  <div style="margin-bottom: 12px;">
-                      <label class="mga-label" style="display: block; margin-bottom: 8px;">
-                          Watched Seeds
-                      </label>
-                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px;">
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-carrot" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Carrot") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🥕 Carrot</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-strawberry" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Strawberry") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍓 Strawberry</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-aloe" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Aloe") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌿 Aloe</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-fava-bean" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("FavaBean") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🫘 Fava Bean</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-blueberry" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Blueberry") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🫐 Blueberry</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-apple" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Apple") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍎 Apple</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-tulip" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Tulip") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌷 Tulip</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-tomato" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Tomato") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍅 Tomato</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-daffodil" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Daffodil") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌼 Daffodil</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-corn" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Corn") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌽 Corn</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-watermelon" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Watermelon") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍉 Watermelon</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-pumpkin" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Pumpkin") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🎃 Pumpkin</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-echeveria" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Echeveria") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🪴 Echeveria</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-coconut" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Coconut") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🥥 Coconut</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-banana" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Banana") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍌 Banana</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-lily" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Lily") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌺 Lily</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-camellia" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Camellia") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌸 Camellia</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-burrostail" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("BurrosTail") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌱 Burro's Tail</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-mushroom" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Mushroom") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍄 Mushroom</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-cactus" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Cactus") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌵 Cactus</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-bamboo" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Bamboo") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🎋 Bamboo</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-chrysanthemum" class="mga-checkbox"
-                                      ${settings.notifications.watchedSeeds.includes("Chrysanthemum") ? "checked" : ""}
-                                      style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌸 Chrysanthemum</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-grape" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Grape") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍇 Grape</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-pepper" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Pepper") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌶️ Pepper</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-lemon" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Lemon") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍋 Lemon</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-passionfruit" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("PassionFruit") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🧡 PassionFruit</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-dragonfruit" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("DragonFruit") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🐉 DragonFruit</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-cacao" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Cacao") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍫 Cacao Bean</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-lychee" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Lychee") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🍇 Lychee</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-sunflower" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Sunflower") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌻 Sunflower</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-starweaver" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Starweaver") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>⭐ Starweaver</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-dawnbinder" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Dawnbinder") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌅 Dawnbinder</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-moonbinder" class="mga-checkbox"
-                                     ${settings.notifications.watchedSeeds.includes("Moonbinder") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🌙 Moonbinder</span>
-                          </label>
-                      </div>
-                  </div>
+                                <div style="margin-bottom: 12px;">
+                                    <label class="mga-label" style="display: block; margin-bottom: 8px;">
+                                        Watched Seeds
+                    </label>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px;">
+                                        ${UnifiedState.plantsDatabase
+                                          .filter((plant) => plant.inShop) // Only show plants that are buyable
+                                          .map(
+                                            (plant) => `
+                                            <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                                                <input type="checkbox" id="watch-${plant.id.toLowerCase()}" class="mga-checkbox"
+                                                       ${settings.notifications.watchedSeeds.includes(plant.name) ? "checked" : ""}
+                                                       style="accent-color: #4a9eff; transform: scale(0.8);">
+                                                <span>${plant.htmlEmoji} ${plant.name}</span>
+                                            </label>
+                                          `,
+                                          )
+                                          .join("")}
+                                    </div>
+                                </div>
 
                   <div style="margin-bottom: 12px;">
                       <label class="mga-label" style="display: block; margin-bottom: 8px;">
@@ -19814,6 +19776,12 @@ console.log(
                                      ${settings.notifications.watchedEggs.includes("RareEgg") ? "checked" : ""}
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
                               <span>🥚 Rare Egg</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-winter-egg" class="mga-checkbox"
+                                     ${settings.notifications.watchedEggs.includes("WinterEgg") ? "checked" : ""}
+                                     style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🥚❄️ Winter Egg</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-legendary-egg" class="mga-checkbox"
@@ -23194,42 +23162,11 @@ console.log(
 
     function setupSeedsTabHandlers(context = document) {
       // Seed ID mapping for initialization
-      const seedIdMap = {
-        Carrot: "Carrot",
-        Strawberry: "Strawberry",
-        Aloe: "Aloe",
-        Blueberry: "Blueberry",
-        Apple: "Apple",
-        Tulip: "OrangeTulip",
-        Tomato: "Tomato",
-        Daffodil: "Daffodil",
-        Sunflower: "Sunflower",
-        Corn: "Corn",
-        Watermelon: "Watermelon",
-        Pumpkin: "Pumpkin",
-        Delphinium: "Delphinium",
-        Squash: "Squash",
-        Echeveria: "Echeveria",
-        Coconut: "Coconut",
-        Banana: "Banana",
-        Lily: "Lily",
-        BurrosTail: "BurrosTail",
-        Mushroom: "Mushroom",
-        Cactus: "Cactus",
-        Bamboo: "Bamboo",
-        Grape: "Grape",
-        Pepper: "Pepper",
-        Lemon: "Lemon",
-        PassionFruit: "PassionFruit",
-        DragonFruit: "DragonFruit",
-        Lychee: "Lychee",
-        Starweaver: "Starweaver",
-        Moonbinder: "Moonbinder",
-        Dawnbinder: "Dawnbinder",
-        Chrysanthemum: "Chrysanthemum",
-        Camellia: "Camellia",
-        Cacao: "Cacao",
-      };
+      const seedIdMap = {};
+
+      UnifiedState.plantsDatabase.forEach((plant, index) => {
+        seedIdMap[plant.name] = plant.id;
+      });
 
       context.querySelectorAll(".seed-checkbox").forEach((checkbox) => {
         // Prevent duplicate event listeners
@@ -23510,44 +23447,13 @@ console.log(
 
     // Helper function to calculate selected seeds value
     function calculateSelectedSeedsValue(context) {
-      const seedValues = {
-        // Common seeds
-        Carrot: 10,
-        Strawberry: 12,
-        Aloe: 15,
-        // Uncommon seeds
-        Apple: 25,
-        Tulip: 30,
-        Tomato: 35,
-        Blueberry: 40,
-        // Rare seeds
-        Daffodil: 75,
-        Sunflower: 85,
-        Corn: 80,
-        Watermelon: 90,
-        Pumpkin: 100,
-        // Legendary seeds
-        Echeveria: 200,
-        Coconut: 250,
-        Banana: 300,
-        Lily: 350,
-        BurrosTail: 400,
-        // Mythical seeds
-        Mushroom: 500,
-        Cactus: 600,
-        Bamboo: 750,
-        Grape: 800,
-        // Divine seeds
-        Pepper: 1000,
-        Lemon: 1200,
-        PassionFruit: 1500,
-        DragonFruit: 2000,
-        Lychee: 2500,
-        // Celestial seeds
-        Starweaver: 5000,
-        Moonbinder: 7500,
-        Dawnbinder: 10000,
-      };
+      const seedValues = {};
+
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        if (plant.inShop) {
+          seedValues[plant.name] = plant.shopPrice;
+        }
+      });
 
       if (
         !UnifiedState.atoms.inventory ||
@@ -24267,21 +24173,12 @@ console.log(
 
     function setupProtectTabHandlers(context = document) {
       // Actual game crop species (from shop)
-      const cropSpecies = [
-        "Mushroom",
-        "Cactus",
-        "Bamboo",
-        "Grape",
-        "Pepper",
-        "Lemon",
-        "PassionFruit",
-        "DragonFruit",
-        "Lychee",
-        "Sunflower",
-        "Starweaver",
-        "DawnCelestial",
-        "MoonCelestial",
-      ];
+      const cropSpecies = [];
+
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        cropSpecies.push(plant.id);
+      });
+
       const cropMutations = [
         "Rainbow",
         "Frozen",
@@ -25484,41 +25381,13 @@ console.log(
       }
 
       // Seed watch checkboxes
-      const seedWatchMap = {
-        "watch-carrot": "Carrot",
-        "watch-strawberry": "Strawberry",
-        "watch-aloe": "Aloe",
-        "watch-blueberry": "Blueberry",
-        "watch-apple": "Apple",
-        "watch-tulip": "Tulip",
-        "watch-tomato": "Tomato",
-        "watch-daffodil": "Daffodil",
-        "watch-corn": "Corn",
-        "watch-watermelon": "Watermelon",
-        "watch-pumpkin": "Pumpkin",
-        "watch-echeveria": "Echeveria",
-        "watch-coconut": "Coconut",
-        "watch-banana": "Banana",
-        "watch-lily": "Lily",
-        "watch-burrostail": "BurrosTail",
-        "watch-mushroom": "Mushroom",
-        "watch-cactus": "Cactus",
-        "watch-bamboo": "Bamboo",
-        "watch-grape": "Grape",
-        "watch-pepper": "Pepper",
-        "watch-lemon": "Lemon",
-        "watch-passionfruit": "PassionFruit",
-        "watch-dragonfruit": "DragonFruit",
-        "watch-lychee": "Lychee",
-        "watch-sunflower": "Sunflower",
-        "watch-starweaver": "Starweaver",
-        "watch-dawnbinder": "Dawnbinder",
-        "watch-moonbinder": "Moonbinder",
-        "watch-chrysanthemum": "Chrysanthemum",
-        "watch-camellia": "Camellia",
-        "watch-cacao": "Cacao",
-        "watch-fava-bean": "FavaBean",
-      };
+      const seedWatchMap = {};
+
+      UnifiedState.plantsDatabase.forEach((plant) => {
+        if (plant.inShop) {
+          seedWatchMap[`watch-${plant.id.toLowerCase()}`] = plant.name;
+        }
+      });
 
       Object.entries(seedWatchMap).forEach(([checkboxId, seedId]) => {
         const checkbox = context.querySelector(`#${checkboxId}`);
@@ -25549,6 +25418,7 @@ console.log(
         "watch-common-egg": "CommonEgg",
         "watch-uncommon-egg": "UncommonEgg",
         "watch-rare-egg": "RareEgg",
+        "watch-winter-egg": "WinterEgg",
         "watch-legendary-egg": "LegendaryEgg",
         "watch-mythical-egg": "MythicalEgg",
       };
@@ -26606,12 +26476,12 @@ console.log(
 
       // Wiki mapping
       const wikiUrls = {
-        crops: "https://magicgarden.fandom.com/wiki/Crops",
-        pets: "https://magicgarden.fandom.com/wiki/Pets",
-        abilities: "https://magicgarden.fandom.com/wiki/Abilities",
-        weather: "https://magicgarden.fandom.com/wiki/Weather_Events",
-        multipliers: "https://magicgarden.fandom.com/wiki/Multipliers",
-        shops: "https://magicgarden.fandom.com/wiki/Shops",
+        crops: "https://magicgarden.wiki/Crops",
+        pets: "https://magicgarden.wiki/Pets",
+        abilities: "https://magicgarden.wiki/Abilities",
+        weather: "https://magicgarden.wiki/Weather_Events",
+        multipliers: "https://magicgarden.wiki/Multipliers",
+        shops: "https://magicgarden.wiki/Shops",
       };
 
       // Add click handlers to all calculator cards
@@ -29714,41 +29584,11 @@ console.log(
     }
 
     // ==================== VALUE CALCULATIONS ====================
-    const speciesValues = {
-      Sunflower: 750000,
-      Starweaver: 10000000,
-      DawnCelestial: 11000000,
-      MoonCelestial: 11000000,
-      Lychee: 50000,
-      Cacao: 70000,
-      DragonFruit: 24500,
-      PassionFruit: 24500,
-      Lemon: 10000,
-      Pepper: 7220,
-      Grape: 12500,
-      Chrysanthemum: 18000,
-      Bamboo: 500000,
-      Cactus: 261000,
-      Mushroom: 160000,
-      BurrosTail: 6000,
-      Camellia: 4875,
-      Lily: 20123,
-      Banana: 1750,
-      Coconut: 302,
-      Echeveria: 5520,
-      Pumpkin: 3700,
-      Watermelon: 2708,
-      Corn: 36,
-      Daffodil: 1090,
-      Tomato: 27,
-      OrangeTulip: 767,
-      Apple: 73,
-      Blueberry: 23,
-      FavaBean: 30,
-      Aloe: 310,
-      Strawberry: 14,
-      Carrot: 20,
-    };
+    const speciesValues = {};
+
+    UnifiedState.plantsDatabase.forEach((plant) => {
+      speciesValues[plant.id] = plant.plantValue;
+    });
 
     // Mutation calculation matching FriendsScript logic
     const COLOR_MULT = {
@@ -29860,10 +29700,10 @@ console.log(
             mutations.forEach((mutation) => {
               // Check if changes are related to inventory or game state
               if (
-                mutation.target.className &&
-                (mutation.target.className.includes("inventory") ||
-                  mutation.target.className.includes("garden") ||
-                  mutation.target.className.includes("crop"))
+                mutation.target.classList &&
+                (mutation.target.classList.contains("inventory") ||
+                  mutation.target.classList.contains("garden") ||
+                  mutation.target.classList.contains("crop"))
               ) {
                 shouldUpdate = true;
               }
@@ -30000,7 +29840,7 @@ console.log(
       }
 
       calculateGardenValue() {
-        const myGarden = UnifiedState.atoms.myGarden;
+        const myGarden = UnifiedState?.atoms?.myGarden?.data;
         const friendBonus = UnifiedState.atoms.friendBonus || 1;
         let gardenValue = 0;
 
@@ -30955,39 +30795,95 @@ console.log(
                 );
 
             if (petsChanged) {
-              // Update UI if pets tab is active
-              if (UnifiedState.activeTab === "pets") {
-                const context = document.getElementById("mga-tab-content");
-                if (context && typeof updateActivePetsDisplay === "function") {
-                  updateActivePetsDisplay(context);
-                }
-              }
+              try {
+                // 1. Establish a safe document reference
+                const activeDoc =
+                  (typeof targetDocument !== "undefined" && targetDocument) ||
+                  document;
 
-              // Update all pet overlays
-              UnifiedState.data.popouts.overlays.forEach((overlay, tabName) => {
-                if (
-                  overlay &&
-                  document.contains(overlay) &&
-                  tabName === "pets"
-                ) {
-                  updateActivePetsDisplay(overlay);
-                }
-              });
+                // Safety check: if the document isn't initialized or accessible, skip this cycle
+                if (!activeDoc || !activeDoc.body) return;
 
-              // TURTLE TIMER: Refresh tooltip when pets change
-              (targetDocument || document)
-                .querySelectorAll(
-                  '[data-turtletimer-estimate="true"], [data-turtletimer-slot-value="true"]',
-                )
-                .forEach((el) => el.remove());
-
-              setTimeout(() => {
-                requestAnimationFrame(() => {
-                  if (typeof insertTurtleEstimate === "function") {
-                    insertTurtleEstimate();
+                // 2. Update UI if pets tab is active
+                if (UnifiedState.activeTab === "pets") {
+                  const context = activeDoc.getElementById("mga-tab-content");
+                  if (
+                    context &&
+                    typeof updateActivePetsDisplay === "function"
+                  ) {
+                    try {
+                      updateActivePetsDisplay(context);
+                    } catch (e) {
+                      /* Firefox often fails here if the element is being re-rendered */
+                    }
                   }
-                });
-              }, 150);
+                }
+
+                // 3. Update all pet overlays with "Dead Object" protection
+                if (UnifiedState.data?.popouts?.overlays) {
+                  UnifiedState.data.popouts.overlays.forEach(
+                    (overlay, tabName) => {
+                      try {
+                        // In Firefox, accessing properties on a 'dead' overlay element throws NS_ERROR
+                        if (
+                          overlay &&
+                          tabName === "pets" &&
+                          activeDoc.contains(overlay)
+                        ) {
+                          updateActivePetsDisplay(overlay);
+                        }
+                      } catch (e) {
+                        // Ignore errors for specific overlays that might have been closed/destroyed
+                      }
+                    },
+                  );
+                }
+
+                // 4. TURTLE TIMER: Safe removal
+                try {
+                  const elements = activeDoc.querySelectorAll(
+                    '[data-turtletimer-estimate="true"], [data-turtletimer-slot-value="true"]',
+                  );
+                  elements.forEach((el) => {
+                    try {
+                      el.remove();
+                    } catch (e) {
+                      /* element might already be gone */
+                    }
+                  });
+                } catch (e) {
+                  // querySelectorAll can fail in backgrounded Firefox tabs
+                }
+
+                // 5. Hardened Async Update
+                // We wrap the entire timeout chain to ensure it doesn't crash if the tab is closed/hidden
+                setTimeout(() => {
+                  try {
+                    // Double check if context still exists before requesting frame
+                    if (typeof insertTurtleEstimate === "function") {
+                      requestAnimationFrame(() => {
+                        try {
+                          // Final check: is the document still 'alive'?
+                          const finalDoc =
+                            (typeof targetDocument !== "undefined" &&
+                              targetDocument) ||
+                            document;
+                          if (finalDoc && finalDoc.body) {
+                            insertTurtleEstimate();
+                          }
+                        } catch (e) {
+                          // Silently exit if window context died during the frame request
+                        }
+                      });
+                    }
+                  } catch (e) {
+                    // Catch-all for "Component not initialized" in the timeout
+                  }
+                }, 150);
+              } catch (globalErr) {
+                // This catches the "NS_ERROR_NOT_INITIALIZED" if everything fails
+                // productionLog("Pets update skipped: Tab context currently unavailable");
+              }
             }
 
             // CRITICAL: Return the extracted array so hookAtom stores it correctly
@@ -32741,12 +32637,10 @@ console.log(
 
         logDebug("STORAGE", "✅ Loaded main logs:", {
           count: loadedLogs.length,
-          sample: loadedLogs
-            .slice(0, 3)
-            .map((l) => ({
-              ability: l.abilityType,
-              time: new Date(l.timestamp).toLocaleTimeString(),
-            })),
+          sample: loadedLogs.slice(0, 3).map((l) => ({
+            ability: l.abilityType,
+            time: new Date(l.timestamp).toLocaleTimeString(),
+          })),
         });
 
         // DIAGNOSTIC: If logs appeared from nowhere after clear, log a warning
@@ -32810,12 +32704,10 @@ console.log(
       logDebug("STORAGE", "Archive logs:", {
         skippedDueToClear: wasManuallyCleared,
         count: archivedLogs.length,
-        logs: archivedLogs
-          .slice(0, 5)
-          .map((l) => ({
-            ability: l.abilityType,
-            time: new Date(l.timestamp).toLocaleTimeString(),
-          })),
+        logs: archivedLogs.slice(0, 5).map((l) => ({
+          ability: l.abilityType,
+          time: new Date(l.timestamp).toLocaleTimeString(),
+        })),
       });
 
       let archivedMigrationNeeded = false;
@@ -35154,16 +35046,20 @@ console.log(
               Capybara: 0,
               Peacock: 0.1,
               Butterfly: 0.2, // Mythical
-              Turtle: 1,
-              Goat: 1.1, // Legendary
-              Turkey: 2.2,
-              Cow: 2,
-              Pig: 2.1, // Rare
-              Chicken: 3,
-              Dragonfly: 3.1, // Uncommon
-              Bee: 4,
-              Worm: 4.1,
-              Snail: 4.2, // Common
+              Goat: 1,
+              Turtle: 1.1,
+              Squirrel: 1.2, // Legendary
+              Caribou: 2.0,
+              Stoat: 2.1,
+              SnowFox: 2.3, //Winter
+              Turkey: 3.2,
+              Cow: 3,
+              Pig: 3.1, // Rare
+              Chicken: 4,
+              Dragonfly: 4.1, // Uncommon
+              Bee: 5,
+              Worm: 5.1,
+              Snail: 5.2, // Common
             };
             const petRarityMap = Object.assign(
               {},
@@ -35611,20 +35507,35 @@ console.log(
           // Pet species and their compatible crops (from game data)
           const PET_FEED_CATALOG = {
             Worm: ["Carrot", "Strawberry", "Aloe", "Tomato", "Apple"],
-            Snail: ["Blueberry", "Tomato", "Corn", "Daffodil"],
-            Bee: ["Strawberry", "Blueberry", "OrangeTulip", "Daffodil", "Lily"],
+            Snail: ["Blueberry", "Tomato", "Corn", "Daffodil", "Chrysanthemum"],
+            Bee: [
+              "Strawberry",
+              "Blueberry",
+              "Chrysanthemum",
+              "Daffodil",
+              "Lily",
+            ],
             Chicken: ["Aloe", "Corn", "Watermelon", "Pumpkin"],
-            Bunny: ["Carrot", "Strawberry", "Blueberry", "Echeveria"],
+            Bunny: [
+              "Carrot",
+              "Strawberry",
+              "Blueberry",
+              "OrangeTulip",
+              "Apple",
+            ],
             Dragonfly: ["Apple", "OrangeTulip", "Echeveria"],
             Pig: ["Watermelon", "Pumpkin", "Mushroom", "Bamboo"],
             Cow: ["Coconut", "Banana", "BurrosTail", "Mushroom"],
+            Turkey: ["FavaBean", "Corn", "Squash"],
+            SnowFox: ["Echeveria", "Squash", "Grape"],
+            Stoat: ["Banana", "Pepper", "Cactus"],
+            Caribou: ["Camellia", "BurrosTail", "Mushroom"],
             Squirrel: ["Pumpkin", "Banana", "Grape"],
             Turtle: ["Watermelon", "BurrosTail", "Bamboo", "Pepper"],
             Goat: ["Pumpkin", "Coconut", "Pepper", "Camellia", "PassionFruit"],
             Butterfly: ["Daffodil", "Lily", "Grape", "Lemon", "Sunflower"],
-            Capybara: ["Lemon", "PassionFruit", "DragonFruit", "Lychee"],
             Peacock: ["Cactus", "Sunflower", "Lychee"],
-            Turkey: ["FavaBean", "Corn", "Squash"],
+            Capybara: ["Lemon", "PassionFruit", "DragonFruit", "Lychee"],
             Copycat: [],
           };
 
@@ -36958,7 +36869,7 @@ console.log(
             "%c🎮 MGTools v" +
               (typeof GM_info !== "undefined"
                 ? GM_info.script.version
-                : "1.1.1") +
+                : "2.4.0") +
               " Loaded",
             "color: #4CAF50; font-weight: bold; font-size: 14px",
           );
@@ -37638,6 +37549,7 @@ console.log(
             UnifiedState.data.petAbilityLogs = [];
             UnifiedState.data.seedsToDelete = [];
             UnifiedState.data.autoDeleteEnabled = false;
+
             MGA_saveJSON("MGA_petPresets", {});
             MGA_saveJSON("MGA_petAbilityLogs", []);
             updateTabContent();

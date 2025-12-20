@@ -4,13 +4,14 @@
 > Warning, this is the Maintenence Mode Repository for MGTools, use this repository only if prompted in the Discord Server, as this will be used when the Current Main Contributor to the main repo is not active! (Right now it is Myke)
 
 What does this mean?
+
 It means that bugfixes will be given, but new features will be added extremely sparingly if at all.
 
 Meant to go to the Main Repo?
 
 [Main Repo](https://github.com/Myke247/MGTools)
 
-## **Version 2.3.0-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
+## **Version 2.4.0-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
 
 ![MGTools](https://img.shields.io/badge/version-2.3.0_M-blue) ![Status](https://img.shields.io/badge/status-maintenance-yellow?style=flat&label=status)
 
@@ -20,7 +21,7 @@ Meant to go to the Main Repo?
 ## 🚀 Quick Start (30 seconds)
 
 1. **Install Tampermonkey**: [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) | [Firefox](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/) | [Safari](https://apps.apple.com/us/app/tampermonkey/id1482490089)
-2. **Click to Install**: **[MGTools.user.js](https://github.com/Myke247/MGTools/raw/Live-Beta/MGTools.user.js)**
+2. **Click to Install**: **[MGTools.user.js](https://github.com/Umm12many/MGTools-M/raw/main/MGTools.user.js)**
 3. **Visit Game**: [Magic Garden](https://magiccircle.gg/r/) - MGTools loads automatically!
 
 That's it! The dock appears at the bottom of your screen. Click any tab to explore features.
@@ -131,20 +132,20 @@ MGTools is a powerful userscript that enhances your Magic Garden experience with
 
 **For Chrome, Edge, Brave, Opera:**
 1. Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-2. Click [**Install MGTools**](https://github.com/Myke247/MGTools/raw/main/MGTools.user.js)
+2. Click [**Install MGTools**](https://github.com/Umm12many/MGTools-M/raw/main/MGTools.user.js)
 3. Click **Install** when Tampermonkey opens
 4. Done! Visit [Magic Garden](https://magiccircle.gg/r/)
 
 **For Firefox:**
 1. Install [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
-2. Click [**Install MGTools**](https://github.com/Myke247/MGTools/raw/main/MGTools.user.js)
+2. Click [**Install MGTools**](https://github.com/Umm12many/MGTools-M/raw/main/MGTools.user.js)
 3. Click **Install** when Tampermonkey opens
 4. Done! Visit [Magic Garden](https://magiccircle.gg/r/)
 
 **For Safari:**
 1. Install [Tampermonkey](https://apps.apple.com/us/app/tampermonkey/id1482490089)
 2. Enable the extension in Safari preferences
-3. Click [**Install MGTools**](https://github.com/Myke247/MGTools/raw/main/MGTools.user.js)
+3. Click [**Install MGTools**](https://github.com/Umm12many/MGTools-M/raw/main/MGTools.user.js)
 4. Click **Install** when Tampermonkey opens
 5. Done! Visit [Magic Garden](https://magiccircle.gg/r/)
 
@@ -433,7 +434,7 @@ MGTools works when playing Magic Garden through **Discord's activity embed**, bu
 
 ## 🛠️ Support & Issues
 
-**Found a bug?** Report it here: [GitHub Issues](https://github.com/Myke247/MGTools/issues)
+**Found a bug?** Report it here: [GitHub Issues](https://github.com/Umm12many/MGTools-M/issues)
 
 **Need help?** Check the **❓ Help** tab in MGTools for quick tips and guides.
 
@@ -445,7 +446,8 @@ MGTools works when playing Magic Garden through **Discord's activity embed**, bu
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-### Latest Updates (v2.0.0)
+### Latest Updates (v2.4.0)
+- **v2.4.0**: Firefox support added back, Rooms addded back, added new game items (excluding decor).
 - **v2.0.0**: Pet auto-favorite fixes + Micro/Mini dock sizes - Fixed pet auto-favorite checkboxes not persisting state and pets not being favorited correctly. Added 2 new smaller dock sizes (Micro and Mini) for 6 total size options. Enhanced debug logging for troubleshooting. BREAKING: Dock size order now Micro → Mini → Tiny → Small → Medium → Large.
 - **v1.1.9**: Shop loading fix + pet auto-favorite + FPS optimization - Fixed shop showing empty data on first load with smart loading state. Added auto-favorite in VALUES tab for pets with Rainbow/Gold Granter abilities (based on mutations). Removed unnecessary console.logs for improved performance.
 - **v1.1.8**: New black accent themes + opacity fix - Added 15 new black accent color themes (Pure Void, Violet, Amber, Jade, Coral, Steel, Lavender, Mint, Ruby, Cobalt, Bronze, Teal, Magenta, Lime, Indigo). Fixed opacity slider to work correctly from 0% (fully transparent) to 100% (fully opaque).
@@ -465,6 +467,7 @@ Open Source - Free to use, modify, and share!
 **Created by**: Myke247
 *Normie, Daserix, & Ghastly
 **Community**: Magic Garden players
+**Maintained By**: Umm12manyy
 
 Special thanks to all contributors and testers!
 
