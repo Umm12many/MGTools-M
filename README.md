@@ -7,13 +7,13 @@ What does this mean?
 
 It means that bugfixes will be given, but new features will be added extremely sparingly if at all.
 
-Meant to go to the Main Repo?
+Meant to go to the Original Repo?
 
-[Main Repo](https://github.com/Myke247/MGTools)
+[Original Repo](https://github.com/Myke247/MGTools)
 
-## **Version 2.4.0-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
+## **Version 2.5.0-M** | All-in-one assistant for Magic Garden with a beautiful unified UI
 
-![MGTools](https://img.shields.io/badge/version-2.3.0_M-blue) ![Status](https://img.shields.io/badge/status-maintenance-yellow?style=flat&label=status)
+![MGTools](https://img.shields.io/badge/version-2.5.0_M-blue) ![Status](https://img.shields.io/badge/status-maintenance-yellow?style=flat&label=status)
 
 
 ---
@@ -446,14 +446,6 @@ MGTools works when playing Magic Garden through **Discord's activity embed**, bu
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-### Latest Updates (v2.4.0)
-- **v2.4.0**: Firefox support added back, Rooms addded back, added new game items (excluding decor).
-- **v2.0.0**: Pet auto-favorite fixes + Micro/Mini dock sizes - Fixed pet auto-favorite checkboxes not persisting state and pets not being favorited correctly. Added 2 new smaller dock sizes (Micro and Mini) for 6 total size options. Enhanced debug logging for troubleshooting. BREAKING: Dock size order now Micro → Mini → Tiny → Small → Medium → Large.
-- **v1.1.9**: Shop loading fix + pet auto-favorite + FPS optimization - Fixed shop showing empty data on first load with smart loading state. Added auto-favorite in VALUES tab for pets with Rainbow/Gold Granter abilities (based on mutations). Removed unnecessary console.logs for improved performance.
-- **v1.1.8**: New black accent themes + opacity fix - Added 15 new black accent color themes (Pure Void, Violet, Amber, Jade, Coral, Steel, Lavender, Mint, Ruby, Cobalt, Bronze, Teal, Magenta, Lime, Indigo). Fixed opacity slider to work correctly from 0% (fully transparent) to 100% (fully opaque).
-- **v1.1.7**: Shop/Notification/Timers fixed
-- **v1.1.5**: Added Alt+X hotkey for dock position reset - Press Alt+X to instantly reset the dock to its default position on the right side of the screen.
-
 ---
 
 ## 📜 License
@@ -467,7 +459,7 @@ Open Source - Free to use, modify, and share!
 **Created by**: Myke247
 *Normie, Daserix, & Ghastly
 **Community**: Magic Garden players
-**Maintained By**: Umm12manyy
+**Maintained By**: Umm12many
 
 Special thanks to all contributors and testers!
 

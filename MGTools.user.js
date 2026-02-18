@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.4.0
+// @version      2.5.0
 // @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
 // @author       Myke247 & Umm12many
 // @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
@@ -44,7 +44,7 @@
       if (Array.isArray(sp)) {
         targetWin.__mga_lastScopePath = sp.slice();
         // Debug only - uncomment if troubleshooting scopePath issues
-        // console.log('[MGTools ScopePatch] captured scopePath', targetWin.__mga_lastScopePath);
+        // productionLog('[MGTools ScopePatch] captured scopePath', targetWin.__mga_lastScopePath);
       }
     };
 
@@ -69,7 +69,7 @@
     }
 
     // Debug only - uncomment if troubleshooting scopePath issues
-    // console.log('[MGTools ScopePatch] early RC trap installed');
+    // productionLog('[MGTools ScopePatch] early RC trap installed');
   }
 
   // Check if RC already exists
@@ -129,7 +129,7 @@ async function rcSend(payload, opts = {}) {
   try {
     targetWin.MagicCircle_RoomConnection?.sendMessage(payload);
     // Debug only - uncomment if troubleshooting message sending
-    // console.log('[MGTools] Sent with scopePath:', payload.scopePath);
+    // productionLog('[MGTools] Sent with scopePath:', payload.scopePath);
   } catch (e) {
     console.error("[MGTools] rcSend error", e);
   }
@@ -139,7 +139,7 @@ async function rcSend(payload, opts = {}) {
  * MGTools - Magic Garden Enhancement Suite
  * A comprehensive userscript for enhancing the Magic Garden gaming experience
  *
- * @version 2.3.0
+ * @version 2.5.0
  * @author Unified Script
  * @license MIT
  */
@@ -248,7 +248,7 @@ console.warn(
 );
 console.log("[MGTOOLS-DEBUG] 1. Script file loaded");
 console.log(
-  "[MGTOOLS-DEBUG] ⚡ VERSION: 2.4.0 - More New Game Feature bug fixes + Firefox is Back!",
+  "[MGTOOLS-DEBUG] ⚡ VERSION: 2.5.0 - Added new game features + Compatibilty and Bug fixes",
 );
 console.log("[MGTOOLS-DEBUG] 🕐 Load Time:", new Date().toISOString());
 console.log("[MGTOOLS-DEBUG] 2. Location:", window.location.href);
@@ -272,7 +272,9 @@ console.log(
       window.DiscordNative ||
       window.__discordApp;
     if (isDiscord) {
-      console.log("🛡️ [CSP] External font loads disabled in Discord context.");
+      productionLog(
+        "🛡️ [CSP] External font loads disabled in Discord context.",
+      );
     }
     const origCreateElement = Document.prototype.createElement;
     Document.prototype.createElement = function (tag) {
@@ -286,7 +288,7 @@ console.log(
               typeof value === "string" &&
               /fonts\.googleapis/i.test(value)
             ) {
-              console.log(
+              productionLog(
                 "🛡️ [CSP] Prevented external font link injection:",
                 value,
               );
@@ -417,7 +419,7 @@ console.log(
           iframeStorage.removeItem(test);
 
           localStorageRef = iframeStorage;
-          console.log("✅ [STORAGE] Using iframe localStorage workaround");
+          productionLog("✅ [STORAGE] Using iframe localStorage workaround");
           return localStorageRef;
         } catch (iframeError) {
           // Fallback failed
@@ -463,12 +465,12 @@ console.log(
       // Test storage types in order of preference
       if (testGMStorage()) {
         storageType = storageTypes.GM;
-        console.log(
+        productionLog(
           "✅ [STORAGE] Using GM storage (persistent across domains)",
         );
       } else if (getLocalStorage()) {
         storageType = storageTypes.LOCAL;
-        console.log("✅ [STORAGE] Using localStorage");
+        productionLog("✅ [STORAGE] Using localStorage");
       } else if (getSessionStorage()) {
         storageType = storageTypes.SESSION;
         console.warn(
@@ -718,7 +720,7 @@ console.log(
   const CONFIG = {
     // Version Information
     VERSION: {
-      CURRENT: "2.4.0",
+      CURRENT: "2.5.0",
       CHECK_URL_STABLE:
         "https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js",
       CHECK_URL_BETA:
@@ -919,7 +921,8 @@ console.log(
 
       if (level === LogLevel.ERROR) console.error(...args);
       else if (level === LogLevel.WARN) console.warn(...args);
-      else console.log(...args);
+      else if (level === LogLevel.INFO && CURRENT_LOG_LEVEL != PRODUCTION)
+        console.log(...args);
     }
 
     /**
@@ -1079,7 +1082,7 @@ console.log(
         isDiscordHost || isDiscordDesktop || inDiscordIframe || hasDiscordSDK;
 
       if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-        console.log("[FIX_DISCORD]", {
+        productionLog("[FIX_DISCORD]", {
           host: isDiscordHost,
           desktop: isDiscordDesktop,
           iframe: inDiscordIframe,
@@ -1463,7 +1466,9 @@ console.log(
         typeof directStore.set === "function"
       ) {
         jotaiStore = directStore;
-        console.log("✅ [STORE] Captured Jotai store from window.__jotaiStore");
+        productionLog(
+          "✅ [STORE] Captured Jotai store from window.__jotaiStore",
+        );
         return jotaiStore;
       }
 
@@ -1492,7 +1497,7 @@ console.log(
                 typeof value.sub === "function"
               ) {
                 jotaiStore = value;
-                console.log(
+                productionLog(
                   "✅ [STORE] Captured Jotai store from React fiber tree",
                 );
                 return jotaiStore;
@@ -1515,7 +1520,7 @@ console.log(
           // Some Jotai implementations store the store reference in the atom cache
           if (value?.store && typeof value.store.get === "function") {
             jotaiStore = value.store;
-            console.log(
+            productionLog(
               "✅ [STORE] Extracted Jotai store from atom cache metadata",
             );
             return jotaiStore;
@@ -1567,7 +1572,7 @@ console.log(
       // This works even when jotaiStore capture fails
       const atomState = atomCache.get(atomKey);
       if (atomState && "v" in atomState) {
-        console.log(
+        productionLog(
           `[STORE] ✅ Tier 1: Read '${atomLabel}' directly from atom cache`,
         );
         return atomState.v;
@@ -1577,7 +1582,9 @@ console.log(
       if (jotaiStore) {
         try {
           const value = await jotaiStore.get(targetAtom);
-          console.log(`[STORE] ✅ Tier 2: Read '${atomLabel}' via jotaiStore`);
+          productionLog(
+            `[STORE] ✅ Tier 2: Read '${atomLabel}' via jotaiStore`,
+          );
           return value;
         } catch (err) {
           console.warn(
@@ -1593,7 +1600,7 @@ console.log(
         if (jotaiStore) {
           try {
             const value = await jotaiStore.get(targetAtom);
-            console.log(
+            productionLog(
               `[STORE] ✅ Tier 3: Read '${atomLabel}' via late-captured jotaiStore`,
             );
             return value;
@@ -1639,7 +1646,7 @@ console.log(
     if (atomCacheWatcherCallbacks.length === 1) {
       const observer = new MutationObserver(() => {
         if (targetWindow.jotaiAtomCache) {
-          console.log(
+          productionLog(
             "✅ [ATOM-WATCH] jotaiAtomCache detected via MutationObserver",
           );
           observer.disconnect();
@@ -1660,7 +1667,7 @@ console.log(
         if (targetWindow.jotaiAtomCache) {
           clearInterval(pollInterval);
           observer.disconnect();
-          console.log("✅ [ATOM-WATCH] jotaiAtomCache detected via polling");
+          productionLog("✅ [ATOM-WATCH] jotaiAtomCache detected via polling");
           const callbacks = atomCacheWatcherCallbacks;
           atomCacheWatcherCallbacks = [];
           callbacks.forEach((cb) => cb());
@@ -1807,7 +1814,7 @@ console.log(
 
     // Main capture routine - tries all methods with retry logic
     async capture(maxRetries = 20, retryDelay = 500) {
-      console.log("🔍 [STORE] Attempting to capture Jotai store...");
+      productionLog("🔍 [STORE] Attempting to capture Jotai store...");
 
       for (let attempt = 0; attempt < maxRetries; attempt++) {
         // Try direct cache access first (fastest)
@@ -1891,9 +1898,9 @@ console.log(
   const getGameApiBaseUrl = targetWindow.getGameApiBaseUrl;
 
   // Verify function is accessible and log current API base
-  console.log("✅ [API-BASE] getGameApiBaseUrl() defined and accessible");
+  productionLog("✅ [API-BASE] getGameApiBaseUrl() defined and accessible");
   try {
-    console.log(
+    productionLog(
       "🔗 [API-BASE] Current API base:",
       targetWindow.getGameApiBaseUrl(),
     );
@@ -1957,7 +1964,7 @@ console.log(
           try {
             logInfo("GM-STORAGE", "GM API fully functional");
           } catch (e) {
-            console.log("✅ [GM-STORAGE] GM API fully functional");
+            productionLog("✅ [GM-STORAGE] GM API fully functional");
           }
           return true;
         } else {
@@ -2339,28 +2346,28 @@ console.log(
   }, 30000);
 
   // ==================== CRITICAL EXECUTION CHECKPOINT ====================
-  console.log(
+  productionLog(
     "🔍🔍🔍 [EXECUTION] Reached line 951 - About to define initialization",
   );
-  console.log("🔍 typeof document:", typeof document);
-  console.log("🔍 typeof window:", typeof window);
-  console.log("🔍 document.readyState:", document?.readyState);
+  productionLog("🔍 typeof document:", typeof document);
+  productionLog("🔍 typeof window:", typeof window);
+  productionLog("🔍 document.readyState:", document?.readyState);
 
   // ==================== PROPER PAGE LOAD DETECTION ====================
   // Fix for document-idle timing issues - wait for complete page load
   let initializationStarted = false;
 
   function initializeWhenReady() {
-    console.log("🔍🔍🔍 [EXECUTION] initializeWhenReady() called!");
-    console.log(
+    productionLog("🔍🔍🔍 [EXECUTION] initializeWhenReady() called!");
+    productionLog(
       `🔍 [EXECUTION] initializationStarted = ${initializationStarted}`,
     );
     if (initializationStarted) {
-      console.log("🔍 [EXECUTION] Already initialized, returning early");
+      productionLog("🔍 [EXECUTION] Already initialized, returning early");
       return;
     }
     initializationStarted = true;
-    console.log("🔍 [EXECUTION] Set initializationStarted = true");
+    productionLog("🔍 [EXECUTION] Set initializationStarted = true");
 
     productionLog("🚀 Magic Garden Unified Assistant v3.5.2 - Discord Fix");
     productionLog("🔧 CRITICAL: Disabled data-destroying migration system");
@@ -2376,18 +2383,18 @@ console.log(
     productionLog("🔧 [BASIC-DEBUG] User Agent:", navigator.userAgent);
 
     // Proceed with initialization
-    console.log("🔍 [EXECUTION] About to call startMGAInitialization()");
+    productionLog("🔍 [EXECUTION] About to call startMGAInitialization()");
     startMGAInitialization();
-    console.log("🔍 [EXECUTION] startMGAInitialization() returned");
+    productionLog("🔍 [EXECUTION] startMGAInitialization() returned");
   }
 
   // CRITICAL FIX: Handle all readyState possibilities for Tampermonkey compatibility
   // document-idle means readyState is 'interactive' - not 'loading' or 'complete'
 
-  console.log(
+  productionLog(
     "🔍🔍🔍 [EXECUTION] Reached line 982 - INITIALIZATION BLOCK START",
   );
-  console.log("🔍 About to call productionLog for readyState...");
+  productionLog("🔍 About to call productionLog for readyState...");
 
   try {
     productionLog("🔧 [INIT] Initial readyState:", document.readyState);
@@ -2426,22 +2433,24 @@ console.log(
 
   // Discord Fix: Wait for canvas with retry mechanism
   function initWithCanvasCheck(attempt = 0) {
-    console.log(
+    productionLog(
       `🔍 [EXECUTION] initWithCanvasCheck called, attempt=${attempt}`,
     );
     if (isGameCanvasReady()) {
-      console.log("🔍 [EXECUTION] Canvas ready! Calling initializeWhenReady()");
+      productionLog(
+        "🔍 [EXECUTION] Canvas ready! Calling initializeWhenReady()",
+      );
       productionLog("✅ [INIT] Game canvas detected, initializing MGTools");
       initializeWhenReady();
     } else if (attempt < 20) {
       // Retry up to 20 times (10 seconds) for Discord
-      console.log(
+      productionLog(
         `🔍 [EXECUTION] Canvas not ready, scheduling retry ${attempt + 1}/20`,
       );
       productionLog(`🔄 [INIT] Canvas not ready, retry ${attempt + 1}/20`);
       setTimeout(() => initWithCanvasCheck(attempt + 1), 500);
     } else {
-      console.log(
+      productionLog(
         "🔍 [EXECUTION] Max retries reached, calling initializeWhenReady() anyway",
       );
       productionLog(
@@ -2451,35 +2460,35 @@ console.log(
     }
   }
 
-  console.log("🔍 [EXECUTION] About to check document.readyState...");
+  productionLog("🔍 [EXECUTION] About to check document.readyState...");
 
   try {
     if (document.readyState === "complete") {
       // Page is already fully loaded
-      console.log("🔍 [EXECUTION] readyState is complete");
-      console.log(
+      productionLog("🔍 [EXECUTION] readyState is complete");
+      productionLog(
         `🔍 [EXECUTION] isDiscordEnv = ${isDiscordEnv}, initDelay = ${initDelay}ms`,
       );
       productionLog(
         `🔧 [INIT] Page already complete, initializing in ${initDelay}ms`,
       );
-      console.log(
+      productionLog(
         `🔍 [EXECUTION] About to schedule setTimeout for ${initDelay}ms`,
       );
       setTimeout(() => {
-        console.log(
+        productionLog(
           "🔍🔍🔍 [EXECUTION] setTimeout FIRED! About to call init function...",
         );
         if (isDiscordEnv) {
-          console.log("🔍 [EXECUTION] Calling initWithCanvasCheck()");
+          productionLog("🔍 [EXECUTION] Calling initWithCanvasCheck()");
           initWithCanvasCheck();
         } else {
-          console.log("🔍 [EXECUTION] Calling initializeWhenReady()");
+          productionLog("🔍 [EXECUTION] Calling initializeWhenReady()");
           initializeWhenReady();
         }
       }, initDelay);
     } else if (document.readyState === "interactive") {
-      console.log("🔍 [EXECUTION] readyState is interactive");
+      productionLog("🔍 [EXECUTION] readyState is interactive");
       // DOM is ready but resources still loading (document-idle state)
       productionLog(
         `🔧 [INIT] DOM interactive (document-idle), initializing in ${initDelay}ms...`,
@@ -2517,7 +2526,7 @@ console.log(
     );
     console.error("Stack:", initError.stack);
     // Try to initialize anyway as fallback
-    console.log("🔄 [EXECUTION] Attempting fallback initialization in 1s...");
+    productionLog("🔄 [EXECUTION] Attempting fallback initialization in 1s...");
     setTimeout(() => {
       try {
         initializeWhenReady();
@@ -2527,18 +2536,20 @@ console.log(
     }, 1000);
   }
 
-  console.log("✅ [EXECUTION] Initialization block completed without throwing");
+  productionLog(
+    "✅ [EXECUTION] Initialization block completed without throwing",
+  );
 
   function startMGAInitialization() {
-    console.log(
+    productionLog(
       "🔍🔍🔍🔍🔍 [EXECUTION] ENTERED startMGAInitialization() function!",
     );
-    console.log("🔍 [EXECUTION] document.readyState:", document.readyState);
+    productionLog("🔍 [EXECUTION] document.readyState:", document.readyState);
     productionLog(
       "🚀 [TIMING] Starting MGA initialization with readyState:",
       document.readyState,
     );
-    console.log("🔍 [EXECUTION] productionLog completed, continuing...");
+    productionLog("🔍 [EXECUTION] productionLog completed, continuing...");
 
     // ==================== PROACTIVE STORAGE CLEANUP ====================
     // CRITICAL: Clean up large debug/console storage items BEFORE MGTools tries to save anything
@@ -2698,12 +2709,11 @@ console.log(
               position: fixed;
               display: flex;
               gap: 6px;
-              background: rgba(10, 10, 10, 0.9);
-              backdrop-filter: blur(20px);
-              border: 1px solid rgba(255, 255, 255, 0.15);
+              background: rgba(0, 0, 0, 0.65) !important;
+              border: 0px !important;
+              backdrop-filter: blur(4px);
               padding: 8px 12px;
               z-index: 999999;
-              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
               /* No transition for instant drag response */
           }
 
@@ -2723,7 +2733,7 @@ console.log(
               border-radius: 16px;
               max-height: calc(100vh - 40px);
               overflow-y: auto;
-              overflow-x: hidden;
+              overflow: visible !important;
           }
 
           /* Custom scrollbar for vertical dock */
@@ -2759,21 +2769,18 @@ console.log(
 
           #mgh-dock.vertical::before {
               top: 0;
-              background: linear-gradient(to bottom, rgba(31, 41, 55, 0.9), transparent);
               margin-bottom: -20px;
           }
 
           #mgh-dock.vertical::after {
               bottom: 0;
-              background: linear-gradient(to top, rgba(31, 41, 55, 0.9), transparent);
               margin-top: -20px;
           }
 
           .mgh-dock-item {
               width: 44px;
               height: 44px;
-              background: rgba(255, 255, 255, 0.05);
-              border: 1px solid rgba(255, 255, 255, 0.57);
+              background-color: rgba(0, 0, 0, 0.30) !important;
               border-radius: 10px;
               display: flex;
               align-items: center;
@@ -2805,14 +2812,13 @@ console.log(
 
           /* Optimized sizes for vertical mode */
           #mgh-dock.vertical .mgh-dock-item {
-              width: 40px;
-              height: 40px;
+              width: 44px;
+              height: 44px;
+              padding: 2px;
           }
 
           #mgh-dock.vertical .mgh-dock-item img {
-              /* FIX: Match scriptwithicons sizing exactly */
-              width: 24px;
-              height: 24px;
+
           }
 
           #mgh-dock.vertical .mgh-dock-item {
@@ -3608,7 +3614,6 @@ console.log(
               "Starweaver",
             ],
             watchedEggs: ["CommonEgg", "MythicalEgg"],
-            watchedDecor: [], // Decoration/hourly shop items
             // Pet hunger notifications
             petHungerEnabled: false,
             petHungerThreshold: 25, // Notify when hunger drops below this % (percentage of observed max)
@@ -3752,6 +3757,16 @@ console.log(
           20,
         ),
         new Plant(
+          "Cabbage",
+          "Cabbage",
+          "https://media.magicgarden.wiki/Cabbage.png",
+          NUM_COM,
+          30,
+          true,
+          "🥬",
+          42,
+        ),
+        new Plant(
           "Strawberry",
           "Strawberry",
           "https://media.magicgarden.wiki/Strawberry.png",
@@ -3770,6 +3785,26 @@ console.log(
           true,
           "🌿",
           310,
+        ),
+        new Plant(
+          "Beet",
+          "Beet",
+          "https://media.magicgarden.wiki/Beet.png",
+          NUM_COM,
+          210,
+          true,
+          "🪘🫚",
+          350,
+        ),
+        new Plant(
+          "Rose",
+          "Rose",
+          "https://media.magicgarden.wiki/Rose.png",
+          NUM_UNCOM,
+          229,
+          true,
+          "🌹",
+          300,
         ),
         new Plant(
           "Delphinium",
@@ -3882,6 +3917,26 @@ console.log(
           4600,
         ),
         new Plant(
+          "Pear",
+          "Pear",
+          "https://media.magicgarden.wiki/Pear.png",
+          NUM_RARE,
+          6000,
+          true,
+          "🍐",
+          250,
+        ),
+        new Plant(
+          "Gentian",
+          "Gentian",
+          "https://media.magicgarden.wiki/Gentian.png",
+          NUM_RARE,
+          9000,
+          true,
+          "🪻🌺",
+          10000,
+        ),
+        new Plant(
           "Coconut",
           "Coconut",
           "https://media.magicgarden.wiki/Coconut.png",
@@ -3907,7 +3962,7 @@ console.log(
           "https://media.magicgarden.wiki/Pine_Tree.png",
           NUM_LEG,
           12000,
-          true,
+          false,
           "🌲",
           15000,
         ),
@@ -3940,6 +3995,16 @@ console.log(
           false,
           "🎄",
           3500,
+        ),
+        new Plant(
+          "Peach",
+          "Peach",
+          "https://media.magicgarden.wiki/Peach.png",
+          NUM_LEG,
+          85000,
+          true,
+          "🍑",
+          9000,
         ),
         new Plant(
           "BurrosTail",
@@ -3980,6 +4045,16 @@ console.log(
           true,
           "🎍",
           500000,
+        ),
+        new Plant(
+          "VioletCort",
+          "VioletCort",
+          "https://media.magicgarden.wiki/Violet_Cort.png",
+          NUM_MYTH,
+          520000,
+          true,
+          "🪻🍄",
+          600000,
         ),
         new Plant(
           "Poinsettia",
@@ -4059,7 +4134,7 @@ console.log(
           10000000,
           true,
           "🫘",
-          50000,
+          70000,
         ),
         new Plant(
           "Lychee",
@@ -4121,18 +4196,18 @@ console.log(
 
     // ==================== DEBUG FUNCTIONS ====================
     window.debugSettingsPersistence = function () {
-      console.log("=== SETTINGS PERSISTENCE DEBUG ===");
-      console.log("Current settings in memory:", UnifiedState.data.settings);
-      console.log("Settings in GM storage:", GM_getValue("MGA_data"));
-      console.log(
+      productionLog("=== SETTINGS PERSISTENCE DEBUG ===");
+      productionLog("Current settings in memory:", UnifiedState.data.settings);
+      productionLog("Settings in GM storage:", GM_getValue("MGA_data"));
+      productionLog(
         "Settings in localStorage:",
         localStorage.getItem("MGA_data"),
       );
-      console.log("Handlers attached:", {
+      productionLog("Handlers attached:", {
         settings: !!document.querySelector("[data-handler-setup]"),
         count: document.querySelectorAll("[data-handler-setup]").length,
       });
-      console.log("===================================");
+      productionLog("===================================");
     };
 
     // Emergency save on page unload
@@ -4284,7 +4359,7 @@ console.log(
           targetWindow.MagicCircle_RoomConnection?.lastRoomStateJsonable;
         if (!roomState?.child?.data?.userSlots) {
           if (UnifiedState.data.settings.roomDebugMode) {
-            console.log("[Room Status] No userSlots data available", {
+            productionLog("[Room Status] No userSlots data available", {
               hasRoomConnection: !!targetWindow.MagicCircle_RoomConnection,
               hasRoomState: !!roomState,
               hasChild: !!roomState?.child,
@@ -4298,7 +4373,7 @@ console.log(
           (slot) => slot !== null && slot !== undefined,
         ).length;
         if (UnifiedState.data.settings.roomDebugMode) {
-          console.log(
+          productionLog(
             "[Room Status] Player count:",
             count,
             "userSlots:",
@@ -4477,7 +4552,7 @@ console.log(
           app = firebase.app();
         }
         database = firebase.database();
-        console.log(
+        productionLog(
           "[Public Rooms] Firebase initialized for background operations",
         );
       } else {
@@ -4506,7 +4581,7 @@ console.log(
           count = getActualPlayerCount();
           retryCount++;
           if (UnifiedState.data.settings.roomDebugMode) {
-            console.log(
+            productionLog(
               `[Room Status] Retry ${retryCount}/${maxRetries} for ${roomCode}...`,
             );
           }
@@ -4547,7 +4622,7 @@ console.log(
             // Skip if we don't have valid data yet
             if (currentCount === null) {
               if (UnifiedState.data.settings.roomDebugMode) {
-                console.log(
+                productionLog(
                   "[Room Status] Skipping report - no player data available yet",
                 );
               }
@@ -4577,7 +4652,7 @@ console.log(
             UnifiedState.data.roomStatus.counts[roomCode] = currentCount;
 
             if (UnifiedState.data.settings.roomDebugMode) {
-              console.log(
+              productionLog(
                 `[Room Status] Reported count: ${currentCount} (changed from ${previousCount}, forced: ${shouldForceReport})`,
               );
             }
@@ -4847,7 +4922,7 @@ console.log(
           UnifiedState.data.customRooms.push(roomCode);
           MGA_saveJSON("MGA_data", UnifiedState.data);
 
-          console.log(
+          productionLog(
             "[FIX_ROOMS] Added to polling:",
             roomCode,
             "Total rooms:",
@@ -4866,7 +4941,10 @@ console.log(
               const url = `${apiBase}/api/rooms/${encodeURIComponent(roomCode)}/info`;
 
               if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-                console.log("[FIX_ROOMS] Immediately fetching room info:", url);
+                productionLog(
+                  "[FIX_ROOMS] Immediately fetching room info:",
+                  url,
+                );
               }
 
               const response = await fetch(url);
@@ -4874,7 +4952,7 @@ console.log(
                 const data = await response.json();
 
                 if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-                  console.log("[FIX_ROOMS] Got immediate room data:", data);
+                  productionLog("[FIX_ROOMS] Got immediate room data:", data);
                 }
 
                 // Extract player count and store it in UnifiedState
@@ -4903,13 +4981,13 @@ console.log(
                     UnifiedState.data.settings?.debugMode ||
                     UnifiedState.data.settings?.roomDebugMode
                   ) {
-                    console.log(
+                    productionLog(
                       "[FIX_ROOMS] Stored player count for",
                       roomCode,
                       ":",
                       UnifiedState.data.roomStatus.counts[roomCode],
                     );
-                    console.log("[FIX_ROOMS] Saved roomStatus to storage");
+                    productionLog("[FIX_ROOMS] Saved roomStatus to storage");
                   }
                 }
 
@@ -4985,7 +5063,7 @@ console.log(
             MGA_saveJSON("MGA_data", UnifiedState.data);
 
             if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-              console.log(
+              productionLog(
                 "[FIX_ROOMS] Removed from polling:",
                 roomCode,
                 "Remaining rooms:",
@@ -6811,36 +6889,43 @@ console.log(
       };
 
       // Output report
-      console.log("🔍 ========== ABILITY LOGS STORAGE DIAGNOSTIC ==========");
-      console.log("📊 Summary:", report.summary);
-      console.log("");
+      productionLog("🔍 ========== ABILITY LOGS STORAGE DIAGNOSTIC ==========");
+      productionLog("📊 Summary:", report.summary);
+      productionLog("");
 
       // Show counts for each storage location
-      console.log("📁 GM Storage:");
-      console.log("  Main:", report.sources.gmStorage.main.count, "logs");
-      console.log("  Archive:", report.sources.gmStorage.archive.count, "logs");
+      productionLog("📁 GM Storage:");
+      productionLog("  Main:", report.sources.gmStorage.main.count, "logs");
+      productionLog(
+        "  Archive:",
+        report.sources.gmStorage.archive.count,
+        "logs",
+      );
 
-      console.log("📁 Window localStorage:");
-      console.log(
+      productionLog("📁 Window localStorage:");
+      productionLog(
         "  Main:",
         report.sources.windowLocalStorage.main.count,
         "logs",
       );
-      console.log(
+      productionLog(
         "  Archive:",
         report.sources.windowLocalStorage.archive.count,
         "logs",
       );
-      console.log("  Clear flag:", report.sources.windowLocalStorage.clearFlag);
+      productionLog(
+        "  Clear flag:",
+        report.sources.windowLocalStorage.clearFlag,
+      );
 
       if (report.sources.targetWindowLocalStorage) {
-        console.log("📁 Target Window localStorage:");
-        console.log(
+        productionLog("📁 Target Window localStorage:");
+        productionLog(
           "  Main:",
           report.sources.targetWindowLocalStorage.main.count,
           "logs",
         );
-        console.log(
+        productionLog(
           "  Archive:",
           report.sources.targetWindowLocalStorage.archive.count,
           "logs",
@@ -6848,41 +6933,41 @@ console.log(
       }
 
       if (report.sources.mgaDataNested) {
-        console.log("📁 MGA_data nested:", report.sources.mgaDataNested);
+        productionLog("📁 MGA_data nested:", report.sources.mgaDataNested);
       }
 
       if (report.sources.compatibilityArray) {
-        console.log(
+        productionLog(
           "📁 Compatibility array:",
           report.sources.compatibilityArray,
         );
       }
 
-      console.log(
+      productionLog(
         "💾 Memory:",
         report.sources.memory.unifiedState.count,
         "logs",
       );
-      console.log("");
+      productionLog("");
 
       // DETAILED LOG LISTING - Show individual logs from each source
-      console.log("📋 ========== DETAILED LOG LISTING ==========");
+      productionLog("📋 ========== DETAILED LOG LISTING ==========");
 
       const showLogs = (title, logs) => {
         if (logs && logs.length > 0) {
-          console.log(`\n${title}:`);
+          productionLog(`\n${title}:`);
           logs.forEach((log, i) => {
             const prefix = log.isMalformed
               ? "⚠️ MALFORMED"
               : log.isKnown
                 ? "✅"
                 : "❓ UNKNOWN";
-            console.log(`  ${i + 1}. ${prefix} [${log.fingerprint}]`);
-            console.log(`     ${log.ability} - ${log.pet}`);
+            productionLog(`  ${i + 1}. ${prefix} [${log.fingerprint}]`);
+            productionLog(`     ${log.ability} - ${log.pet}`);
             if (log.isMalformed) {
-              console.log(`     → Should be: "${log.normalizedAbility}"`);
+              productionLog(`     → Should be: "${log.normalizedAbility}"`);
             }
-            console.log(`     ${log.time}`);
+            productionLog(`     ${log.time}`);
           });
         }
       };
@@ -6936,28 +7021,30 @@ console.log(
         0,
       );
 
-      console.log("\n=======================================================");
-      console.log("💡 TIPS:");
-      console.log(
+      productionLog(
+        "\n=======================================================",
+      );
+      productionLog("💡 TIPS:");
+      productionLog(
         "  • Look for logs with identical fingerprints across multiple storage locations",
       );
-      console.log(
+      productionLog(
         "  • If a log persists after clear, check which storage still contains it",
       );
       if (totalMalformed > 0) {
-        console.log(
+        productionLog(
           `  • ⚠️ Found ${totalMalformed} MALFORMED ability name(s) - missing spaces before roman numerals`,
         );
-        console.log(
+        productionLog(
           '  • Malformed logs may not clear properly. Enable Debug Mode and click "Clear Logs".',
         );
       }
       if (totalUnknown > 0) {
-        console.log(
+        productionLog(
           `  • ❓ Found ${totalUnknown} UNKNOWN ability type(s) - not in known abilities list`,
         );
       }
-      console.log("=======================================================");
+      productionLog("=======================================================");
 
       logDebug(
         "ABILITY-LOGS",
@@ -8284,38 +8371,6 @@ console.log(
       WS.prototype.__mgaTapInstalled = true;
     })();
 
-    // Detect native feed button clicks to debug message format
-    (function detectNativeFeed() {
-      const targetWin =
-        typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-
-      // Hook into React event system to catch native feed clicks
-      document.addEventListener(
-        "click",
-        function (e) {
-          // Check if clicked element looks like a feed button
-          const elem = e.target;
-          if (
-            elem &&
-            (elem.textContent?.includes("Feed") ||
-              elem.className?.includes("feed"))
-          ) {
-            console.log(
-              "[NATIVE-FEED] Possible native feed button clicked:",
-              elem,
-            );
-
-            // Set flag to capture next FeedPet message
-            targetWin.__captureNextFeedPet = true;
-            setTimeout(() => {
-              targetWin.__captureNextFeedPet = false;
-            }, 2000);
-          }
-        },
-        true,
-      );
-    })();
-
     // Wait for one matching server message using the bulletproof tap
     async function waitForServer(predicate, timeoutMs = 3500) {
       return new Promise((resolve, reject) => {
@@ -8346,7 +8401,7 @@ console.log(
       });
       await new Promise((res) => setTimeout(res, windowMs));
       unsub();
-      console.log("[WS-TAP] next msgs after send:", seen);
+      productionLog("[WS-TAP] next msgs after send:", seen);
     }
 
     // Resolve a concrete inventory item id for the given species name
@@ -8378,7 +8433,7 @@ console.log(
         petItemId: petItemId,
         cropItemId: cropItemId,
       };
-      console.log("[MGA] Feed payload:", payload);
+      productionLog("[MGA] Feed payload:", payload);
       return rcSend(payload);
     }
 
@@ -8389,7 +8444,7 @@ console.log(
       makePredicate,
       debugPeek = false,
     ) {
-      console.log("[Feed-Debug] 🚀 Sending", { type, ...payload });
+      productionLog("[Feed-Debug] 🚀 Sending", { type, ...payload });
       await sendFeedPet(payload.petItemId, payload.cropItemId);
 
       // Debug: peek at next messages to confirm tap is working (remove after verification)
@@ -8445,7 +8500,7 @@ console.log(
             msgStr.includes(payload.petItemId) &&
             msgStr.includes(payload.cropItemId)
           ) {
-            console.log(
+            productionLog(
               "[Feed-Verify] 🔍 Fallback match on IDs in:",
               msg.type || "unknown",
             );
@@ -8463,7 +8518,7 @@ console.log(
       );
 
       if (ok) {
-        console.log("[Feed-Verify] ✅ verified by server event");
+        productionLog("[Feed-Verify] ✅ verified by server event");
         return { verified: true };
       }
 
@@ -8483,7 +8538,7 @@ console.log(
       if (!produce?.id) throw new Error("No produce item found");
 
       await sendFeedPet(pet.petItemId, produce.id);
-      console.log("[MGA] Test feed sent.");
+      productionLog("[MGA] Test feed sent.");
     }
 
     // Expose test function to global scope for console access
@@ -8509,7 +8564,7 @@ console.log(
         }
 
         // Return the current value directly from the atom cache
-        console.log(
+        productionLog(
           `[MGTools] 🔄 Got fresh data for '${windowKey}' from atom cache`,
         );
         return currentState.v;
@@ -8536,12 +8591,12 @@ console.log(
 
       // DIAGNOSTIC: Check multiple possible locations for jotaiAtomCache
       if (retryCount === 0) {
-        console.log(
+        productionLog(
           "  - targetWindow.jotaiAtomCache:",
           typeof targetWindow.jotaiAtomCache,
           targetWindow.jotaiAtomCache,
         );
-        console.log(
+        productionLog(
           "  - isUserscript:",
           isUserscript,
           "(using unsafeWindow:",
@@ -8550,7 +8605,7 @@ console.log(
         const jotaiKeys = Object.keys(targetWindow).filter((k) =>
           k.toLowerCase().includes("jotai"),
         );
-        console.log('  - Keys with "jotai" on targetWindow:', jotaiKeys);
+        productionLog('  - Keys with "jotai" on targetWindow:', jotaiKeys);
       }
 
       // Try multiple contexts for jotaiAtomCache (cascading fallback)
@@ -8718,7 +8773,7 @@ console.log(
       // Initialize the slot index
       if (typeof window._mgtools_currentSlotIndex === "undefined") {
         window._mgtools_currentSlotIndex = 0;
-        console.log("🎯 [SLOT-ATOM] Initialized slot index to 0");
+        productionLog("🎯 [SLOT-ATOM] Initialized slot index to 0");
       }
 
       // Method 1: Try to hook via jotaiAtomCache
@@ -8751,7 +8806,7 @@ console.log(
               // Only update if changed
               if (window._mgtools_currentSlotIndex !== idx) {
                 window._mgtools_currentSlotIndex = idx;
-                console.log(
+                productionLog(
                   `🎯 [SLOT-ATOM-CACHE] Slot index changed to: ${idx}`,
                 );
 
@@ -8871,7 +8926,7 @@ console.log(
           window._mgtools_currentSlotIndex = idx;
 
           if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-            console.log("[FIX_SLOT] Set slot index to:", idx);
+            productionLog("[FIX_SLOT] Set slot index to:", idx);
           }
         }
 
@@ -8904,7 +8959,7 @@ console.log(
 
             if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
               window._mgtools_syncCount = (window._mgtools_syncCount || 0) + 1;
-              console.log("[FIX_HARVEST] Synced to game slot:", {
+              productionLog("[FIX_HARVEST] Synced to game slot:", {
                 from: currentIndex,
                 to: gameIndex,
                 syncCount: window._mgtools_syncCount,
@@ -8942,7 +8997,7 @@ console.log(
               (window._mgtools_currentSlotIndex - 1 + maxIndex) % maxIndex;
           }
 
-          console.log(
+          productionLog(
             `🎯 [SLOT-KEY] Cycled ${direction} - slot index: ${window._mgtools_currentSlotIndex}/${maxIndex}`,
           );
 
@@ -8976,7 +9031,9 @@ console.log(
               window._mgtools_currentSlotIndex = 0;
               lastCropHash = currentHash;
               lastCropCount = currentCrop.length;
-              console.log(`🔄 [SLOT-KEY] New crop detected, reset index to 0`);
+              productionLog(
+                `🔄 [SLOT-KEY] New crop detected, reset index to 0`,
+              );
             }
 
             if (e.key.toLowerCase() === "x") {
@@ -9011,17 +9068,17 @@ console.log(
               button.getAttribute("aria-label")?.includes("Next");
 
             if (hasLeftArrow) {
-              console.log("⬅️ [SLOT-ARROW] Left arrow clicked");
+              productionLog("⬅️ [SLOT-ARROW] Left arrow clicked");
               updateSlotIndex("backward");
             } else if (hasRightArrow) {
-              console.log("➡️ [SLOT-ARROW] Right arrow clicked");
+              productionLog("➡️ [SLOT-ARROW] Right arrow clicked");
               updateSlotIndex("forward");
             }
           },
           true,
         );
 
-        console.log("✅ [SLOT-ATOM] Key and arrow watchers installed");
+        productionLog("✅ [SLOT-ATOM] Key and arrow watchers installed");
       };
 
       // Install key watcher immediately as backup
@@ -9617,11 +9674,10 @@ console.log(
         indicatorElement.style.color = IS_LIVE_BETA ? "#ff9500" : "#00ff00"; // Orange for beta, green for stable
 
         const tooltipLines = [
-          `CURRENT VERSION: v${CURRENT_VERSION} (${branchLabel})`,
+          `CURRENT VERSION: v${CURRENT_VERSION} (Maintenence Mode)`,
           `STATUS: Version check disabled on Discord`,
           "",
-          "Shift+Click: Install Stable",
-          "Shift+Alt+Click: Install Beta",
+          "Shift+Click: Update to Latest",
         ];
 
         indicatorElement.title = tooltipLines.join("\n");
@@ -9629,9 +9685,7 @@ console.log(
 
         indicatorElement.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (e.shiftKey && e.altKey) {
-            window.open(BETA_DOWNLOAD_URL, "_blank");
-          } else if (e.shiftKey) {
+          if (e.shiftKey) {
             window.open(STABLE_DOWNLOAD_URL, "_blank");
           }
         });
@@ -9673,7 +9727,6 @@ console.log(
       try {
         const [stableVersion, betaVersion] = await Promise.all([
           fetchVersion("main"),
-          fetchVersion("Live-Beta"),
         ]);
 
         if (!stableVersion && !betaVersion) {
@@ -9682,12 +9735,11 @@ console.log(
           indicatorElement.style.color = IS_LIVE_BETA ? "#ff9500" : "#ffa500";
 
           const tooltipLines = [
-            `CURRENT VERSION: v${CURRENT_VERSION} (${branchLabel})`,
+            `CURRENT VERSION: v${CURRENT_VERSION} (Maintenence Mode)`,
             `STATUS: Version check failed`,
             "",
             "Click: Retry",
-            "Shift+Click: Install Stable",
-            "Shift+Alt+Click: Install Beta",
+            "Shift+Click: Update to Latest",
           ];
 
           indicatorElement.title = tooltipLines.join("\n");
@@ -9701,9 +9753,7 @@ console.log(
 
           newIndicator.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (e.shiftKey && e.altKey) {
-              window.open(BETA_DOWNLOAD_URL, "_blank");
-            } else if (e.shiftKey) {
+            if (e.shiftKey) {
               window.open(STABLE_DOWNLOAD_URL, "_blank");
             } else {
               newIndicator.style.color = "#888";
@@ -9757,16 +9807,10 @@ console.log(
           `STATUS: ${statusMsg}`,
           "",
           `GitHub Versions:`,
-          IS_LIVE_BETA
-            ? `  Your Branch (Beta): v${betaVersion || "Loading..."}`
-            : `  Your Branch (Stable): v${stableVersion || "Loading..."}`,
-          IS_LIVE_BETA
-            ? `  Other Branch (Stable): v${stableVersion || "Loading..."}`
-            : `  Other Branch (Beta): v${betaVersion || "Loading..."}`,
+          `  Maintenence Version: v${stableVersion || "Loading..."}`,
           "",
           "Click: Recheck",
-          "Shift+Click: Install Stable",
-          "Shift+Alt+Click: Install Beta",
+          "Shift+Click: Update to Latest",
         ];
 
         indicatorElement.style.color = color;
@@ -9798,12 +9842,11 @@ console.log(
         indicatorElement.style.color = IS_LIVE_BETA ? "#ff9500" : "#ffa500";
 
         const tooltipLines = [
-          `CURRENT VERSION: v${CURRENT_VERSION} (${branchLabel})`,
+          `CURRENT VERSION: v${CURRENT_VERSION} (Maintenence Mode)`,
           `STATUS: Version check failed`,
           "",
           "Click: Retry",
-          "Shift+Click: Install Stable",
-          "Shift+Alt+Click: Install Beta",
+          "Shift+Click: Update to Latest",
         ];
 
         indicatorElement.title = tooltipLines.join("\n");
@@ -9817,9 +9860,7 @@ console.log(
 
         newIndicator.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (e.shiftKey && e.altKey) {
-            window.open(BETA_DOWNLOAD_URL, "_blank");
-          } else if (e.shiftKey) {
+          if (e.shiftKey) {
             window.open(STABLE_DOWNLOAD_URL, "_blank");
           } else {
             newIndicator.style.color = "#888";
@@ -9827,7 +9868,7 @@ console.log(
             checkVersion(newIndicator);
           }
         });
-        console.log("[VERSION CHECK] Error:", e);
+        productionLog("[VERSION CHECK] Error:", e);
       }
     }
 
@@ -9878,48 +9919,47 @@ console.log(
       const primaryTabs = [
         "pets",
         "abilities",
-        "seeds",
         "values",
-        "timers",
+        "seeds",
         "rooms",
+        "protect",
+        "tools",
         "shop",
       ];
 
       // Tail group tabs (Tools, Settings, Hotkeys, Protect, Notifications, Help)
       const tailTabs = [
-        "tools",
-        "settings",
         "hotkeys",
-        "protect",
         "notifications",
+        "settings",
+        "timers",
         "help",
       ];
 
       // Icon mapping
       const icons = {
-        pets: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANIAAADkCAMAAADaZIrAAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAACXBIWXMAAC4jAAAuIwF4pT92AAAC/VBMVEVHcEz5nVv5jGPnqWjcqnb3nlf6tGXC1apD6bJE6878nV33Z+H6t1P9jIDuzW+9mdig4V261+D+hFvsnKHx0VO0PL7ygrJD7pFs7HyP8syy5kGkNaS0y1quMbLlski6TOHR6Gdc6UfSapulr+/iSvxJQy/+4X//yIH+1Hn+24D86XD+8H20NMr923j943f8+3j+z4H6+mn+1oH86mf88G7+6H/+zHr96nj+xXn98XbV+2f/uH7G+2fj+2jv+2fy/XbjUvwtad/9zHP/wID91m40SS8reN0s35Bk+rIsht7kW/1Q97Vk+sVm+6dQ+KZl+rvo/Xb88WVp+423+2Zj+tCq/GtP98QtV+As34JOtfYskt9jeO9qY+/8wFaB+Pwt4J2e+2RR1vemRu1i+tyxRe1P9fT/3cos33Jx+2d+5vxS+JAs315P99T84Gn9tVZPxvZ6M+Fi+por3raP+2Yw3jAs36na/Xb/fllBm+os38+7SOpl+3OA+2VO5vZ+1fz74VR17bRRjPjL/XVO9uT/rYCaSe0u394tRt8snt9S+Xgt30hh+un711Rg9/hvM+FBqupi+oNK4DAyNOHt2nj9qVf+jllqovNu/H5Rofgs3sP5zFFmjfEsqd9wtfaB/fLKXP1RcviA3SssyN9rSfHdS/jWVfx1xvhg+mX/18ksvd+HM+E/uellMuAstN9l3StUV/i/Yf1GMOHWyqqZ3SqHXe1ASS8t0+Cw3ixZ+FNAjeruTfxXMeCMRe7G3izWYv25/HWP/+D/4sr9m1hbSO/t03hBy+px+FL+zFeZ/HKDtv6I+VH861V6Re+q+VE/futf5flt+5t+dv1D6Zl27J/Z3SyB/ub0W/oveeKD/HHfzi1L8WBBbOyW8ElD4eeL/9KWNOFKRvD5+VSwZPx6mf7U+1RD6Hzo+1To2EPB+lO8OtpJWu0hLdOz6EVx6EUm2Kni50OyO9pYXjv/x6nM6UQfXNKQi1rJP+Zwc036d7TIsF7ox0VhtVmzqoypu5JHcExw1ESbAAAA/3RSTlMAnGIQIDx9/v7+vvzf/lv+/P7b+rp9uXxClpFP+bP3w/rC+7///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wAoptLHAAAycklEQVR42uSbPWtbaRbHR7alwtghBBfLEoZpolfulaLEV/eOkhgkfQBv4dKQygwBp7SKXTAYNQIVU1jkI0RfIODORIVtZNwH4cZgggs31hLM7G5gz9vzduXpdB0vex4pyxZT/Pid8z/PlaWffvp/r/n03FwmlVpcXFpa2qd6jwX/b2llcSWVymQepdPz/yswc3OpJ/3+EAtI6J/3Upt8sOB/EXExBWwPGW2BaICHiYb7QzG0r4HsOt485tpcST1KP0CedIZwCGmKaD+m6ZiPhurBeyXzoLDmM0/a7Xa/3Xeo4pboX8uRxQRQvV7veOXRwgMRtMg8TDTsUA2FR0+S9N175hEkzQNECNXrPQQqAmozVGcy2NqC19bW58+T5v6+bcmZpmMZpc1pJqBKPwQgdLQ8ARrh+YxvoILKcVVyuSAMG2FjM9S9F+s7U0uPftwMpdqq+h3GISQCEiaFZFe+0Wg4imiSWvDPdm+3twv1o6DmDFC7PxEkzYNlHFU0VFVVvtXQioylXWI63V1a+FGKlvsIBMkwMIo01MRCqtC7yoerUC0UWq1jsYQ4CLS9S3W6m7n3xQq5vTwZDAYTirqOIH22q6LnqCKWDBDyUGULnlHU291VRLv3LQqJEAgLgDqdieo6Q5XLNZ2uqzpImgiPt01AoKgnQKdQvUf3S7Q8UDWhTbQVHyUh4nDIqUGyu46ZpDyS1LMsQWV+iCPFNHH7Duao6YyR03aaKEuWoFZXs/621XanVL17Y3KItgaDaaRKUzmq6ARnnoqtSHiACM/qKkG9QCBhui9PmbbVdrhglSatKGcRVawAryhFVYdIgFYFCrvu9PQ+mRYg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",
+        pets: "data:image/png;base64,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",
         abilities:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23ffe59e"/><stop offset="1" stop-color="%23ffc75b"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><path d="M68 18 40 70h18l-6 38 38-58H74l6-32z" fill="%23fff7d6" stroke="%236b4b2a" stroke-width="6" stroke-linejoin="round"/></svg>',
-        seeds:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23d3f8c6"/><stop offset="1" stop-color="%239be4a3"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><ellipse cx="64" cy="76" rx="20" ry="16" fill="%23a36b3a" stroke="%236b4b2a" stroke-width="6"/><path d="M64 60c0-12 10-22 22-22-3 12-11 20-22 22zM64 60c0-12-10-22-22-22 3 12 11 20 22 22z" fill="%239cd67f" stroke="%236b4b2a" stroke-width="6" stroke-linejoin="round"/></svg>',
+          "data:image/png;base64,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",
+        seeds: `data:image/png;base64,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`,
         values:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23ffe59e"/><stop offset="1" stop-color="%23ffd24d"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><circle cx="64" cy="64" r="30" fill="%23ffd86a" stroke="%236b4b2a" stroke-width="6"/><path d="M64 44v40M52 54h24M52 74h24" stroke="%236b4b2a" stroke-width="8" stroke-linecap="round"/></svg>',
+          "data:image/png;base64,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",
         timers:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23cde9ff"/><stop offset="1" stop-color="%2387d0ff"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><circle cx="64" cy="72" r="34" fill="%23fff" stroke="%236b4b2a" stroke-width="6"/><path d="M64 72V52M64 72l18 12" stroke="%236b4b2a" stroke-width="8" stroke-linecap="round"/><rect x="50" y="18" width="28" height="12" rx="6" fill="%23fff" stroke="%236b4b2a" stroke-width="6"/></svg>',
+          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="darkOrange" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-watch"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path></svg>',
         rooms:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23ffe1f0"/><stop offset="1" stop-color="%23ffb6d9"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><path d="M28 70l36-26 36 26v30H28z" fill="%23fff" stroke="%236b4b2a" stroke-width="6" stroke-linejoin="round"/><rect x="54" y="74" width="20" height="26" rx="4" fill="%23ffd24d" stroke="%236b4b2a" stroke-width="6"/></svg>',
-        shop: "https://cdn.discordapp.com/emojis/1423011042744729700.webp",
+          "data:image/png;base64,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",
+        shop: "data:image/png;base64,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",
         tools:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23e5e1ff"/><stop offset="1" stop-color="%23c7c2ff"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><path d="M46 86l36-36-8-8-36 36-2 14 10-6z" fill="%23fff" stroke="%236b4b2a" stroke-width="6" stroke-linejoin="round"/><rect x="68" y="34" width="14" height="14" rx="3" fill="%23ffd24d" stroke="%236b4b2a" stroke-width="6"/></svg>',
+          "data:image/png;base64,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",
         settings:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23dff3ff"/><stop offset="1" stop-color="%23bfe6ff"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><circle cx="64" cy="64" r="20" fill="%23fff" stroke="%236b4b2a" stroke-width="6"/><path d="M64 30v12M64 86v12M30 64h12M86 64h12M42 42l8 8M78 78l8 8M86 42l-8 8M50 78l-8 8" stroke="%236b4b2a" stroke-width="6" stroke-linecap="round"/></svg>',
+          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="darkGray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
         hotkeys:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23fff2c4"/><stop offset="1" stop-color="%23ffd889"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><rect x="30" y="44" width="68" height="40" rx="10" fill="%23fff" stroke="%236b4b2a" stroke-width="6"/><text x="64" y="70" font-family="Arial,Helvetica,sans-serif" font-size="28" text-anchor="middle" fill="%236b4b2a">F</text></svg>',
+          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gold" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-key"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>',
         protect:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23e2ffe7"/><stop offset="1" stop-color="%23b7f5c3"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><path d="M64 26l32 10v22c0 24-16 36-32 44-16-8-32-20-32-44V36z" fill="%23fff" stroke="%236b4b2a" stroke-width="6" stroke-linejoin="round"/><path d="M46 62l12 12 24-24" fill="none" stroke="%2394d36b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+          "data:image/png;base64,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",
         notifications:
-          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23e3f0ff"/><stop offset="1" stop-color="%23c7dbff"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><path d="M40 82h48l-6-10V58a18 18 0 10-36 0v14z" fill="%23fff" stroke="%236b4b2a" stroke-width="6" stroke-linejoin="round"/><circle cx="84" cy="44" r="10" fill="%23ff6464" stroke="%236b4b2a" stroke-width="6"/></svg>',
-        help: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%23f1e7ff"/><stop offset="1" stop-color="%23d9ccff"/></linearGradient></defs><rect x="12" y="12" width="104" height="104" rx="22" fill="url(%23g)" stroke="%236b4b2a" stroke-width="6"/><circle cx="64" cy="88" r="6" fill="%236b4b2a"/><path d="M48 54a16 16 0 1132 0c0 10-8 10-10 16" fill="none" stroke="%236b4b2a" stroke-width="8" stroke-linecap="round"/></svg>',
+          'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="pink" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>',
+        help: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="lightYellow" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
       };
 
       // Tooltip text with hotkey info
@@ -10210,8 +10250,8 @@ console.log(
       // Restore saved position
       const savedPosition = loadDockPosition();
       if (savedPosition) {
-        dock.style.left = savedPosition.left + "px";
-        dock.style.top = savedPosition.top + "px";
+        dock.style.left = savedPosition.left + "vh";
+        dock.style.top = savedPosition.top + "vh";
         dock.style.transform = "none";
         dock.style.bottom = "auto";
         dock.style.right = "auto";
@@ -10411,7 +10451,7 @@ console.log(
           e.stopPropagation();
           toolbarVisible = !toolbarVisible;
           applyVisibility(toolbarVisible, true);
-          console.log(
+          productionLog(
             `[MGTools] Alt+M: Toolbar ${toolbarVisible ? "shown" : "hidden"}`,
           );
         }
@@ -10502,7 +10542,7 @@ console.log(
           const currentIndex = SIZES.indexOf(currentSize);
           const nextIndex = (currentIndex + 1) % SIZES.length;
           applyDockSize(SIZES[nextIndex], true);
-          console.log(
+          productionLog(
             `[MGTools] Alt+=: Dock size → ${SIZE_LABELS[SIZES[nextIndex]]}`,
           );
         } else if (e.altKey && (e.key === "-" || e.key === "_")) {
@@ -10512,7 +10552,7 @@ console.log(
           const currentIndex = SIZES.indexOf(currentSize);
           const prevIndex = (currentIndex - 1 + SIZES.length) % SIZES.length;
           applyDockSize(SIZES[prevIndex], true);
-          console.log(
+          productionLog(
             `[MGTools] Alt+-: Dock size → ${SIZE_LABELS[SIZES[prevIndex]]}`,
           );
         } else if (e.altKey && (e.key === "x" || e.key === "X")) {
@@ -10520,7 +10560,7 @@ console.log(
           e.preventDefault();
           e.stopPropagation();
           resetDockPosition();
-          console.log(`[MGTools] Alt+X: Dock position reset to default`);
+          productionLog(`[MGTools] Alt+X: Dock position reset to default`);
         }
       };
 
@@ -10539,13 +10579,17 @@ console.log(
 
     function saveDockPosition(position) {
       try {
-        // v3.8.7 - Always stringify for storage consistency
-        const serialized = JSON.stringify(position);
+        // Convert pixels to viewport units for storage
+        const leftVw = (position.left / window.innerWidth) * 100;
+        const topVh = (position.top / window.innerHeight) * 100;
+
+        const viewportPosition = { left: leftVw, top: topVh };
+        const serialized = JSON.stringify(viewportPosition);
+
         localStorage.setItem("mgh_dock_position", serialized);
 
-        // v3.8.7 - Concise breadcrumb log
-        console.log(
-          `[DOCK-SAVE] left=${position.left}, top=${position.top}, typeof=string (len=${serialized.length})`,
+        productionLog(
+          `[DOCK-SAVE] left=${leftVw.toFixed(2)}vw, top=${topVh.toFixed(2)}vh`,
         );
       } catch (e) {
         console.warn("[DOCK-SAVE] Exception during save:", e);
@@ -10562,80 +10606,61 @@ console.log(
 
         // Clear saved position
         localStorage.removeItem("mgh_dock_position");
-        console.log("[DOCK-RESET] Cleared saved position");
+        productionLog("[DOCK-RESET] Cleared saved position");
 
-        // Calculate default position (right side of screen)
+        // Calculate default position (20px from right, 100px from top) in viewport units
         const dockWidth = dock.offsetWidth || 380;
-        const defaultLeft = window.innerWidth - dockWidth - 20;
-        const defaultTop = 100;
+        const defaultLeftVw =
+          ((window.innerWidth - dockWidth - 20) / window.innerWidth) * 100;
+        const defaultTopVh = (100 / window.innerHeight) * 100;
 
-        // Apply default position
-        dock.style.left = `${defaultLeft}px`;
-        dock.style.top = `${defaultTop}px`;
+        // Apply default position using viewport units
+        dock.style.left = `${defaultLeftVw}vw`;
+        dock.style.top = `${defaultTopVh}vh`;
         dock.style.transform = "none";
         dock.style.bottom = "auto";
         dock.style.right = "auto";
 
-        console.log(
-          `[DOCK-RESET] Reset to default position: left=${defaultLeft}, top=${defaultTop}`,
+        productionLog(
+          `[DOCK-RESET] Reset to default position: ${defaultLeftVw.toFixed(2)}vw`,
         );
 
-        // Show toast notification
         try {
           showNotificationToast(
             "🏠 Dock Reset - Position reset to default",
             "success",
           );
         } catch (e) {
-          // Toast not ready, silent fail
-          console.log("[DOCK-RESET] Toast notification unavailable");
+          productionLog("[DOCK-RESET] Toast notification unavailable");
         }
       } catch (e) {
         console.warn("[DOCK-RESET] Exception during reset:", e);
       }
     }
 
-    // One-time cleanup to detect and clear corrupted dock position data
     function cleanupCorruptedDockPosition() {
       try {
         const saved = localStorage.getItem("mgh_dock_position");
         if (!saved) return;
 
-        // v3.8.7 fix: Accept valid objects (storage layer may auto-parse JSON)
         if (typeof saved === "object" && saved !== null) {
-          // If it has valid shape {left, top}, keep it
-          if (typeof saved.left === "number" && typeof saved.top === "number") {
-            console.log(
-              "[DOCK-CLEANUP] Found valid object position, keeping it",
-            );
-            return; // Valid object, no cleanup needed
-          } else {
-            console.log(
-              "[DOCK-CLEANUP] Detected invalid object shape, clearing",
-            );
-            localStorage.removeItem("mgh_dock_position");
+          if (typeof saved.left === "number" && typeof saved.top === "number")
             return;
-          }
-        }
-
-        // Check for corrupted string data
-        if (
-          typeof saved === "string" &&
-          (saved === "[object Object]" || saved.startsWith("[object"))
-        ) {
-          console.log(
-            "[DOCK-CLEANUP] Detected corrupted position data, clearing",
-          );
           localStorage.removeItem("mgh_dock_position");
           return;
         }
 
-        // Try to parse to ensure it's valid JSON
+        if (
+          typeof saved === "string" &&
+          (saved === "[object Object]" || saved.startsWith("[object"))
+        ) {
+          localStorage.removeItem("mgh_dock_position");
+          return;
+        }
+
         try {
           JSON.parse(saved);
-          console.log("[DOCK-CLEANUP] Position data is valid");
         } catch (parseError) {
-          console.log("[DOCK-CLEANUP] Invalid JSON in position data, clearing");
           localStorage.removeItem("mgh_dock_position");
         }
       } catch (e) {
@@ -10649,39 +10674,28 @@ console.log(
         const saved = localStorage.getItem("mgh_dock_position");
         if (!saved) return null;
 
-        // v3.8.7 fix: Accept object directly if storage layer auto-parsed JSON
+        let parsed = null;
         if (typeof saved === "object" && saved !== null) {
-          // Validate it has the expected shape {left, top}
-          if (typeof saved.left === "number" && typeof saved.top === "number") {
-            console.log(
-              `[DOCK-LOAD] parsed {left: ${saved.left}, top: ${saved.top}} source=object`,
-            );
-            return saved;
-          } else {
-            console.log("[DOCK] Invalid object shape, clearing");
+          parsed = saved;
+        } else if (typeof saved === "string") {
+          if (saved === "[object Object]" || saved.startsWith("[object")) {
             localStorage.removeItem("mgh_dock_position");
             return null;
           }
+          parsed = JSON.parse(saved);
         }
 
-        // Handle string (original path)
-        if (typeof saved === "string") {
-          // Detect corrupted data (happens if someone saved without stringify)
-          if (saved === "[object Object]" || saved.startsWith("[object")) {
-            console.log("[DOCK] Clearing corrupted position data");
-            localStorage.removeItem("mgh_dock_position");
-            return null;
-          }
-
-          const parsed = JSON.parse(saved);
-          console.log(
-            `[DOCK-LOAD] parsed {left: ${parsed.left}, top: ${parsed.top}} source=string`,
-          );
+        if (
+          parsed &&
+          typeof parsed.left === "number" &&
+          typeof parsed.top === "number"
+        ) {
+          // Validate viewport bounds (ensure it's not saved way off-screen)
+          parsed.left = Math.max(0, Math.min(parsed.left, 95));
+          parsed.top = Math.max(0, Math.min(parsed.top, 95));
           return parsed;
         }
 
-        // Unknown type
-        console.log("[DOCK] Unknown saved type:", typeof saved);
         localStorage.removeItem("mgh_dock_position");
         return null;
       } catch (e) {
@@ -10712,11 +10726,8 @@ console.log(
       let isDragging = false;
       let startX, startY, startLeft, startTop;
 
-      // Show grab cursor on edges (mouse only)
       dock.addEventListener("mousemove", (e) => {
         if (isDragging) return;
-
-        // Don't show grab cursor on dock items
         if (
           e.target.classList.contains("mgh-dock-item") ||
           e.target.closest(".mgh-dock-item")
@@ -10724,31 +10735,24 @@ console.log(
           dock.style.cursor = "";
           return;
         }
-
         const rect = dock.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const edgeThreshold = 12;
-
-        // Check if near edges
         const nearEdge =
           x < edgeThreshold ||
           x > rect.width - edgeThreshold ||
           y < edgeThreshold ||
           y > rect.height - edgeThreshold;
-
         dock.style.cursor = nearEdge ? "grab" : "";
       });
 
-      // Shared drag start logic
       const startDrag = (clientX, clientY, event) => {
-        // Don't start drag if clicking/touching on a dock item
         if (
           event.target.classList.contains("mgh-dock-item") ||
           event.target.closest(".mgh-dock-item")
-        ) {
+        )
           return;
-        }
 
         event.preventDefault();
         event.stopPropagation();
@@ -10759,43 +10763,61 @@ console.log(
         startLeft = rect.left;
         startTop = rect.top;
         dock.style.cursor = "grabbing";
-
-        // Disable transitions during drag to prevent blinking
         dock.style.transition = "none";
+
         dock.querySelectorAll("*").forEach((child) => {
           child.style.transition = "none";
           child.style.pointerEvents = "none";
         });
       };
 
-      // Shared drag move logic
       const handleDragMove = (clientX, clientY, event) => {
         if (!isDragging) return;
         event.preventDefault();
-        const deltaX = clientX - startX;
-        const deltaY = clientY - startY;
-        dock.style.left = startLeft + deltaX + "px";
-        dock.style.top = startTop + deltaY + "px";
+
+        let newLeft = startLeft + (clientX - startX);
+        let newTop = startTop + (clientY - startY);
+
+        // Boundary Checks (Stay within window)
+        const rect = dock.getBoundingClientRect();
+        const padding = 5; // 5px padding from edges
+
+        newLeft = Math.max(
+          padding,
+          Math.min(newLeft, window.innerWidth - rect.width - padding),
+        );
+        newTop = Math.max(
+          padding,
+          Math.min(newTop, window.innerHeight - rect.height - padding),
+        );
+
+        dock.style.left = `${newLeft}px`;
+        dock.style.top = `${newTop}px`;
         dock.style.transform = "none";
         dock.style.bottom = "auto";
         dock.style.right = "auto";
       };
 
-      // Shared drag end logic
       const endDrag = () => {
         if (isDragging) {
           isDragging = false;
           dock.style.cursor = "";
-
-          // Re-enable transitions after drag
           dock.style.transition = "";
+
           dock.querySelectorAll("*").forEach((child) => {
             child.style.transition = "";
             child.style.pointerEvents = "";
           });
 
-          // Save dock position to localStorage
+          // Convert final pixel position to Viewport Units for permanence
           const rect = dock.getBoundingClientRect();
+          const leftVw = (rect.left / window.innerWidth) * 100;
+          const topVh = (rect.top / window.innerHeight) * 100;
+
+          // Apply VW/VH styles immediately
+          dock.style.left = `${leftVw}vw`;
+          dock.style.top = `${topVh}vh`;
+
           saveDockPosition({
             left: rect.left,
             top: rect.top,
@@ -10803,27 +10825,19 @@ console.log(
         }
       };
 
-      // Mouse event handlers
-      dock.addEventListener("mousedown", (e) => {
-        startDrag(e.clientX, e.clientY, e);
-      });
+      dock.addEventListener("mousedown", (e) =>
+        startDrag(e.clientX, e.clientY, e),
+      );
+      targetDocument.addEventListener("mousemove", (e) =>
+        handleDragMove(e.clientX, e.clientY, e),
+      );
+      targetDocument.addEventListener("mouseup", endDrag);
 
-      targetDocument.addEventListener("mousemove", (e) => {
-        handleDragMove(e.clientX, e.clientY, e);
-      });
-
-      targetDocument.addEventListener("mouseup", () => {
-        endDrag();
-      });
-
-      // Touch event handlers
       dock.addEventListener(
         "touchstart",
         (e) => {
-          if (e.touches.length === 1) {
-            const touch = e.touches[0];
-            startDrag(touch.clientX, touch.clientY, e);
-          }
+          if (e.touches.length === 1)
+            startDrag(e.touches[0].clientX, e.touches[0].clientY, e);
         },
         { passive: false },
       );
@@ -10831,21 +10845,14 @@ console.log(
       targetDocument.addEventListener(
         "touchmove",
         (e) => {
-          if (isDragging && e.touches.length === 1) {
-            const touch = e.touches[0];
-            handleDragMove(touch.clientX, touch.clientY, e);
-          }
+          if (isDragging && e.touches.length === 1)
+            handleDragMove(e.touches[0].clientX, e.touches[0].clientY, e);
         },
         { passive: false },
       );
 
-      targetDocument.addEventListener("touchend", () => {
-        endDrag();
-      });
-
-      targetDocument.addEventListener("touchcancel", () => {
-        endDrag();
-      });
+      targetDocument.addEventListener("touchend", endDrag);
+      targetDocument.addEventListener("touchcancel", endDrag);
     }
 
     function openSidebarTab(tabName) {
@@ -11337,7 +11344,7 @@ console.log(
         // CRITICAL: Block ALL MGTools hotkeys when typing in inputs
         if (shouldBlockHotkey(e)) {
           if (UnifiedState.data.settings?.debugMode) {
-            console.log(
+            productionLog(
               "[FIX_HOTKEYS] Blocked MGTools hotkey in input (pet presets/nav)",
             );
           }
@@ -13986,7 +13993,7 @@ console.log(
                 "MGA_petPresetHotkeys",
                 UnifiedState.data.petPresetHotkeys,
               );
-              console.log(
+              productionLog(
                 `[MGTOOLS-FIX] ✅ Cleared hotkey "${deletedHotkey}" for deleted preset: ${presetName}`,
               );
             }
@@ -14445,23 +14452,18 @@ console.log(
     const SHOP_IMAGE_MAP = {
       // Seeds added programatically
       // Eggs
-      CommonEgg: "https://cdn.discordapp.com/emojis/1423011628978540676.webp",
-      UncommonEgg: "https://cdn.discordapp.com/emojis/1423011627602804856.webp",
-      RareEgg: "https://cdn.discordapp.com/emojis/1423011625664905316.webp",
-      WinterEgg: "https://media.magicgarden.wiki/Winter_Egg.png",
-      LegendaryEgg:
-        "https://cdn.discordapp.com/emojis/1423011623089737739.webp",
-      MythicalEgg: "https://cdn.discordapp.com/emojis/1423011620828745899.webp",
+      CommonEgg: "https://media.magicgarden.wiki/Common_Egg.png",
+      UncommonEgg: "https://media.magicgarden.wiki/Uncommon_Egg.png",
+      RareEgg: "https://media.magicgarden.wiki/Rare_Egg.png",
+      SnowEgg: "https://media.magicgarden.wiki/Snow_Egg.png",
+      HorseEgg: "https://media.magicgarden.wiki/Horse_Egg.png",
+      LegendaryEgg: "https://media.magicgarden.wiki/Legendary_Egg.png",
+      MythicalEgg: "https://media.magicgarden.wiki/Mythical_Egg.png",
       // Tools (Use Discord emojis for proper display)
-      WateringCan: "https://cdn.discordapp.com/emojis/1426622484957888512.webp",
-      PlanterPot: "https://cdn.discordapp.com/emojis/1426622518948794451.webp",
-      Shovel: "https://cdn.discordapp.com/emojis/1426622542222856282.webp",
-      "Watering Can":
-        "https://cdn.discordapp.com/emojis/1426622484957888512.webp",
-      "Planter Pot":
-        "https://cdn.discordapp.com/emojis/1426622518948794451.webp",
-      "Garden Shovel":
-        "https://cdn.discordapp.com/emojis/1426622542222856282.webp",
+      WateringCan: "https://media.magicgarden.wiki/Watering_Can.png",
+      PlanterPot: "https://media.magicgarden.wiki/Planter_Pot.png",
+      CropCleanser: "https://media.magicgarden.wiki/Crop_Cleanser.png",
+      Shovel: "https://media.magicgarden.wiki/Shovel.png",
     };
 
     UnifiedState.plantsDatabase.forEach((plant) => {
@@ -14474,7 +14476,7 @@ console.log(
       white: ["CommonEgg"],
       green: ["UncommonEgg"],
       blue: ["RareEgg"],
-      yellow: ["LegendaryEgg", "WinterEgg"],
+      yellow: ["LegendaryEgg", "SnowEgg", "HorseEgg"],
       purple: ["MythicalEgg"],
       orange: [],
     };
@@ -14508,16 +14510,15 @@ console.log(
       CommonEgg: 100000,
       UncommonEgg: 1000000,
       RareEgg: 10000000,
-      WinterEgg: 80000000,
+      SnowEgg: 200000000,
+      HorseEgg: 200000000,
       LegendaryEgg: 100000000,
       MythicalEgg: 1000000000,
       // Tools (from game screenshot)
       WateringCan: 3000,
-      "Watering Can": 3000,
       PlanterPot: 25000,
-      "Planter Pot": 25000,
-      GardenShovel: 0, // OWNED - unlimited uses
-      "Garden Shovel": 0,
+      CropCleanser: 80000,
+      GardenShovel: 1000000, // OWNED - unlimited uses
     };
 
     UnifiedState.plantsDatabase.forEach((plant) => {
@@ -15089,7 +15090,8 @@ console.log(
       "CommonEgg",
       "UncommonEgg",
       "RareEgg",
-      "WinterEgg",
+      "SnowEgg",
+      "HorseEgg",
       "LegendaryEgg",
       "MythicalEgg",
     ];
@@ -15401,7 +15403,7 @@ console.log(
               timerWasDecreasing = false;
 
               if (UnifiedState.data.settings.debugMode) {
-                console.log(
+                productionLog(
                   `[SHOP DEBUG] Restock detected for ${type}! Pattern: ${lastTimerValue}s → ${currentTimer}s (was decreasing, then increased)`,
                 );
               }
@@ -15651,7 +15653,7 @@ console.log(
           `Inventory Full! (100/100) - Cannot purchase new items`,
         );
         if (UnifiedState.data.settings?.debugMode) {
-          console.log(
+          productionLog(
             `[SHOP] Purchase blocked: Inventory full and no existing stack for ${id}`,
           );
         }
@@ -15660,7 +15662,7 @@ console.log(
 
       // If we have an existing stack, the quantity cap check will handle it
       if (hasExistingStack && UnifiedState.data.settings?.debugMode) {
-        console.log(
+        productionLog(
           `[SHOP] ✅ Inventory full but ${id} can stack on existing item`,
         );
       }
@@ -15695,7 +15697,7 @@ console.log(
         }
 
         if (UnifiedState.data.settings?.debugMode) {
-          console.log(
+          productionLog(
             `[MGTOOLS-FIX-C] ❌ Purchase blocked: ${id} at cap (${currentCount}/${stackCap})`,
           );
         }
@@ -15712,7 +15714,7 @@ console.log(
           `Can only purchase ${canPurchase} more ${displayName} (currently ${currentCount}/${stackCap})`,
         );
         if (UnifiedState.data.settings?.debugMode) {
-          console.log(
+          productionLog(
             `[MGTOOLS-FIX-C] ❌ Purchase blocked: would exceed cap (${currentCount} + ${amount} > ${stackCap})`,
           );
         }
@@ -15720,7 +15722,7 @@ console.log(
       }
 
       if (UnifiedState.data.settings?.debugMode) {
-        console.log(
+        productionLog(
           `[MGTOOLS-FIX-C] ✅ Purchase allowed: ${id} (${currentCount} + ${amount} <= ${stackCap})`,
         );
       }
@@ -15789,7 +15791,7 @@ console.log(
           }
 
           if (UnifiedState.data.settings.debugMode) {
-            console.log(
+            productionLog(
               `[SHOP DEBUG] Stock updated for ${id}: ${newStock} (using game's purchase data)`,
             );
           }
@@ -15898,7 +15900,7 @@ console.log(
             egg: saved.egg || {},
             tool: saved.tool || {},
           };
-          console.log("📦 [LOCAL-TRACK] Loaded purchase tracker:", {
+          productionLog("📦 [LOCAL-TRACK] Loaded purchase tracker:", {
             seeds: Object.keys(localPurchaseTracker.seed).length,
             eggs: Object.keys(localPurchaseTracker.egg).length,
             tools: Object.keys(localPurchaseTracker.tool).length,
@@ -16065,7 +16067,8 @@ console.log(
         "CommonEgg",
         "UncommonEgg",
         "RareEgg",
-        "WinterEgg",
+        "SnowEgg",
+        "HorseEgg",
         "LegendaryEgg",
         "MythicalEgg",
       ];
@@ -16177,7 +16180,7 @@ console.log(
             itemEl,
             `Inventory Full! (100/100) - Cannot purchase new items`,
           );
-          console.log(
+          productionLog(
             `[SHOP] Purchase blocked: Inventory full and no existing stack for ${id}`,
           );
           return;
@@ -16185,7 +16188,7 @@ console.log(
 
         // If we have an existing stack, the quantity cap check will handle it
         if (hasExistingStack) {
-          console.log(
+          productionLog(
             `[SHOP] ✅ Inventory full but ${id} can stack on existing item`,
           );
         }
@@ -16220,7 +16223,7 @@ console.log(
           }
 
           if (UnifiedState.data.settings?.debugMode) {
-            console.log(
+            productionLog(
               `[MGTOOLS-FIX-C] ❌ Purchase blocked: ${id} at cap (${currentCount}/${stackCap})`,
             );
           }
@@ -16237,7 +16240,7 @@ console.log(
             `Can only purchase ${canPurchase} more ${displayName} (currently ${currentCount}/${stackCap})`,
           );
           if (UnifiedState.data.settings?.debugMode) {
-            console.log(
+            productionLog(
               `[MGTOOLS-FIX-C] ❌ Purchase blocked: would exceed cap (${currentCount} + ${amount} > ${stackCap})`,
             );
           }
@@ -16245,7 +16248,7 @@ console.log(
         }
 
         if (UnifiedState.data.settings?.debugMode) {
-          console.log(
+          productionLog(
             `[MGTOOLS-FIX-C] ✅ Purchase allowed: ${id} (${currentCount} + ${amount} <= ${stackCap})`,
           );
         }
@@ -16421,7 +16424,7 @@ console.log(
                       <div style="font-size: 11px; color: #aaa; margin-bottom: 12px;">
                           Automatically favorite these species when added to inventory:
                       </div>
-                      <div id="auto-favorite-species" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; max-height: 300px; overflow-y: auto; padding-right: 8px;">
+                      <div id="auto-favorite-species" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; max-height: 400px; overflow-y: auto; padding-right: 8px;">
                           ${UnifiedState.plantsDatabase
                             .map((plant) => plant.id) // Extract IDs directly from the database
                             .map(
@@ -16455,6 +16458,7 @@ console.log(
                             "Rainbow",
                             "Gold",
                             "Frozen",
+                            "ThunderStruck",
                             "Wet",
                             "Chilled",
                             "Dawnlit",
@@ -18348,177 +18352,6 @@ console.log(
           `✅ [NOTIFICATIONS] Finished checking eggs, moving to decor...`,
         );
 
-        // Check decor shop (hourly resets)
-        let currentDecorIds = [];
-        const currentDecorQuantities = {};
-
-        try {
-          // Ensure watchedDecor exists (backwards compatibility)
-          if (!notifications.watchedDecor) {
-            notifications.watchedDecor = [];
-          }
-
-          productionLog(`🎨 [NOTIFICATIONS] === CHECKING DECOR SHOP ===`);
-          const currentDecor =
-            targetWindow?.globalShop?.shops?.decor?.inventory || [];
-          const inStockDecor = currentDecor.filter(
-            (item) => item.initialStock > 0,
-          );
-          currentDecorIds = inStockDecor.map((item) => item.decorId);
-
-          // Always log current decor state for debugging
-          productionLog(
-            `🎨 [NOTIFICATIONS] Current decor in shop: [${currentDecorIds.join(", ")}] | Previous: [${previousDecorInventory.join(", ")}]`,
-          );
-          productionLog(
-            `🎨 [NOTIFICATIONS] Raw decor inventory:`,
-            currentDecor.map((d) => `${d.decorId}(stock:${d.initialStock})`),
-          );
-
-          // Debug decor shop structure
-          if (currentDecor.length === 0) {
-            productionLog(
-              `🎨 [NOTIFICATIONS] No decor found. Shop structure:`,
-              {
-                hasGlobalShop: !!targetWindow?.globalShop,
-                hasShops: !!targetWindow?.globalShop?.shops,
-                hasDecorShop: !!targetWindow?.globalShop?.shops?.decor,
-                hasDecorInventory:
-                  !!targetWindow?.globalShop?.shops?.decor?.inventory,
-                decorInventoryLength:
-                  targetWindow?.globalShop?.shops?.decor?.inventory?.length ||
-                  0,
-              },
-            );
-          }
-
-          // Track decor quantities
-          inStockDecor.forEach((item) => {
-            currentDecorQuantities[item.decorId] = item.initialStock;
-          });
-
-          // Initialize previous quantities if empty (first run)
-          if (
-            Object.keys(previousDecorQuantities).length === 0 &&
-            !decorRestocked
-          ) {
-            productionLog(
-              `🔧 [NOTIFICATIONS] Initializing previous decor quantities...`,
-            );
-            Object.keys(currentDecorQuantities).forEach((decorId) => {
-              previousDecorQuantities[decorId] =
-                currentDecorQuantities[decorId];
-            });
-          }
-
-          productionLog(
-            `🎨 [NOTIFICATIONS] Current decor quantities:`,
-            currentDecorQuantities,
-            `| Previous:`,
-            previousDecorQuantities,
-          );
-
-          // Find decor with increased quantities or new items (after restock)
-          Object.keys(currentDecorQuantities).forEach((decorId) => {
-            const oldQuantity = previousDecorQuantities[decorId] || 0;
-            const newQuantity = currentDecorQuantities[decorId];
-
-            // Always log each decor being processed for debugging
-            productionLog(
-              `🔍 [NOTIFICATIONS] Processing decor: ${decorId} (${oldQuantity}→${newQuantity})`,
-            );
-
-            // Determine if we should check for notification
-            const quantityIncreased = newQuantity > oldQuantity;
-            const isRestockWindow =
-              decorRestocked && now - lastDecorRestock < RESTOCK_COOLDOWN;
-            const alreadyNotifiedInRestock =
-              decorRestockNotifiedItems.has(decorId);
-
-            productionLog(
-              `🔍 [NOTIFICATIONS] ${decorId} check logic: quantityIncreased=${quantityIncreased}, isRestockWindow=${isRestockWindow}, alreadyNotifiedInRestock=${alreadyNotifiedInRestock}`,
-            );
-
-            const shouldCheck =
-              (isFirstRun && newQuantity > 0) ||
-              (quantityIncreased && !isRestockWindow) ||
-              (isRestockWindow && !alreadyNotifiedInRestock) ||
-              (oldQuantity === 0 && newQuantity > 0);
-
-            productionLog(
-              `🔍 [NOTIFICATIONS] ${decorId} shouldCheck: ${shouldCheck}`,
-            );
-
-            if (shouldCheck) {
-              productionLog(
-                `🆕 [NOTIFICATIONS] Decor stock change: ${decorId} (${oldQuantity}→${newQuantity}) | Restock: ${decorRestocked} | RestockWindow: ${isRestockWindow}`,
-              );
-
-              // Update last seen for ANY decor that appears or increases
-              updateLastSeen(decorId);
-
-              // Check if it's a watched decor item
-              const isWatched = isWatchedItem(decorId, "decor");
-              productionLog(
-                `🔍 [NOTIFICATIONS] Is ${decorId} watched? ${isWatched}`,
-              );
-              productionLog(
-                `🔍 [NOTIFICATIONS] Watched list: [${notifications.watchedDecor.join(", ")}]`,
-              );
-
-              if (isWatched) {
-                // Check cooldown (1 minute per item)
-                const itemKey = `decor_${decorId}`;
-                const lastNotified =
-                  notifications.lastSeenTimestamps[`notified_${itemKey}`] || 0;
-                const canNotify = now - lastNotified > NOTIFICATION_COOLDOWN;
-
-                if (canNotify) {
-                  productionLog(
-                    `🎉 [NOTIFICATIONS] WATCHED DECOR DETECTED: ${decorId} (${newQuantity} in stock)`,
-                  );
-                  notifications.lastSeenTimestamps[`notified_${itemKey}`] = now;
-
-                  // Track that we notified this item during restock
-                  if (isRestockWindow) {
-                    decorRestockNotifiedItems.add(decorId);
-                  }
-
-                  MGA_saveJSON("MGA_data", UnifiedState.data);
-
-                  // Collect item for batch notification
-                  detectedItems.push({
-                    type: "decor",
-                    id: decorId,
-                    quantity: newQuantity,
-                    icon: "🎨",
-                  });
-                } else {
-                  productionLog(
-                    `⏰ [NOTIFICATIONS] ${decorId} on cooldown, not notifying`,
-                  );
-                }
-              } else {
-                productionLog(
-                  `❌ [NOTIFICATIONS] ${decorId} is not watched, skipping notification`,
-                );
-              }
-            } else {
-              productionLog(
-                `⏭️ [NOTIFICATIONS] ${decorId} shouldCheck=false, skipping`,
-              );
-            }
-          });
-
-          productionLog(`✅ [NOTIFICATIONS] Finished checking all decor`);
-
-          // Update decor inventory and quantities
-          previousDecorInventory = [...currentDecorIds];
-          previousDecorQuantities = { ...currentDecorQuantities };
-        } catch (decorError) {
-          console.error(`❌ [NOTIFICATIONS] Error checking decor:`, decorError);
-        }
-
         // Process batch notifications if any items were detected
         if (detectedItems.length > 0) {
           productionLog(
@@ -19031,12 +18864,12 @@ console.log(
       const activePets =
         window.activePets || UnifiedState.atoms.activePets || [];
 
-      // DEBUG: Log active pets and their abilities (using console.log to bypass PRODUCTION mode)
+      // DEBUG: Log active pets and their abilities (using productionLog to bypass PRODUCTION mode)
       if (UnifiedState.data.settings?.debugMode) {
-        console.log("🍖 [HUNGER-CALC] Calculating for pet:", pet.petSpecies);
-        console.log("🍖 [HUNGER-CALC] Active pets:", activePets.length);
+        productionLog("🍖 [HUNGER-CALC] Calculating for pet:", pet.petSpecies);
+        productionLog("🍖 [HUNGER-CALC] Active pets:", activePets.length);
         activePets.forEach((p, i) => {
-          console.log(`🍖 [HUNGER-CALC] Pet ${i}:`, {
+          productionLog(`🍖 [HUNGER-CALC] Pet ${i}:`, {
             species: p.petSpecies,
             abilities: p.abilities,
             strength: p.strength,
@@ -19049,7 +18882,7 @@ console.log(
         if (p.abilities && Array.isArray(p.abilities)) {
           p.abilities.forEach((ability) => {
             if (UnifiedState.data.settings?.debugMode) {
-              console.log("🍖 [HUNGER-CALC] Checking ability:", ability);
+              productionLog("🍖 [HUNGER-CALC] Checking ability:", ability);
             }
             // Ability can be either a string directly or an object with properties
             const abilityType =
@@ -19070,7 +18903,7 @@ console.log(
                 totalHungerReduction += reduction * strength;
 
                 if (UnifiedState.data.settings?.debugMode) {
-                  console.log(
+                  productionLog(
                     `🍖 [HUNGER-CALC] Found ${abilityType} on ${p.petSpecies}, STR: ${p.strength || p.str}, reduction: ${reduction}, strength mult: ${strength}`,
                   );
                 }
@@ -19081,7 +18914,7 @@ console.log(
       });
 
       if (UnifiedState.data.settings?.debugMode && totalHungerReduction > 0) {
-        console.log(
+        productionLog(
           `🍖 [HUNGER-CALC] Total hunger reduction: ${(totalHungerReduction * 100).toFixed(1)}%`,
         );
       }
@@ -19624,9 +19457,6 @@ console.log(
       ) {
         settings.notifications.weatherNotificationsEnabled = false;
       }
-      if (!settings.notifications.watchedDecor) {
-        settings.notifications.watchedDecor = [];
-      }
       if (!settings.notifications.watchedWeatherEvents) {
         settings.notifications.watchedWeatherEvents = [
           "Snow",
@@ -19778,16 +19608,22 @@ console.log(
                               <span>🥚 Rare Egg</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                              <input type="checkbox" id="watch-winter-egg" class="mga-checkbox"
-                                     ${settings.notifications.watchedEggs.includes("WinterEgg") ? "checked" : ""}
-                                     style="accent-color: #4a9eff; transform: scale(0.8);">
-                              <span>🥚❄️ Winter Egg</span>
-                          </label>
-                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-legendary-egg" class="mga-checkbox"
                                      ${settings.notifications.watchedEggs.includes("LegendaryEgg") ? "checked" : ""}
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
                               <span>🥚 Legendary Egg</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-snow-egg" class="mga-checkbox"
+                                     ${settings.notifications.watchedEggs.includes("SnowEgg") ? "checked" : ""}
+                                     style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🥚❄️ Snow Egg</span>
+                          </label>
+                          <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                              <input type="checkbox" id="watch-horse-egg" class="mga-checkbox"
+                                     ${settings.notifications.watchedEggs.includes("HorseEgg") ? "checked" : ""}
+                                     style="accent-color: #4a9eff; transform: scale(0.8);">
+                              <span>🥚🐎 Horse Egg</span>
                           </label>
                           <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
                               <input type="checkbox" id="watch-mythical-egg" class="mga-checkbox"
@@ -19795,24 +19631,6 @@ console.log(
                                      style="accent-color: #4a9eff; transform: scale(0.8);">
                               <span>🥚✨ Mythical Egg</span>
                           </label>
-                      </div>
-                  </div>
-
-                  <div style="margin-bottom: 12px;">
-                      <label class="mga-label" style="display: block; margin-bottom: 8px;">
-                          Watched Decor (Hourly Shop)
-                      </label>
-                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px;">
-                          ${DECOR_ITEMS.map(
-                            (decor) => `
-                              <label class="mga-checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                                  <input type="checkbox" id="watch-decor-${decor.id.toLowerCase()}" class="mga-checkbox"
-                                         ${settings.notifications.watchedDecor.includes(decor.id) ? "checked" : ""}
-                                         style="accent-color: #4a9eff; transform: scale(0.8);">
-                                  <span>🎨 ${decor.name}</span>
-                              </label>
-                          `,
-                          ).join("")}
                       </div>
                   </div>
 
@@ -21053,7 +20871,7 @@ console.log(
                 "MGA_petPresetHotkeys",
                 UnifiedState.data.petPresetHotkeys,
               );
-              console.log(
+              productionLog(
                 `[MGTOOLS] Cleared hotkey "${deletedHotkey}" for deleted preset: ${presetName}`,
               );
             }
@@ -21203,7 +21021,7 @@ console.log(
                 "MGA_petPresetHotkeys",
                 UnifiedState.data.petPresetHotkeys,
               );
-              console.log(
+              productionLog(
                 `[MGTOOLS] Cleared hotkey "${deletedHotkey}" for deleted preset: ${presetName}`,
               );
             }
@@ -21583,7 +21401,7 @@ console.log(
                 "MGA_petPresetHotkeys",
                 UnifiedState.data.petPresetHotkeys,
               );
-              console.log(
+              productionLog(
                 `[MGTOOLS] Cleared hotkey "${deletedHotkey}" for deleted preset: ${presetName}`,
               );
             }
@@ -22166,7 +21984,7 @@ console.log(
       ) {
         diagnoseLogsBtn.setAttribute("data-handler-setup", "true");
         diagnoseLogsBtn.addEventListener("click", () => {
-          console.log("🔍 Running ability logs storage diagnostic...");
+          productionLog("🔍 Running ability logs storage diagnostic...");
           const report = MGA_diagnoseAbilityLogStorage();
 
           // Show a user-friendly notification
@@ -22338,7 +22156,7 @@ console.log(
 
       // Diagnostic logging for FIX_VALIDATION
       if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-        console.log("[FIX_ABILITY_LOGS] Update called:", {
+        productionLog("[FIX_ABILITY_LOGS] Update called:", {
           totalLogs: logs.length,
           filteredLogs: filteredLogs.length,
           filterMode: UnifiedState.data.filterMode,
@@ -22558,7 +22376,7 @@ console.log(
 
       // Debug logging for ability logs
       if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-        console.log("[FIX_ABILITY_LOGS] Update called:", {
+        productionLog("[FIX_ABILITY_LOGS] Update called:", {
           force,
           currentLogCount,
           lastLogCount,
@@ -23675,7 +23493,7 @@ console.log(
       // SPECIFIC CHECK for game's Chakra UI chat input
       if (active.classList?.contains("chakra-input")) {
         if (UnifiedState.data.settings?.debugMode) {
-          console.log("[FIX_HOTKEYS] Blocking - Chakra UI input detected");
+          productionLog("[FIX_HOTKEYS] Blocking - Chakra UI input detected");
         }
         return true;
       }
@@ -23752,7 +23570,7 @@ console.log(
         (tagName === "div" || tagName === "span" || active.isContentEditable)
       ) {
         // Likely a chat input
-        console.log("[FIX_HOTKEYS] Blocking hotkey - detected chat input:", {
+        productionLog("[FIX_HOTKEYS] Blocking hotkey - detected chat input:", {
           tag: tagName,
           classes: activeClasses,
           id: activeId,
@@ -23775,7 +23593,7 @@ console.log(
               parentId.toLowerCase().includes(pattern),
           )
         ) {
-          console.log(
+          productionLog(
             "[FIX_HOTKEYS] Blocking hotkey - active element in chat container:",
             {
               parentTag: parent.tagName,
@@ -23955,7 +23773,7 @@ console.log(
         // Log when hotkey is blocked (helps diagnose chat detection issues)
         if (UnifiedState.data.settings?.debugMode) {
           const active = document.activeElement;
-          console.log("[FIX_HOTKEYS] Hotkey blocked - typing detected:", {
+          productionLog("[FIX_HOTKEYS] Hotkey blocked - typing detected:", {
             key: e.key,
             tag: active?.tagName,
             id: active?.id,
@@ -24181,6 +23999,7 @@ console.log(
 
       const cropMutations = [
         "Rainbow",
+        "Thunderstruck",
         "Frozen",
         "Wet",
         "Chilled",
@@ -24294,7 +24113,7 @@ console.log(
       const mutationCheckboxes = context.querySelectorAll(
         ".protect-mutation-checkbox",
       );
-      console.log(
+      productionLog(
         `✅ [Protect] Found ${speciesCheckboxes.length} species checkboxes, ${mutationCheckboxes.length} mutation checkboxes`,
       );
 
@@ -24303,7 +24122,7 @@ console.log(
         .querySelectorAll(".protect-species-checkbox")
         .forEach((checkbox) => {
           checkbox.addEventListener("change", (e) => {
-            console.log(
+            productionLog(
               "[Protect] 🔔 Species checkbox changed!",
               e.target.value,
               "checked:",
@@ -24319,13 +24138,13 @@ console.log(
                 (s) => s !== species,
               );
             }
-            console.log(
+            productionLog(
               "[Protect] Saving species change:",
               species,
               e.target.checked,
             );
             MGA_saveJSON("MGA_data", UnifiedState.data);
-            console.log("[Protect] Save completed");
+            productionLog("[Protect] Save completed");
             updateProtectStatus(context);
             applyHarvestRule();
           });
@@ -24336,7 +24155,7 @@ console.log(
         .querySelectorAll(".protect-mutation-checkbox")
         .forEach((checkbox) => {
           checkbox.addEventListener("change", (e) => {
-            console.log(
+            productionLog(
               "[Protect] 🔔 Mutation checkbox changed!",
               e.target.value,
               "checked:",
@@ -24352,6 +24171,7 @@ console.log(
               const otherMutations = [
                 "Rainbow",
                 "Frozen",
+                "Thunderstruck",
                 "Wet",
                 "Chilled",
                 "Gold",
@@ -24419,13 +24239,13 @@ console.log(
               }
             }
 
-            console.log(
+            productionLog(
               "[Protect] Saving mutation change:",
               mutation,
               e.target.checked,
             );
             MGA_saveJSON("MGA_data", UnifiedState.data);
-            console.log("[Protect] Save completed");
+            productionLog("[Protect] Save completed");
             updateProtectStatus(context);
             applyHarvestRule();
           });
@@ -24513,23 +24333,23 @@ console.log(
       }
 
       // Add handler for frozen pickup checkbox
-      console.log(
+      productionLog(
         "[Protect-Debug] 🔍 Looking for #allow-frozen-pickup checkbox in context:",
         context,
       );
       const frozenCheckbox = context.querySelector("#allow-frozen-pickup");
-      console.log(
+      productionLog(
         "[Protect-Debug] 📋 Frozen checkbox found?",
         !!frozenCheckbox,
         frozenCheckbox,
       );
 
       if (frozenCheckbox) {
-        console.log(
+        productionLog(
           "[Protect-Debug] ✅ Attaching change event handler to frozen checkbox",
         );
         frozenCheckbox.addEventListener("change", (e) => {
-          console.log(
+          productionLog(
             "[Protect-Debug] 🔔 FROZEN CHECKBOX CHANGED!",
             e.target.checked,
           );
@@ -24544,7 +24364,7 @@ console.log(
           );
           applyHarvestRule();
         });
-        console.log(
+        productionLog(
           "[Protect-Debug] ✅ Frozen checkbox handler attached successfully",
         );
       } else {
@@ -24670,7 +24490,7 @@ console.log(
     function applySellBlockThreshold() {
       targetWindow.sellBlockThreshold =
         UnifiedState.data.sellBlockThreshold || 1.0;
-      console.log(
+      productionLog(
         `✅ Sell block threshold set to ${targetWindow.sellBlockThreshold}x`,
       );
     }
@@ -24704,7 +24524,7 @@ console.log(
 
         // Reset counter on success
         roomConnectionRetries = 0;
-        console.log(
+        productionLog(
           "✅ MagicCircle_RoomConnection found - initializing protection hooks",
         );
 
@@ -24738,16 +24558,19 @@ console.log(
               }
             } else if (msgType === "PurchaseTool" && message.toolId) {
               if (UnifiedState.data.settings?.debugMode) {
-                console.log(`🔧 [PURCHASE-INTERCEPT] Tool Purchase Detected!`, {
-                  toolId: message.toolId,
-                  toolIdType: typeof message.toolId,
-                  fullMessage: JSON.stringify(message),
-                });
+                productionLog(
+                  `🔧 [PURCHASE-INTERCEPT] Tool Purchase Detected!`,
+                  {
+                    toolId: message.toolId,
+                    toolIdType: typeof message.toolId,
+                    fullMessage: JSON.stringify(message),
+                  },
+                );
               }
               if (typeof trackLocalPurchase === "function") {
                 trackLocalPurchase(message.toolId, "tool", 1);
                 if (UnifiedState.data.settings?.debugMode) {
-                  console.log(
+                  productionLog(
                     `🔧 [PURCHASE-INTERCEPT] Called trackLocalPurchase with: "${message.toolId}"`,
                   );
                 }
@@ -24775,21 +24598,21 @@ console.log(
                 targetWindow.myGarden?.garden?.tileObjects?.[message.slot];
               const slotData = tile?.slots?.[message.slotsIndex];
 
-              console.log(
+              productionLog(
                 `[HarvestCheck] Attempting harvest: slot=${message.slot}, index=${message.slotsIndex}`,
               );
-              console.log(`[HarvestCheck] Tile data:`, tile);
-              console.log(`[HarvestCheck] Slot data:`, slotData);
+              productionLog(`[HarvestCheck] Tile data:`, tile);
+              productionLog(`[HarvestCheck] Slot data:`, slotData);
 
               if (slotData) {
                 const species = slotData.species;
                 const slotMutations = slotData.mutations || [];
 
-                console.log(
+                productionLog(
                   `[HarvestCheck] Species: ${species}, Mutations:`,
                   slotMutations,
                 );
-                console.log(
+                productionLog(
                   `[HarvestCheck] currentHarvestRule exists:`,
                   !!targetWindow.currentHarvestRule,
                 );
@@ -24801,18 +24624,18 @@ console.log(
                     mutations: slotMutations,
                   })
                 ) {
-                  console.log(
+                  productionLog(
                     `🔒 BLOCKED HarvestCrop: ${species} with mutations [${slotMutations.join(", ")}]`,
                   );
                   return;
                 }
-                console.log(
+                productionLog(
                   `✅ ALLOWED HarvestCrop: ${species} with mutations [${slotMutations.join(", ")}]`,
                 );
 
                 // DIAGNOSTIC: Log when debug mode is enabled
                 if (UnifiedState.data.settings?.debugMode) {
-                  console.log(
+                  productionLog(
                     "[FIX_HARVEST] Harvest handler called for:",
                     species,
                     "Will attempt sync in 100ms...",
@@ -24849,7 +24672,7 @@ console.log(
 
                       // Log slot sync when debug mode is enabled
                       if (UnifiedState.data.settings?.debugMode) {
-                        console.log("[FIX_HARVEST] Post-harvest slot sync:", {
+                        productionLog("[FIX_HARVEST] Post-harvest slot sync:", {
                           species,
                           preHarvest: preHarvestIndex,
                           postHarvest:
@@ -24868,7 +24691,7 @@ console.log(
                         requestAnimationFrame(() => {
                           insertTurtleEstimate();
                           if (UnifiedState.data.settings?.debugMode) {
-                            console.log(
+                            productionLog(
                               "[FIX_HARVEST] Refreshed value display",
                             );
                           }
@@ -24896,11 +24719,11 @@ console.log(
               const petId = message.itemId || message.petId;
 
               if (UnifiedState.data.settings?.debugMode) {
-                console.log(
+                productionLog(
                   `🐾 [PetSellDebug] Message type: ${msgType}`,
                   message,
                 );
-                console.log(
+                productionLog(
                   `🐾 [PetSellDebug] Locked abilities:`,
                   lockedAbilities,
                 );
@@ -24925,7 +24748,7 @@ console.log(
                 }
 
                 if (UnifiedState.data.settings?.debugMode) {
-                  console.log(`🐾 [PetSellDebug] Found pet:`, pet);
+                  productionLog(`🐾 [PetSellDebug] Found pet:`, pet);
                 }
 
                 if (pet) {
@@ -24934,7 +24757,7 @@ console.log(
                   const petMutations = pet.mutations || [];
 
                   if (UnifiedState.data.settings?.debugMode) {
-                    console.log(
+                    productionLog(
                       `🐾 [PetSellDebug] Pet mutations:`,
                       petMutations,
                     );
@@ -24948,7 +24771,7 @@ console.log(
                       const abilityData = UnifiedState.atoms.petAbility[petId];
                       abilityFromAtom =
                         abilityData.lastAbilityTrigger?.abilityId;
-                      console.log(
+                      productionLog(
                         `🐾 [PetSellDebug] Pet ability from atom:`,
                         abilityFromAtom,
                       );
@@ -24960,7 +24783,7 @@ console.log(
                   const hasRainbowMutation = petMutations.includes("Rainbow");
 
                   if (UnifiedState.data.settings?.debugMode) {
-                    console.log(
+                    productionLog(
                       `🐾 [PetSellDebug] Has Gold mutation: ${hasGoldMutation}, Has Rainbow mutation: ${hasRainbowMutation}`,
                     );
                   }
@@ -24977,7 +24800,7 @@ console.log(
                     hasRainbowMutation && isRainbowGranterLocked;
 
                   if (UnifiedState.data.settings?.debugMode) {
-                    console.log(
+                    productionLog(
                       `🐾 [PetSellDebug] Should block gold: ${shouldBlockGold}, Should block rainbow: ${shouldBlockRainbow}`,
                     );
                   }
@@ -24989,12 +24812,12 @@ console.log(
                     );
                     return; // Block the sale
                   } else if (UnifiedState.data.settings?.debugMode) {
-                    console.log(
+                    productionLog(
                       `🐾 [PetSellDebug] ✅ Pet mutations not locked, allowing sale`,
                     );
                   }
                 } else if (UnifiedState.data.settings?.debugMode) {
-                  console.log(
+                  productionLog(
                     `🐾 [PetSellDebug] ⚠️ Could not find pet with ID ${petId}`,
                   );
                 }
@@ -25005,7 +24828,7 @@ console.log(
             // CRITICAL: PickupDecor message doesn't include decorId, only localTileIndex!
             // We need to look up what's at that position in the garden
             if (msgType === "PickupDecor") {
-              console.log(
+              productionLog(
                 `🏛️ [DecorCheck] PickupDecor message:`,
                 JSON.stringify(message, null, 2),
               );
@@ -25017,7 +24840,7 @@ console.log(
                 const tileType = message.tileType;
                 const tileIndex = message.localTileIndex;
 
-                console.log(
+                productionLog(
                   `🏛️ [DecorCheck] Looking for decor at ${tileType} tile ${tileIndex}`,
                 );
 
@@ -25041,10 +24864,13 @@ console.log(
                   }
                 }
 
-                console.log(
+                productionLog(
                   `🏛️ [DecorCheck] Decor at position: "${decorAtPosition}"`,
                 );
-                console.log(`🏛️ [DecorCheck] Locked decor list:`, lockedDecor);
+                productionLog(
+                  `🏛️ [DecorCheck] Locked decor list:`,
+                  lockedDecor,
+                );
 
                 // Block if this decor is locked
                 if (decorAtPosition && lockedDecor.includes(decorAtPosition)) {
@@ -25053,11 +24879,11 @@ console.log(
                   );
                   return; // Block the pickup
                 } else if (decorAtPosition) {
-                  console.log(
+                  productionLog(
                     `🏛️ [DecorCheck] ✅ Decor "${decorAtPosition}" not locked, allowing pickup`,
                   );
                 } else {
-                  console.log(
+                  productionLog(
                     `🏛️ [DecorCheck] ⚠️ Could not find decor at tile position`,
                   );
                 }
@@ -25071,7 +24897,7 @@ console.log(
 
             // Debug hook to see ALL FeedPet messages (native and ours)
             if (message?.type === "FeedPet") {
-              console.log("[FEED-DEBUG] 🔍 FeedPet message being sent:", {
+              productionLog("[FEED-DEBUG] 🔍 FeedPet message being sent:", {
                 type: message.type,
                 petItemId: message.petItemId,
                 cropItemId: message.cropItemId,
@@ -25103,7 +24929,7 @@ console.log(
           }
         };
 
-        console.log("✅ Harvest and sell protection hooks installed");
+        productionLog("✅ Harvest and sell protection hooks installed");
       }, 2000);
 
       // Apply initial rules
@@ -25418,7 +25244,8 @@ console.log(
         "watch-common-egg": "CommonEgg",
         "watch-uncommon-egg": "UncommonEgg",
         "watch-rare-egg": "RareEgg",
-        "watch-winter-egg": "WinterEgg",
+        "watch-snow-egg": "SnowEgg",
+        "watch-horse-egg": "HorseEgg",
         "watch-legendary-egg": "LegendaryEgg",
         "watch-mythical-egg": "MythicalEgg",
       };
@@ -25447,32 +25274,6 @@ console.log(
         }
       });
 
-      // Decor watch checkboxes
-      DECOR_ITEMS.forEach((decor) => {
-        const checkboxId = `watch-decor-${decor.id.toLowerCase()}`;
-        const checkbox = context.querySelector(`#${checkboxId}`);
-        if (checkbox && !checkbox.hasAttribute("data-handler-setup")) {
-          checkbox.setAttribute("data-handler-setup", "true");
-          checkbox.addEventListener("change", (e) => {
-            const notifications = UnifiedState.data.settings.notifications;
-            if (e.target.checked) {
-              if (!notifications.watchedDecor.includes(decor.id)) {
-                notifications.watchedDecor.push(decor.id);
-              }
-            } else {
-              notifications.watchedDecor = notifications.watchedDecor.filter(
-                (id) => id !== decor.id,
-              );
-            }
-            MGA_saveJSON("MGA_data", UnifiedState.data);
-            productionLog(
-              `🎨 [NOTIFICATIONS] ${e.target.checked ? "Added" : "Removed"} ${decor.id} to/from watch list`,
-            );
-            updateLastSeenDisplay();
-          });
-        }
-      });
-
       // Update last seen display function
       function updateLastSeenDisplay() {
         const lastSeenDisplay = context.querySelector("#last-seen-display");
@@ -25482,7 +25283,6 @@ console.log(
         const allWatched = [
           ...notifications.watchedSeeds,
           ...notifications.watchedEggs,
-          ...notifications.watchedDecor,
         ];
 
         if (allWatched.length === 0) {
@@ -25912,11 +25712,11 @@ console.log(
     }
 
     function setupSettingsTabHandlers(context = document) {
-      console.log("🚨 [CRITICAL-DEBUG] setupSettingsTabHandlers ENTERED");
+      productionLog("🚨 [CRITICAL-DEBUG] setupSettingsTabHandlers ENTERED");
       productionLog("⚙️ [SETTINGS] setupSettingsTabHandlers called", {
         context: context === document ? "document" : "custom",
       });
-      console.log(
+      productionLog(
         "🚨 [CRITICAL-DEBUG] Context type:",
         context === document ? "DOCUMENT" : "ELEMENT",
         context,
@@ -26160,7 +25960,7 @@ console.log(
             );
           });
 
-          console.log(
+          productionLog(
             `[MGTOOLS-FIX-B] Feed buttons ${e.target.checked ? "hidden" : "shown"}`,
           );
           productionLog(
@@ -26201,7 +26001,7 @@ console.log(
         roomDebugModeCheckbox.addEventListener("change", (e) => {
           UnifiedState.data.settings.roomDebugMode = e.target.checked;
           MGA_saveJSON("MGA_data", UnifiedState.data);
-          console.log(
+          productionLog(
             `[MGTools] Room debug mode ${e.target.checked ? "enabled" : "disabled"}`,
           );
         });
@@ -27298,17 +27098,17 @@ console.log(
             log.abilityType && /crop\s*size\s*boost/i.test(log.abilityType),
         );
 
-        console.log("=== ABILITY LOG VERIFICATION ===");
-        console.log('Old "Produce Scale Boost" logs:', oldLogs.length);
+        productionLog("=== ABILITY LOG VERIFICATION ===");
+        productionLog('Old "Produce Scale Boost" logs:', oldLogs.length);
         if (oldLogs.length > 0) {
           console.warn(
             "⚠️ Found unmigrated logs - migration may need to run again",
           );
-          console.log("Sample old logs:", oldLogs.slice(0, 3));
+          productionLog("Sample old logs:", oldLogs.slice(0, 3));
         }
-        console.log('New "Crop Size Boost" logs:', newLogs.length);
-        console.log("Total logs:", allLogs.length);
-        console.log("============================");
+        productionLog('New "Crop Size Boost" logs:', newLogs.length);
+        productionLog("Total logs:", allLogs.length);
+        productionLog("============================");
 
         return {
           oldCount: oldLogs.length,
@@ -27321,14 +27121,14 @@ console.log(
         const abilityTypes = [
           ...new Set(allLogs.map((log) => log.abilityType)),
         ].sort();
-        console.log("=== ALL UNIQUE ABILITIES IN LOGS ===");
+        productionLog("=== ALL UNIQUE ABILITIES IN LOGS ===");
         abilityTypes.forEach((ability, i) => {
           const count = allLogs.filter(
             (log) => log.abilityType === ability,
           ).length;
-          console.log(`${i + 1}. ${ability} (${count} logs)`);
+          productionLog(`${i + 1}. ${ability} (${count} logs)`);
         });
-        console.log("===================================");
+        productionLog("===================================");
         return abilityTypes;
       },
     };
@@ -28758,7 +28558,7 @@ console.log(
 
       const modalSettings = UnifiedState.data.settings.modalSpamProtection;
 
-      // Note: Console.log filtering removed - cannot intercept logs from other userscripts (MGC)
+      // Note: productionLog filtering removed - cannot intercept logs from other userscripts (MGC)
       // MGC spam is from separate userscript and must be filtered at browser console level if needed
 
       // Enhanced modal prevention with debouncing
@@ -29599,35 +29399,29 @@ console.log(
     const WEATHER_MULT = {
       Wet: 2,
       Chilled: 2,
-      Frozen: 10,
+      Frozen: 6,
+      ThunderStruck: 5,
     };
 
     const TIME_MULT = {
-      Dawnlit: 2,
-      Dawnbound: 3,
-      Dawncharged: 3, // Same as Dawnbound
-      Amberlit: 5,
-      Ambershine: 5, // Internal game name for Amberlit
-      Amberbound: 6,
-      Ambercharged: 6, // Same as Amberbound
+      Dawnlit: 4,
+      Dawnbound: 7,
+      Dawncharged: 7, // Same as Dawnbound
+      Amberlit: 6,
+      Ambershine: 6, // Internal game name for Amberlit
+      Amberbound: 10,
+      Ambercharged: 10, // Same as Amberbound
     };
 
-    const WEATHER_TIME_COMBO = {
-      "Wet+Dawnlit": 3,
-      "Chilled+Dawnlit": 3,
-      "Wet+Amberlit": 6,
-      "Chilled+Amberlit": 6,
-      "Wet+Ambershine": 6, // Internal game name for Amberlit
-      "Chilled+Ambershine": 6, // Internal game name for Amberlit
-      "Frozen+Dawnlit": 11,
-      "Frozen+Dawnbound": 12,
-      "Frozen+Dawncharged": 12, // Same as Dawnbound
-      "Frozen+Amberlit": 14,
-      "Frozen+Ambershine": 14, // Internal game name for Amberlit
-      "Frozen+Amberbound": 15,
-      "Frozen+Ambercharged": 15, // Same as Amberbound
-    };
+    // Auto-generate the combinations
+    const WEATHER_TIME_COMBO = {};
 
+    for (const [weather, wVal] of Object.entries(WEATHER_MULT)) {
+      for (const [time, tVal] of Object.entries(TIME_MULT)) {
+        const comboKey = `${weather}+${time}`;
+        WEATHER_TIME_COMBO[comboKey] = wVal + tVal - 1;
+      }
+    }
     function calculateMutationMultiplier(mutations) {
       if (!mutations || !Array.isArray(mutations)) return 1;
 
@@ -31697,6 +31491,14 @@ console.log(
       const currentEgg =
         targetWindow.currentEgg || UnifiedState.atoms.currentEgg;
 
+      //Remove old Span if no current crop
+      if (!currentCrop) {
+        const span = document
+          .getElementsByClassName("tm-crop-price-value")
+          .item(0);
+        if (span != null) span.remove();
+      }
+
       if (!currentCrop && !currentEgg) {
         return; // No data available
       }
@@ -31826,6 +31628,8 @@ console.log(
       color,
       showCoinIcon = false,
     ) {
+      if (MGSpriteCatalog) return;
+
       const COIN_URL =
         "https://cdn.discordapp.com/emojis/1425389207525920808.webp?size=96";
       const ICON_CLASS = markerClass + "-icon";
@@ -31926,14 +31730,14 @@ console.log(
         // The value at that position is the actual slot index in currentCrop
         if (slotIndex < sortedIndices.length) {
           actualSlotIndex = sortedIndices[slotIndex];
-          console.log(
+          productionLog(
             `🔄 [CROP-VALUE] Using sorted index: position ${slotIndex} → actual slot ${actualSlotIndex}`,
           );
         }
       }
 
       // Debug logging
-      console.log(
+      productionLog(
         `📊 [CROP-VALUE] Calculating value for slot ${actualSlotIndex}/${currentCrop.length}`,
         {
           displayIndex: slotIndex,
@@ -31955,17 +31759,21 @@ console.log(
 
       const slot = currentCrop[actualSlotIndex];
       if (!slot || !slot.species) {
-        console.log(`[CROP-VALUE] No species at slot ${actualSlotIndex}`, slot);
+        productionLog(
+          `[CROP-VALUE] No species at slot ${actualSlotIndex}`,
+          slot,
+        );
         return 0;
       }
 
       const multiplier = calculateMutationMultiplier(slot.mutations);
       const speciesVal = speciesValues[slot.species] || 0;
       const scale = slot.targetScale || 1;
+
       const value = Math.round(multiplier * speciesVal * scale * friendBonus);
 
       // Always log for debugging the issue
-      console.log(
+      productionLog(
         `💰 [CROP-VALUE] Slot ${actualSlotIndex}/${currentCrop.length}: ${slot.species} = ${value.toLocaleString()}`,
         {
           species: slot.species,
@@ -31983,7 +31791,7 @@ console.log(
     // Hook currentCrop atom for turtle timer
 
     function initializeTurtleTimer() {
-      console.log(
+      productionLog(
         "🐢🐢🐢 [TURTLE-TIMER-START] initializeTurtleTimer() called!",
       );
       productionLog("🐢 [TURTLE-TIMER] Initializing crop growth estimate...");
@@ -32219,19 +32027,22 @@ console.log(
 
       // Expose a debug function to manually check - make it available in page context
       const debugCropDetectionFunc = function () {
-        console.log("=== MANUAL CROP DETECTION DEBUG ===");
+        productionLog("=== MANUAL CROP DETECTION DEBUG ===");
 
         // Check atom cache
         const atomCache = window.jotaiAtomCache?.cache || window.jotaiAtomCache;
-        console.log("atomCache exists:", !!atomCache);
+        productionLog("atomCache exists:", !!atomCache);
 
         if (atomCache && atomCache.get) {
-          console.log("Atom cache entries count:", atomCache.size || "unknown");
+          productionLog(
+            "Atom cache entries count:",
+            atomCache.size || "unknown",
+          );
 
           // Look for crop-related atoms
           try {
             const allKeys = Array.from(atomCache.keys ? atomCache.keys() : []);
-            console.log("Total atoms:", allKeys.length);
+            productionLog("Total atoms:", allKeys.length);
 
             const cropAtoms = allKeys.filter(
               (k) =>
@@ -32240,44 +32051,46 @@ console.log(
                 k.includes("Grow") ||
                 k.includes("Egg"),
             );
-            console.log("Crop-related atoms:", cropAtoms);
+            productionLog("Crop-related atoms:", cropAtoms);
 
             // Try to read the current crop atom
             const atom = atomCache.get(
               "/home/runner/work/magiccircle.gg/magiccircle.gg/client/src/games/Quinoa/atoms/myAtoms.ts/myCurrentGrowSlotsAtom",
             );
-            console.log("Current crop atom:", atom);
+            productionLog("Current crop atom:", atom);
 
             if (atom) {
-              console.log("Atom properties:", Object.keys(atom));
-              console.log("Atom.debugValue:", atom.debugValue);
-              console.log("Atom.init:", atom.init);
+              productionLog("Atom properties:", Object.keys(atom));
+              productionLog("Atom.debugValue:", atom.debugValue);
+              productionLog("Atom.init:", atom.init);
 
               // Try to find store and read it
               const tw = window;
               if (tw.__foundJotaiStore) {
-                console.log("Found store, trying to read...");
+                productionLog("Found store, trying to read...");
                 try {
                   const val = tw.__foundJotaiStore.get(atom);
-                  console.log("✅ Store.get(atom) returned:", val);
+                  productionLog("✅ Store.get(atom) returned:", val);
                 } catch (e) {
-                  console.log("❌ Error reading from store:", e);
+                  productionLog("❌ Error reading from store:", e);
                 }
               } else {
-                console.log("⚠️ No Jotai store found yet");
+                productionLog("⚠️ No Jotai store found yet");
               }
             }
           } catch (e) {
-            console.log("Error exploring atoms:", e);
+            productionLog("Error exploring atoms:", e);
           }
         }
 
         // Force call insertTurtleEstimate
-        console.log("Calling insertTurtleEstimate()...");
+        productionLog("Calling insertTurtleEstimate()...");
         if (typeof insertTurtleEstimate === "function") {
           insertTurtleEstimate();
         } else {
-          console.log("❌ insertTurtleEstimate not available in this context");
+          productionLog(
+            "❌ insertTurtleEstimate not available in this context",
+          );
         }
       };
 
@@ -32286,12 +32099,12 @@ console.log(
         window.debugCropDetection = debugCropDetectionFunc;
         targetWindow.debugCropDetection = debugCropDetectionFunc;
 
-        console.log(
+        productionLog(
           "💡 TIP: Run window.debugCropDetection() in console to debug crop detection",
         );
-        console.log("💡 Available in: window, targetWindow");
+        productionLog("💡 Available in: window, targetWindow");
       } catch (e) {
-        console.log("⚠️ Could not attach debugCropDetection:", e);
+        productionLog("⚠️ Could not attach debugCropDetection:", e);
       }
 
       // === EXPOSE STORAGE RECOVERY FUNCTIONS (v3.8.7) ===
@@ -32306,17 +32119,17 @@ console.log(
         targetWindow.importPetPresets = importPetPresets;
         targetWindow.performStorageHealthCheck = performStorageHealthCheck;
 
-        console.log("💡 TIP: Storage recovery functions available:");
-        console.log(
+        productionLog("💡 TIP: Storage recovery functions available:");
+        productionLog(
           '   - emergencyStorageScan("MGA_petPresets") - Scan for lost data',
         );
-        console.log("   - exportPetPresets() - Backup your presets to JSON");
-        console.log("   - importPetPresets() - Restore presets from backup");
-        console.log(
+        productionLog("   - exportPetPresets() - Backup your presets to JSON");
+        productionLog("   - importPetPresets() - Restore presets from backup");
+        productionLog(
           "   - performStorageHealthCheck() - Check storage system health",
         );
       } catch (e) {
-        console.log("⚠️ Could not attach storage recovery functions:", e);
+        productionLog("⚠️ Could not attach storage recovery functions:", e);
       }
     }
 
@@ -32363,7 +32176,7 @@ console.log(
           if (animEnabled !== undefined) {
             GM_deleteValue("animationEnabled");
             if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-              console.log(
+              productionLog(
                 "[FIX_ANIMATION] Removed deprecated animationEnabled from GM storage",
               );
             }
@@ -32374,7 +32187,7 @@ console.log(
             if (localStorage.getItem("animationEnabled") !== null) {
               localStorage.removeItem("animationEnabled");
               if (CONFIG.DEBUG.FLAGS.FIX_VALIDATION) {
-                console.log(
+                productionLog(
                   "[FIX_ANIMATION] Removed deprecated animationEnabled from localStorage",
                 );
               }
@@ -32863,7 +32676,6 @@ console.log(
                 "Starweaver",
               ],
               watchedEggs: ["CommonEgg", "MythicalEgg"],
-              watchedDecor: [],
               petHungerEnabled: false,
               petHungerThreshold: 25,
               petHungerSound: "double",
@@ -33558,14 +33370,14 @@ console.log(
           }
 
           if (UnifiedState.data.settings?.debugMode) {
-            console.log(
+            productionLog(
               "🍖 [TIMER-UPDATE] Cached timer elements:",
               cachedTimerElements.length,
             );
-            console.log("🍖 [TIMER-UPDATE] Active pets:", activePets.length);
+            productionLog("🍖 [TIMER-UPDATE] Active pets:", activePets.length);
             if (activePets.length > 0) {
               activePets.forEach((p, i) => {
-                console.log(`🍖 [TIMER-UPDATE] Pet ${i}:`, {
+                productionLog(`🍖 [TIMER-UPDATE] Pet ${i}:`, {
                   species: p.petSpecies,
                   hunger: p.hunger,
                   abilities: p.abilities,
@@ -35027,481 +34839,6 @@ console.log(
           // ==================== SORT INVENTORY BUTTON (FIX ISSUE D) ====================
 
           // FIX BUG #1: Full autosort.txt implementation (v3.8.6) - replaces stub
-          const sortInventoryKeepHeadAndSendMovesOptimized = function (
-            inventoryObj,
-            options = {},
-          ) {
-            if (!inventoryObj || !Array.isArray(inventoryObj.items)) {
-              console.error(
-                "[MGTOOLS-FIX-D] Invalid inventory object passed to sorter.",
-              );
-              return null;
-            }
-            const items = inventoryObj.items;
-            const fixedCount = Number(options.fixedCount || 9);
-            const petSortBy = options.petSortBy === "rarity" ? "rarity" : "xp";
-
-            // Default pet rarity map (lower = earlier in sort)
-            const defaultPetRarityMap = {
-              Capybara: 0,
-              Peacock: 0.1,
-              Butterfly: 0.2, // Mythical
-              Goat: 1,
-              Turtle: 1.1,
-              Squirrel: 1.2, // Legendary
-              Caribou: 2.0,
-              Stoat: 2.1,
-              SnowFox: 2.3, //Winter
-              Turkey: 3.2,
-              Cow: 3,
-              Pig: 3.1, // Rare
-              Chicken: 4,
-              Dragonfly: 4.1, // Uncommon
-              Bee: 5,
-              Worm: 5.1,
-              Snail: 5.2, // Common
-            };
-            const petRarityMap = Object.assign(
-              {},
-              defaultPetRarityMap,
-              options.petRarityMap || {},
-            );
-
-            // helpers
-            const toNum = (v) => (typeof v === "number" ? v : Number(v) || 0);
-            const toStr = (v) => (v == null ? "" : String(v));
-
-            function groupRank(item) {
-              if (!item) return 6;
-              switch (item.itemType) {
-                case "Seed":
-                  return 0;
-                case "Produce":
-                  return 1;
-                case "Pet":
-                  return 2;
-                case "Egg":
-                  return 3;
-                case "Decor":
-                  return 4;
-                default:
-                  return 5;
-              }
-            }
-
-            function seedMetric(it) {
-              return toNum(it.quantity);
-            }
-            function produceMetric(it) {
-              return toNum(it.scale);
-            }
-            function petXpMetric(it) {
-              return toNum(it.xp);
-            }
-            function eggMetric(it) {
-              return toNum(it.quantity);
-            }
-            function decorMetric(it) {
-              return toStr(it.decorId).toLowerCase();
-            }
-            function fallbackKey(it) {
-              return (
-                it &&
-                (it.species ||
-                  it.decorId ||
-                  it.toolId ||
-                  it.eggId ||
-                  it.id ||
-                  "")
-              )
-                .toString()
-                .toLowerCase();
-            }
-
-            function petRarityRank(species) {
-              if (!species) return Number.MAX_SAFE_INTEGER;
-              if (Object.prototype.hasOwnProperty.call(petRarityMap, species))
-                return petRarityMap[species];
-              const lower = species.toLowerCase();
-              for (const k of Object.keys(petRarityMap)) {
-                if (k.toLowerCase() === lower) return petRarityMap[k];
-              }
-              return Number.MAX_SAFE_INTEGER;
-            }
-
-            // comparator for tail sorting
-            function cmp(a, b) {
-              const ga = groupRank(a),
-                gb = groupRank(b);
-              if (ga !== gb) return ga - gb;
-              switch (ga) {
-                case 0: {
-                  // Seeds: quantity desc, tie -> species A-Z
-                  const d = seedMetric(b) - seedMetric(a);
-                  if (d !== 0) return d;
-                  break;
-                }
-                case 1: {
-                  // Produce: scale desc
-                  const d = produceMetric(b) - produceMetric(a);
-                  if (d !== 0) return d;
-                  break;
-                }
-                case 2: {
-                  // Pets
-                  if (petSortBy === "rarity") {
-                    const ra = petRarityRank(a.petSpecies || a.species);
-                    const rb = petRarityRank(b.petSpecies || b.species);
-                    if (ra !== rb) return ra - rb; // lower = earlier
-                    // tie-break: xp desc
-                    const d = petXpMetric(b) - petXpMetric(a);
-                    if (d !== 0) return d;
-                    // final tie: species A-Z
-                    const sa = (a.petSpecies || a.species || "")
-                      .toString()
-                      .toLowerCase();
-                    const sb = (b.petSpecies || b.species || "")
-                      .toString()
-                      .toLowerCase();
-                    if (sa < sb) return -1;
-                    if (sa > sb) return 1;
-                    break;
-                  } else {
-                    // xp sort
-                    const d = petXpMetric(b) - petXpMetric(a);
-                    if (d !== 0) return d;
-                  }
-                  break;
-                }
-                case 3: {
-                  // Eggs: quantity desc
-                  const d = eggMetric(b) - eggMetric(a);
-                  if (d !== 0) return d;
-                  break;
-                }
-                case 4: {
-                  // Decor: A-Z by decorId
-                  const da = decorMetric(a),
-                    db = decorMetric(b);
-                  if (da < db) return -1;
-                  if (da > db) return 1;
-                  break;
-                }
-                default:
-                  break;
-              }
-              const fa = fallbackKey(a),
-                fb = fallbackKey(b);
-              if (fa < fb) return -1;
-              if (fa > fb) return 1;
-              return 0;
-            }
-
-            function getMoveItemId(item) {
-              if (!item) return null;
-              if (item.id) return item.id;
-              if (item.species) return item.species;
-              if (item.toolId) return item.toolId;
-              if (item.eggId) return item.eggId;
-              if (item.decorId) return item.decorId;
-              return null;
-            }
-
-            // Build target order by keeping head and sorting the tail
-            const head = items.slice(0, fixedCount);
-            const tail = items.slice(fixedCount);
-            const sortedTail = tail.slice().sort(cmp);
-            const targetOrder = head.concat(sortedTail);
-
-            // Working copy to simulate moves and compute from/to indices correctly
-            const working = items.slice();
-
-            function findIndexInWorking(desiredItem) {
-              if (!desiredItem) return -1;
-              // exact unique id first
-              if (desiredItem.id) {
-                for (let i = 0; i < working.length; i++) {
-                  const it = working[i];
-                  if (it && it.id && it.id === desiredItem.id) return i;
-                }
-              }
-              // collect candidates for stackable matches or pets without id
-              const candidates = [];
-              for (let i = 0; i < working.length; i++) {
-                const it = working[i];
-                if (!it) continue;
-                // species match (seeds, produce)
-                if (
-                  desiredItem.species &&
-                  it.species &&
-                  it.species === desiredItem.species
-                ) {
-                  candidates.push({ idx: i, score: toNum(it.quantity) });
-                  continue;
-                }
-                if (
-                  desiredItem.toolId &&
-                  it.toolId &&
-                  it.toolId === desiredItem.toolId
-                ) {
-                  candidates.push({ idx: i, score: toNum(it.quantity) });
-                  continue;
-                }
-                if (
-                  desiredItem.eggId &&
-                  it.eggId &&
-                  it.eggId === desiredItem.eggId
-                ) {
-                  candidates.push({ idx: i, score: toNum(it.quantity) });
-                  continue;
-                }
-                if (
-                  desiredItem.decorId &&
-                  it.decorId &&
-                  it.decorId === desiredItem.decorId
-                ) {
-                  candidates.push({ idx: i, score: 0 });
-                  continue;
-                }
-                // pets without id: match by petSpecies and prefer higher xp
-                if (
-                  desiredItem.itemType === "Pet" &&
-                  desiredItem.petSpecies &&
-                  it.itemType === "Pet" &&
-                  it.petSpecies === desiredItem.petSpecies
-                ) {
-                  candidates.push({ idx: i, score: toNum(it.xp) });
-                  continue;
-                }
-              }
-              if (candidates.length === 0) {
-                // fallback match by any moveItemId-like field
-                const want = getMoveItemId(desiredItem);
-                if (!want) return -1;
-                for (let i = 0; i < working.length; i++) {
-                  const it = working[i];
-                  if (!it) continue;
-                  if (
-                    (it.id && it.id === want) ||
-                    (it.species && it.species === want) ||
-                    (it.toolId && it.toolId === want) ||
-                    (it.eggId && it.eggId === want) ||
-                    (it.decorId && it.decorId === want)
-                  ) {
-                    return i;
-                  }
-                }
-                return -1;
-              }
-              // pick best candidate (largest stack or highest xp)
-              candidates.sort((a, b) => b.score - a.score);
-              return candidates[0].idx;
-            }
-
-            function sendMove(moveItemId, toIndex) {
-              if (!moveItemId || typeof toIndex !== "number") return;
-              const msg = {
-                scopePath: ["Room", "Quinoa"],
-                type: "MoveInventoryItem",
-                moveItemId: moveItemId,
-                toInventoryIndex: toIndex,
-              };
-              if (
-                targetWindow &&
-                targetWindow.MagicCircle_RoomConnection &&
-                typeof targetWindow.MagicCircle_RoomConnection.sendMessage ===
-                  "function"
-              ) {
-                targetWindow.MagicCircle_RoomConnection.sendMessage(msg);
-              } else {
-                console.warn(
-                  "[MGTOOLS-FIX-D] MagicCircle_RoomConnection not available — simulated move:",
-                  msg,
-                );
-              }
-            }
-
-            // Build move list for indices >= fixedCount and update working to reflect each planned move
-            const moves = [];
-            for (
-              let targetIndex = fixedCount;
-              targetIndex < targetOrder.length;
-              targetIndex++
-            ) {
-              const desiredItem = targetOrder[targetIndex];
-              const workingItem = working[targetIndex];
-
-              const desiredKey = getMoveItemId(desiredItem);
-              const workingKey = getMoveItemId(workingItem);
-              const alreadySame =
-                desiredKey &&
-                workingKey &&
-                (desiredKey === workingKey ||
-                  (desiredItem.species &&
-                    workingItem.species &&
-                    desiredItem.species === workingItem.species));
-              if (alreadySame) continue;
-
-              const curIndex = findIndexInWorking(desiredItem);
-              if (curIndex === -1) {
-                console.warn(
-                  "[MGTOOLS-FIX-D] Could not find desired item in current inventory for",
-                  desiredItem,
-                );
-                continue;
-              }
-
-              const moveId = getMoveItemId(desiredItem);
-              if (!moveId) {
-                console.warn("[MGTOOLS-FIX-D] No moveItemId for", desiredItem);
-                continue;
-              }
-
-              moves.push({ moveId, from: curIndex, to: targetIndex });
-              const [moved] = working.splice(curIndex, 1);
-              working.splice(targetIndex, 0, moved);
-            }
-
-            // Send moves immediately
-            for (const m of moves) {
-              sendMove(m.moveId, m.to);
-            }
-
-            console.log(
-              "[MGTOOLS-FIX-D] ✅ Sort completed. Moves sent:",
-              moves.length,
-              moves,
-            );
-            return targetOrder;
-          };
-
-          // Add Sort Inventory button after each CLEAR FILTERS button
-          const addSortButtonAfterClearFilters = function () {
-            const clearButtons = Array.from(
-              targetDocument.querySelectorAll("button"),
-            ).filter(
-              (btn) => btn.textContent.trim().toUpperCase() === "CLEAR FILTERS",
-            );
-
-            clearButtons.forEach((clearButton) => {
-              if (clearButton.dataset.sortBtnAdded === "true") return;
-
-              // FIX ISSUE D: EXACT copy from autosort.txt
-              const container = targetDocument.createElement("div");
-              container.className = "custom-sort-container";
-              container.style.display = "inline-flex";
-              container.style.alignItems = "center";
-              container.style.gap = "6px";
-              container.style.marginLeft = "6px";
-
-              // FIX ISSUE D: Button with EXACT autosort.txt styling
-              const btn = targetDocument.createElement("button");
-              btn.className = "custom-sort-button";
-              btn.textContent = "Sort Inventory";
-              btn.title = "Click to sort (Shift+Click to sort pets by XP)";
-              Object.assign(btn.style, {
-                background: "#2b2a2a",
-                color: "white",
-                border: "1px solid #555",
-                borderRadius: "6px",
-                padding: "6px 10px",
-                cursor: "pointer",
-                fontSize: "13px",
-                transform: "translateX(calc(-1 * var(--offset, -200%)))",
-              });
-
-              // FIX BUG #1: Click handler with 3-tier inventory detection (v3.8.6)
-              btn.addEventListener("click", (ev) => {
-                const petSortBy = ev.shiftKey ? "xp" : "rarity";
-
-                // 3-TIER FALLBACK: UnifiedState → targetWindow → window search
-                const inventoryObj =
-                  UnifiedState.atoms.inventory ||
-                  targetWindow.inventory ||
-                  targetWindow.Inventory ||
-                  targetWindow.gameInventory ||
-                  (typeof inventory !== "undefined" && inventory) ||
-                  null;
-
-                if (!inventoryObj || !Array.isArray(inventoryObj.items)) {
-                  console.error(
-                    "[MGTOOLS-FIX-D] Could not find inventory object. Searching window keys...",
-                  );
-                  // Try to find any object on window with .items array (best-effort)
-                  for (const k of Object.keys(targetWindow)) {
-                    try {
-                      const candidate = targetWindow[k];
-                      if (
-                        candidate &&
-                        candidate.items &&
-                        Array.isArray(candidate.items)
-                      ) {
-                        console.log(
-                          `[MGTOOLS-FIX-D] ✅ Using inventory from window["${k}"]`,
-                        );
-                        sortInventoryKeepHeadAndSendMovesOptimized(candidate, {
-                          fixedCount: 9,
-                          petSortBy,
-                        });
-                        return;
-                      }
-                    } catch (e) {
-                      /* ignore */
-                    }
-                  }
-                  console.error(
-                    "[MGTOOLS-FIX-D] ❌ Failed to find inventory object anywhere",
-                  );
-                  return;
-                }
-
-                console.log(
-                  `[MGTOOLS-FIX-D] 🔄 Sorting inventory (${petSortBy === "xp" ? "XP" : "Rarity"} sort)`,
-                );
-                sortInventoryKeepHeadAndSendMovesOptimized(inventoryObj, {
-                  fixedCount: 9,
-                  petSortBy,
-                });
-              });
-
-              container.appendChild(btn);
-              clearButton.insertAdjacentElement("afterend", container);
-              clearButton.dataset.sortBtnAdded = "true";
-
-              console.log(
-                "[MGTOOLS-FIX-D] ✅ Sort button added after CLEAR FILTERS",
-              );
-            });
-          };
-
-          // Initialize Sort Inventory button with mutation observer
-          const initializeSortInventoryButton = function () {
-            console.log(
-              "[MGTOOLS-FIX-D] 🚀 Initializing Sort Inventory button...",
-            );
-
-            // Initial injection
-            addSortButtonAfterClearFilters();
-
-            // Watch for DOM changes (inventory opening/closing)
-            const observer = new MutationObserver(() => {
-              addSortButtonAfterClearFilters();
-            });
-
-            observer.observe(targetDocument.body, {
-              childList: true,
-              subtree: true,
-            });
-
-            // Store observer for cleanup if needed
-            if (!targetWindow.MGToolsObservers)
-              targetWindow.MGToolsObservers = [];
-            targetWindow.MGToolsObservers.push(observer);
-
-            console.log(
-              "[MGTOOLS-FIX-D] ✅ Sort Inventory button initialized with mutation observer",
-            );
-          };
 
           // ==================== INSTANT FEED BUTTONS ====================
           // Pet species and their compatible crops (from game data)
@@ -35650,7 +34987,7 @@ console.log(
                   );
                   if (freshPetSlots?.[petIndex]) {
                     pet = freshPetSlots[petIndex];
-                    console.log(
+                    productionLog(
                       "[MGTOOLS-FIX-A] Using fresh pet data from Jotai atom cache (Tier 1)",
                     );
                   }
@@ -35665,7 +35002,7 @@ console.log(
               // Tier 2: UnifiedState atoms (updated by subscriptions)
               if (!pet && UnifiedState.atoms.activePets?.[petIndex]) {
                 pet = UnifiedState.atoms.activePets[petIndex];
-                console.log(
+                productionLog(
                   "[MGTOOLS-FIX-A] Using UnifiedState atoms (Tier 2)",
                 );
               }
@@ -35673,7 +35010,7 @@ console.log(
               // Tier 3: window.myData (game global)
               if (!pet && targetWindow.myData?.petSlots?.[petIndex]) {
                 pet = targetWindow.myData.petSlots[petIndex];
-                console.log("[MGTOOLS-FIX-A] Using window.myData (Tier 3)");
+                productionLog("[MGTOOLS-FIX-A] Using window.myData (Tier 3)");
               }
 
               if (!pet) {
@@ -35695,7 +35032,7 @@ console.log(
               const petItemId = pet.id;
 
               // STEP 1: Log active pet data
-              console.log("[Feed-Flow-1] 🐾 Active Pet:", {
+              productionLog("[Feed-Flow-1] 🐾 Active Pet:", {
                 species,
                 petItemId: petItemId.substring(0, 8) + "...",
                 hunger: pet.hunger,
@@ -35706,7 +35043,7 @@ console.log(
               const compatibleCrops = PET_FEED_CATALOG[species];
 
               // STEP 2: Log compatible crops list for this species
-              console.log(
+              productionLog(
                 `[Feed-Flow-2] 🌾 Compatible crops for ${species}:`,
                 compatibleCrops || [],
               );
@@ -35743,7 +35080,7 @@ console.log(
                   );
                   if (freshInventory?.items) {
                     inventoryItems = freshInventory.items;
-                    console.log(
+                    productionLog(
                       "[MGTOOLS-FIX-A] Using fresh inventory from Jotai atom cache (Tier 1)",
                     );
                   }
@@ -35760,7 +35097,7 @@ console.log(
                 try {
                   inventoryItems = readAtom("myCropItemsAtom") || [];
                   if (inventoryItems.length > 0) {
-                    console.log(
+                    productionLog(
                       "[MGTOOLS-FIX-A] Using myCropItemsAtom (Tier 1.5)",
                     );
                   }
@@ -35778,7 +35115,7 @@ console.log(
                   inventoryItems = UnifiedState.atoms.inventory.items.filter(
                     (i) => i.itemType === "Produce" || i.itemType === "Crop",
                   );
-                  console.log(
+                  productionLog(
                     "[MGTOOLS-FIX-A] Using UnifiedState inventory (Tier 2)",
                   );
                 }
@@ -35788,13 +35125,13 @@ console.log(
               if (!inventoryItems || inventoryItems.length === 0) {
                 if (targetWindow.myData?.inventory?.items) {
                   inventoryItems = targetWindow.myData.inventory.items;
-                  console.log(
+                  productionLog(
                     "[MGTOOLS-FIX-A] Using window.myData inventory (Tier 3)",
                   );
                 }
               }
 
-              console.log(
+              productionLog(
                 "[Feed-Inventory] Fresh read:",
                 inventoryItems?.length || 0,
                 "items",
@@ -35814,7 +35151,7 @@ console.log(
               }
 
               // STEP 3: Log full crop inventory
-              console.log("[Feed-Flow-3] 📦 Full inventory:", {
+              productionLog("[Feed-Flow-3] 📦 Full inventory:", {
                 count: inventoryItems.length,
                 species: inventoryItems.map((item) => item.species),
                 items: inventoryItems,
@@ -35825,7 +35162,7 @@ console.log(
                 UnifiedState.data?.autoFavorite?.selectedSpecies || [];
 
               // STEP 4: Log favorited species list
-              console.log(
+              productionLog(
                 "[Feed-Flow-4] 🚫 Favorited species:",
                 favoritedSpecies,
               );
@@ -35842,7 +35179,7 @@ console.log(
               );
 
               // STEP 5: Log non-favorited compatible crops available
-              console.log(
+              productionLog(
                 "[Feed-Flow-5] ✅ Non-favorited compatible crops available:",
                 {
                   count: nonFavoritedCompatibleCrops.length,
@@ -35856,7 +35193,7 @@ console.log(
               const cropToFeed = nonFavoritedCompatibleCrops[0];
 
               // STEP 6: Log boolean check if compatible crop exists
-              console.log(
+              productionLog(
                 `[Feed-Flow-6] ❓ Compatible crop exists: ${!!cropToFeed}`,
               );
 
@@ -35864,15 +35201,15 @@ console.log(
                 console.error(
                   "[MGTools Feed] No feedable crops (compatible, non-favorited, unused)",
                 );
-                console.log(
+                productionLog(
                   "[MGTools Feed] Compatible species:",
                   compatibleCrops,
                 );
-                console.log(
+                productionLog(
                   "[MGTools Feed] Favorited species:",
                   favoritedSpecies,
                 );
-                console.log(
+                productionLog(
                   "[MGTools Feed] Used crop IDs:",
                   Array.from(usedCropIds),
                 );
@@ -35895,7 +35232,7 @@ console.log(
                 cropToFeed?.inventoryItemId ||
                 cropToFeed?.itemId;
 
-              console.log("[Feed-Flow-7a] 🧪 Selected crop:", {
+              productionLog("[Feed-Flow-7a] 🧪 Selected crop:", {
                 species: cropToFeed?.species,
                 fullItem: cropToFeed,
                 resolvedId: cropItemId,
@@ -35928,7 +35265,7 @@ console.log(
                   "[Feed] Crop no longer in inventory! ID:",
                   cropItemId,
                 );
-                console.log(
+                productionLog(
                   "[Feed] Current inventory IDs:",
                   currentInventory.map(
                     (i) => i.id || i.inventoryItemId || i.itemId,
@@ -35955,7 +35292,7 @@ console.log(
               }
 
               // 3) Send with proper inventory item id
-              console.log(
+              productionLog(
                 "[Feed-Debug] 🚀 Sending FeedPet message with inventoryItemId",
               );
 
@@ -35963,7 +35300,7 @@ console.log(
               try {
                 // Fire-and-forget - send feed immediately
                 await sendFeedPet(reboundPetItemId, cropItemId);
-                console.log(
+                productionLog(
                   `[MGTools Feed] 🚀 Sent feed: ${species} with ${cropToFeed.species}`,
                 );
 
@@ -35985,7 +35322,7 @@ console.log(
                         "[MGTools Feed] ⚠️ Background verification failed (feed may have worked anyway)",
                       );
                     } else {
-                      console.log(
+                      productionLog(
                         "[MGTools Feed] ✅ Background verification succeeded",
                       );
                     }
@@ -36050,7 +35387,7 @@ console.log(
 
                   if (hungerChange >= HUNGER_EPSILON || currentHunger <= 1) {
                     // Hunger decreased (pet was fed) or pet is full
-                    console.log(
+                    productionLog(
                       `[MGTools Feed] Pet ${petIndex + 1} hunger decreased by ${hungerChange.toFixed(2)}ms (${previousHunger.toFixed(2)}ms → ${currentHunger.toFixed(2)}ms)`,
                     );
                     return {
@@ -36090,7 +35427,7 @@ console.log(
                 freshInventory.items &&
                 Array.isArray(freshInventory.items)
               ) {
-                console.log(
+                productionLog(
                   `[MGTools Feed] 🔄 Got FRESH inventory from hooked atom: ${freshInventory.items.length} items`,
                 );
                 return freshInventory.items;
@@ -36145,7 +35482,7 @@ console.log(
 
             try {
               isInjecting = true;
-              console.log(
+              productionLog(
                 "[MGTools Feed] 🔍 Starting container-based injection...",
               );
 
@@ -36268,7 +35605,7 @@ console.log(
                   candidates.sort((a, b) => a.area - b.area);
                   const targetContainer = candidates[0].element;
 
-                  console.log(`[MGTools Feed] 📐 Selected container:`, {
+                  productionLog(`[MGTools Feed] 📐 Selected container:`, {
                     width: candidates[0].width.toFixed(1),
                     height: candidates[0].height.toFixed(1),
                     tagName: targetContainer.tagName,
@@ -36316,7 +35653,7 @@ console.log(
 
           // Initialize instant feed buttons with polling (reliable for CSS visibility changes)
           const initializeInstantFeedButtons = function () {
-            console.log(
+            productionLog(
               "[MGTools Feed] 🚀 Initializing instant feed buttons with polling interval...",
             );
 
@@ -36324,11 +35661,11 @@ console.log(
             if (!jotaiStore) {
               jotaiStore = captureJotaiStore();
               if (jotaiStore) {
-                console.log(
+                productionLog(
                   "[MGTools Feed] ✅ Jotai store captured at initialization",
                 );
               } else {
-                console.log(
+                productionLog(
                   "[MGTools Feed] ⏳ Jotai store not ready yet - will use fallback data",
                 );
               }
@@ -36499,7 +35836,7 @@ console.log(
             }
             targetWindow.MGToolsIntervals.push(pollInterval);
 
-            console.log(
+            productionLog(
               "[MGTools Feed] ✅ Polling active (500ms) - buttons will auto-reappear when containers become visible",
             );
             productionLog(
@@ -36556,7 +35893,7 @@ console.log(
             // Initialize instant feed buttons after UI is created AND atom cache is ready
             (async () => {
               try {
-                console.log(
+                productionLog(
                   "[MGTools Feed] 🔍 Waiting for Jotai atom cache before initializing feed buttons...",
                 );
 
@@ -36569,7 +35906,7 @@ console.log(
                   // Check if atom cache is ready (this is what we actually need!)
                   if (targetWindow.jotaiAtomCache) {
                     const elapsed = Date.now() - startTime;
-                    console.log(
+                    productionLog(
                       `[MGTools Feed] ✅ Jotai atom cache ready after ${elapsed}ms`,
                     );
                     UnifiedState.jotaiReady = true; // Mark as ready in UnifiedState
@@ -36579,11 +35916,11 @@ console.log(
                     if (!jotaiStore) {
                       jotaiStore = captureJotaiStore();
                       if (jotaiStore) {
-                        console.log(
+                        productionLog(
                           "[MGTools Feed] ✅ Also captured Jotai store",
                         );
                       } else {
-                        console.log(
+                        productionLog(
                           "[MGTools Feed] ℹ️ Store not captured, will use direct atom cache reading",
                         );
                       }
@@ -36611,18 +35948,6 @@ console.log(
                 );
               }
             })();
-
-            // FIX ISSUE D: Initialize Sort Inventory button
-            setTimeout(() => {
-              try {
-                initializeSortInventoryButton();
-              } catch (error) {
-                console.error(
-                  "[MGTools] Error initializing sort inventory button:",
-                  error,
-                );
-              }
-            }, 1500); // Slightly longer delay to ensure inventory UI is ready
           } catch (error) {
             console.error("❌ Error creating UI:", error);
 
@@ -36847,25 +36172,25 @@ console.log(
 
           // Add global recovery function for users whose UI disappears
           targetWindow.MGA_SHOW_UI = function () {
-            console.log(
+            productionLog(
               "%c🔧 MGTools Recovery",
               "color: #4CAF50; font-weight: bold; font-size: 14px",
             );
-            console.log("Clearing corrupted UI state...");
+            productionLog("Clearing corrupted UI state...");
             try {
               localStorage.removeItem("mgh_toolbar_visible");
               localStorage.removeItem("mgh_dock_position");
               localStorage.removeItem("mgh_dock_orientation");
-              console.log("✅ State cleared. Reloading page...");
+              productionLog("✅ State cleared. Reloading page...");
               setTimeout(() => location.reload(), 500);
             } catch (e) {
               console.error("❌ Recovery failed:", e);
-              console.log("Try manually: localStorage.clear() then refresh");
+              productionLog("Try manually: localStorage.clear() then refresh");
             }
           };
 
           // Startup banner with recovery instructions
-          console.log(
+          productionLog(
             "%c🎮 MGTools v" +
               (typeof GM_info !== "undefined"
                 ? GM_info.script.version
@@ -36873,7 +36198,7 @@ console.log(
               " Loaded",
             "color: #4CAF50; font-weight: bold; font-size: 14px",
           );
-          console.log(
+          productionLog(
             "%c💡 UI not showing? Run in console: MGA_SHOW_UI()",
             "color: #FFC107; font-size: 12px",
           );
@@ -36927,11 +36252,16 @@ console.log(
     /* CHECKPOINT removed: ENVIRONMENT_INITIALIZATION_START */
 
     function initializeBasedOnEnvironment() {
-      console.log("🔍🔍🔍 [EXECUTION] ENTERED initializeBasedOnEnvironment()");
+      productionLog(
+        "🔍🔍🔍 [EXECUTION] ENTERED initializeBasedOnEnvironment()",
+      );
       /* CHECKPOINT removed: DETECT_ENVIRONMENT_CALL */
-      console.log("🔍 [EXECUTION] About to call detectEnvironment()");
+      productionLog("🔍 [EXECUTION] About to call detectEnvironment()");
       const environment = detectEnvironment();
-      console.log("🔍 [EXECUTION] detectEnvironment() returned:", environment);
+      productionLog(
+        "🔍 [EXECUTION] detectEnvironment() returned:",
+        environment,
+      );
       /* CHECKPOINT removed: DETECT_ENVIRONMENT_COMPLETE */
 
       productionLog("📊 Environment Analysis:", {
@@ -37070,13 +36400,13 @@ console.log(
 
     // Start environment-based initialization
     /* CHECKPOINT removed: CALLING_MAIN_INITIALIZATION */
-    console.log(
+    productionLog(
       "🔍🔍🔍 [EXECUTION] Reached end of startMGAInitialization, about to call initializeBasedOnEnvironment()",
     );
     try {
-      console.log("🔍 [EXECUTION] Calling initializeBasedOnEnvironment()...");
+      productionLog("🔍 [EXECUTION] Calling initializeBasedOnEnvironment()...");
       initializeBasedOnEnvironment();
-      console.log("🔍 [EXECUTION] initializeBasedOnEnvironment() returned!");
+      productionLog("🔍 [EXECUTION] initializeBasedOnEnvironment() returned!");
       /* CHECKPOINT removed: MAIN_INITIALIZATION_COMPLETE */
 
       // Initialize crop protection hooks
@@ -37088,7 +36418,7 @@ console.log(
       console.error("❌ [EXECUTION] Error stack:", error.stack);
       console.error("🔧 This error caused the script to stop working");
     }
-    console.log(
+    productionLog(
       "🔍 [EXECUTION] Completed startMGAInitialization try-catch block",
     );
 
@@ -38024,48 +37354,6 @@ console.log(
 
       debugLog("PERFORMANCE", "Cleanup completed on window unload");
     });
-
-    // ==================== VERSION INFO ====================
-    productionLog(
-      "╔════════════════════════════════════════╗\n" +
-        "║   🌱 Magic Garden Unified Assistant    ║\n" +
-        "║            Version 1.3.2               ║\n" +
-        "║                                        ║\n" +
-        "║  🎮 Works in ANY browser console!     ║\n" +
-        "║  • Game Mode: Full integration        ║\n" +
-        "║  • Demo Mode: Standalone with samples ║\n" +
-        "║                                        ║\n" +
-        "║  Features:                             ║\n" +
-        "║  • Pet Loadout Management             ║\n" +
-        "║  • Ability Log Tracking               ║\n" +
-        "║  • Seed Deletion & Auto-Delete        ║\n" +
-        "║  • Value Calculations                 ║\n" +
-        "║  • Restock & Event Timers            ║\n" +
-        "║  • Theme Customization                ║\n" +
-        "║  • Pop-out Windows                    ║\n" +
-        "║                                        ║\n" +
-        "║  Controls:                            ║\n" +
-        "║  • window.MGA - Full API              ║\n" +
-        "║  • MGA.showPanel() - Show UI          ║\n" +
-        "║  • MGA.init() - Manual start          ║\n" +
-        "║  • Alt+M - Toggle apanel               ║\n" +
-        "║                                        ║\n" +
-        "║  Debugging (if issues occur):         ║\n" +
-        "║  • MGA.debug.debugStorage() - Storage ║\n" +
-        "║  • MGA_debugStorage() - Same as above ║\n" +
-        "╚════════════════════════════════════════╝",
-    );
-
-    // ==================== IMMEDIATE INITIALIZATION TEST ====================
-    // Final safety initialization for testing - removed to prevent demo mode interference
-    // Demo mode is only triggered by the 8-second fallback if game mode completely fails
-    productionLog(
-      "🧪 Skipping 2-second fallback to prevent demo mode interference",
-    );
-
-    // Final checkpoint - script execution complete
-    /* CHECKPOINT removed: SCRIPT_EXECUTION_COMPLETE */
-    productionLog("✅ Magic Garden Assistant script finished loading");
   }
 })();
 
@@ -38373,7 +37661,7 @@ console.log(
         }
         database = firebase.database();
         isFirebaseReady = true;
-        console.log(
+        productionLog(
           "[ROOMCODE] Firebase initialized for room status fetching.",
         );
       } else {
@@ -38443,7 +37731,7 @@ console.log(
             const secondsSinceLastPoll = Math.floor(
               (now - lastTickWhenHidden) / 1000,
             );
-            console.log(
+            productionLog(
               `[ROOMS] ⏸️ Skipping tick - UI hidden (last poll ${secondsSinceLastPoll}s ago)`,
             );
           }
@@ -38451,7 +37739,7 @@ console.log(
         }
         lastTickWhenHidden = now;
         if (roomDebugMode) {
-          console.log("[ROOMS] 🔄 Polling while UI hidden (30s interval)");
+          productionLog("[ROOMS] 🔄 Polling while UI hidden (30s interval)");
         }
       } else {
         lastTickWhenHidden = 0;
@@ -38476,14 +37764,14 @@ console.log(
           counts[key] = playerCount;
 
           if (roomDebugMode && playerCount > 0) {
-            console.log(
+            productionLog(
               `[ROOMS] 📊 Firebase Room ${key}: ${playerCount} players`,
             );
           }
         });
 
         if (roomDebugMode) {
-          console.log(
+          productionLog(
             `[ROOMS] ✅ Fetched ${roomCodes.length} room counts from Firebase`,
           );
         }
@@ -38511,7 +37799,7 @@ console.log(
         }
 
         if (roomDebugMode) {
-          console.log(
+          productionLog(
             `[ROOMS] ✅ Updated ${Object.keys(counts).length} room counts in UnifiedState`,
           );
         }
@@ -38612,9 +37900,9 @@ console.log(
       } else {
         // Only log if UnifiedState is not ready, as Firebase readiness is checked by `isFirebaseReady`
         if (!hasUnifiedState) {
-          console.log("[ROOMCODE] Waiting for UnifiedState to be ready...");
+          productionLog("[ROOMCODE] Waiting for UnifiedState to be ready...");
         } else if (!isFirebaseReady) {
-          console.log("[ROOMCODE] Waiting for Firebase to initialize...");
+          productionLog("[ROOMCODE] Waiting for Firebase to initialize...");
         }
         setTimeout(startPollingWhenReady, 500);
       }

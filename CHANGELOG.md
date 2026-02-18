@@ -1,5 +1,31 @@
 # Changelog - MGTools
 
+# Version 2.5.0 (2026-2-18)
+
+**Bug Fixes:**
+- Made it so that crop values will no longer show when you shifted to a decor item directly adjacent to the current crop
+- Removed hyperintense console logging
+- Removed some beta checking
+- Removed unnessisary css check that did absolutely nothing
+- Fixed value calculations for mutations
+- Fixed vertical dock tooltips
+- Fixed vertical dock image stretch
+- Fixed vertical dock because it was freaking broken
+- Fixed incorrect internal cactus value
+
+**Additions/Removals:**
+- New Icons
+- Redid toolbar styling to look more like magic garden's styling
+- Redid dock positioning system to use vh and vw instead of px
+- Added thunderstruck
+- Added snow and horse eggs
+- Removed winter egg
+- Added, Rose, Cabbage, Beet, Pear, Gentian, Peach & Violet Cort
+
+**Compatibility Patches:**
+- If Aries mod is detected then the value calculation on the crops will disappear and it will use the Aries mod one
+
+
 ## Version 2.4.0 & 2.3.0 (2025-12-20 & 2025-12-15)
 
 **Bug Fixes:**
