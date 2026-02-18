@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MGTools
 // @namespace    http://tampermonkey.net/
-// @version      2.5.0
+// @version      2.5.1
 // @description  All-in-one assistant for Magic Garden with beautiful unified UI (Enhanced Discord Support!) IN MAINTENANCE MODE!
 // @author       Myke247 & Umm12many
 // @updateURL    https://github.com/Umm12many/MGTools-M/raw/refs/heads/main/MGTools.user.js
@@ -139,7 +139,7 @@ async function rcSend(payload, opts = {}) {
  * MGTools - Magic Garden Enhancement Suite
  * A comprehensive userscript for enhancing the Magic Garden gaming experience
  *
- * @version 2.5.0
+ * @version 2.5.1
  * @author Unified Script
  * @license MIT
  */
@@ -248,7 +248,7 @@ console.warn(
 );
 console.log("[MGTOOLS-DEBUG] 1. Script file loaded");
 console.log(
-  "[MGTOOLS-DEBUG] ⚡ VERSION: 2.5.0 - Added new game features + Compatibilty and Bug fixes",
+  "[MGTOOLS-DEBUG] ⚡ VERSION: 2.5.1 - Added new game features + Compatibilty and Bug fixes",
 );
 console.log("[MGTOOLS-DEBUG] 🕐 Load Time:", new Date().toISOString());
 console.log("[MGTOOLS-DEBUG] 2. Location:", window.location.href);
@@ -720,7 +720,7 @@ console.log(
   const CONFIG = {
     // Version Information
     VERSION: {
-      CURRENT: "2.5.0",
+      CURRENT: "2.5.1",
       CHECK_URL_STABLE:
         "https://raw.githubusercontent.com/Umm12many/MGTools-M/main/MGTools.user.js",
       CHECK_URL_BETA:
@@ -31628,7 +31628,7 @@ console.log(
       color,
       showCoinIcon = false,
     ) {
-      if (MGSpriteCatalog) return;
+      if (typeof MGSpriteCatalog !== "undefined") return;
 
       const COIN_URL =
         "https://cdn.discordapp.com/emojis/1425389207525920808.webp?size=96";
